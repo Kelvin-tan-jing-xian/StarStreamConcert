@@ -14,9 +14,10 @@ router.get("/dynamic/:path", async function (req, res) {
 //	TODO: Attach additional routers here
 import RouterAuth  from './auth.mjs';
 import RouterAdmin from './admin/admin.mjs';
+import RouterVenue from './venue.mjs';
 router.use("/auth",  RouterAuth);
 router.use("/admin", RouterAdmin);
-
+router.use("/venue", RouterVenue);
 
 router.get("/", async function (req, res) {
 	return res.redirect("/home");
