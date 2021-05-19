@@ -1,5 +1,5 @@
 import { Router }              from 'express';
-import { UserRole, ModelUser } from '../../data/user.mjs';
+import { UserRole, ModelUser } from '../../data/User.mjs';
 
 const router = Router();
 export default router;

@@ -1,6 +1,6 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
-import { ModelUser }    from '../data/user.mjs';
+import { ModelUser }    from '../data/User.mjs';
 import Hash             from 'hash.js';
 import Passport         from 'passport';
 

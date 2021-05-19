@@ -53,7 +53,7 @@ console.log(`Database connection successful`);
 
 
 //	Init your models
-import { ModelUser, UserRole } from './data/user.mjs';
+import { ModelUser, UserRole } from './data/User.mjs';
 
 //	Put your models here
 ModelUser.initialize(Database);
