@@ -1,5 +1,6 @@
 import Hash   from 'hash.js'
 import ORM    from 'sequelize';
+import { ModelTicket } from './Ticket.mjs';
 const { Sequelize } = ORM;
 
 import { ModelUser } from './User.mjs';
@@ -14,6 +15,7 @@ export function initialize_models(database) {
 		//	Initialzie models
 		ModelUser.initialize(database);
 		ModelVenue.initialize(database);
+		ModelTicket.initialize(database);
 		console.log("Building ORM model relations and indices");
 		//	Create relations between models or tables
 		//	Setup foreign keys, indexes etc
