@@ -1,31 +1,48 @@
-<iframe width="100%" height="700" src="https://www.youtube.com/embed/gfoBC0SSBDQ" title="YouTube video player"
+<link rel="stylesheet" href="/public/css/comments.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+<iframe class="video" src="https://www.youtube.com/embed/gfoBC0SSBDQ" title="YouTube video player"
     frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowfullscreen>
 </iframe>
 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 
-
-<h1 class="display-4">Comments section</h1>
-<div class="row">
-    <div class="col-md-6 mx-auto">
-        <div class="card card-body">
-            <form method="post" action="">
-                <div class="form-group">
-                    <label for="">Type your comments here:</label>
-                    <input type="text" name="comment" class="form-control" required>
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-center row">
+        <div class="d-flex flex-column col-md-8">
+            <div class="coment-bottom bg-white p-2 px-4">
+                <form method="post" action="">
+                    <div class="d-flex flex-row add-comment-section mt-4 mb-4">
+                        <input type="text" name="comments" class="form-control mr-3" placeholder="Write your comments here..." required>
+                        <button class="btn btn-primary" type="submit">Comment</button>
+                    </div>
+                </form>
+                {{#if comments}}
+                {{#each comments}}
+                <div class="commented-section mt-2">
+                    <div class="d-flex justify-content-between flex-row align-items-center commented-user">
+                        <h5 class="mr-2">Test User</h5>
+                        <span class="mb-1 ml-2">4 hours ago</span>
+                    </div>
+                
+                    <div class="comment-text-sm">
+                        <span> {{ this }} </span>
+                    </div>
+                
+                    <div class="action d-flex justify-content-between mt-2 align-items-center">
+                        <div class="reply">
+                            <small>Reply</small>
+                            <span class="dots"></span>
+                            <small>Edit</small>
+                            <span class="dots"></span>
+                            <small>Delete</small>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary">POST</button>
-            </form>
+                {{/each}}
+                {{/if}}
+            </div>
         </div>
     </div>
 </div>
-
-{{#each comments}}
-<div class="row">
-    <div class="col-md-6 mx-auto">
-        <div class="card card-body">
-            {{ this }}
-        </div>
-    </div>
-</div>
-{{/each}}

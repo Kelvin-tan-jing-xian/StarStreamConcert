@@ -1,0 +1,28 @@
+.video {
+    margin-left: 10%;
+    width: 80%;
+    height: 500px;
+}
+
+.dots {
+    height: 4px;
+    width: 4px;
+    margin-bottom: 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block
+}
+
+.reply {
+    margin-left: 12px;
+}
+
+.reply small {
+    color: #b7b4b4;
+    font-size: 16px;
+}
+
+.reply small:hover {
+    color: green;
+    cursor: pointer
+}

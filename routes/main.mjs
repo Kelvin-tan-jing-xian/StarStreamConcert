@@ -1,5 +1,6 @@
 import { Router }       from 'express';
-import { flashMessage } from '../utils/flashmsg.mjs'
+import { flashMessage } from '../utils/flashmsg.mjs';
+import { ModelComments }    from '../data/Comments.mjs';
 
 const router = Router();
 export default router;
@@ -51,17 +52,31 @@ router.get("/about", async function(req, res) {
 	});
 });
 
-router.get('/streamPage', page_streamPage);
-function page_streamPage(req, res) {
-	res.render('streamPage');
-}
+// Comments Section
+router.get("/streamPage", async function(req, res) {
+	console.log("streamPage page accessed");
+	return res.render('streamPage', {
+		comments: ['Heelo']
+	});
+});
 
-// Post Comments
-router.post('/streamPage', (req, res) => {
+// Create
+router.post('/streamPage', async function (req, res) {
 	console.log("Input form submitted");
-	var comments = [];
-	comments.push(req.body.comment);
-	res.render('streamPage', {
-		comments: comments
-	}) // renders ./streamPage.handlebars
+	try {
+		const comments = await ModelComments.create({
+            "name":     "TestUser",
+            "comments":    req.body.comments,
+		});
+
+		flashMessage(res, 'success', 'Successfully created a comments', true);
+		return res.redirect("/streamPage");
+	}
+	catch (error) {
+		//	Else internal server error
+		console.error(`Failed to create a new comment: ${req.body.comments} `);
+		console.error(error);
+		return res.status(500).end();
+	}
+	
 });
