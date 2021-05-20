@@ -6,7 +6,7 @@
 **/
 import Multer  from 'multer';
 import FileSys from 'fs';
-import Path    from 'path';
+
 
 /**
  * File filter used to accept image files only
@@ -40,6 +40,19 @@ export const UploadProductImage = Multer({ dest:   `${Path}/product`, fileFilter
  * @param files {...Express.Multer.File}
 **/
 export async function DeleteFile(...files) {
+	for (let file of files) {
+		if (FileSys.existsSync(file.destination))
+			return FileSys.unlinkSync(file.destination);
+		else
+			console.warn(`Attempting to delete non-existing file(s) ${file}`);
+	}
+}
+
+/**
+ * Function to delete a uploaded file
+ * @param files {...string}
+**/
+export async function DeleteFilePath(...files) {
 	for (let file of files) {
 		if (FileSys.existsSync(file.destination))
 			return FileSys.unlinkSync(file.destination);

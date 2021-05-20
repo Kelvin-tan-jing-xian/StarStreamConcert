@@ -7,8 +7,12 @@ export default router;
 
 // ---------------- 
 //	Serves dynamic files from the dynamic folder
-router.get("/dynamic/:path", async function (req, res) {	
-	return res.sendFile(`./dynamic/${req.params.path}`)
+router.get("/dynamic/:path/:file*", async function (req, res) {	
+	console.log(req.params);
+	console.log(process.cwd());	 // current working directory
+
+
+	return res.sendFile(`${process.cwd()}/dynamic/${req.params.path}/${req.params.file}`);
 });
 
 // ---------------- 
@@ -16,6 +20,7 @@ router.get("/dynamic/:path", async function (req, res) {
 import RouterAuth  from './auth.mjs';
 import RouterAdmin from './admin/admin.mjs';
 import RouterVenue from './venue.mjs';
+
 router.use("/auth",  RouterAuth);
 router.use("/admin", RouterAdmin);
 router.use("/venue", RouterVenue);
@@ -56,7 +61,7 @@ router.get("/about", async function(req, res) {
 router.get("/streamPage", async function(req, res) {
 	console.log("streamPage page accessed");
 	return res.render('streamPage', {
-		comments: ['Heelo']
+		comments: ["Hello"]
 	});
 });
 
@@ -87,7 +92,6 @@ router.get('/profile', async function(req,res){
 	return res.render('profile',{
 	});
 });
-
 
 	
 	

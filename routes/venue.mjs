@@ -1,16 +1,15 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
 import { ModelVenue }    from '../data/Venue.mjs';
-import Hash             from 'hash.js';
-import Passport         from 'passport';
-
+import { UploadFile } from '../utils/multer.mjs';
 const router = Router();
 export default router;
 
 
 
 router.get("/addVenue",     addVenue_page);
-router.post("/addVenue", addVenue_process);
+router.post("/addVenue", UploadFile.single("venuePoster"), addVenue_process);
+router.get("/listVenue", listVenue_page);
 
 
 /**
@@ -31,6 +30,7 @@ async function addVenue_page(req, res) {
  */
 async function addVenue_process(req, res) {
 	console.log("addVenue contents received");
+	console.log(`${req.file.path}`);
 	console.log(req.body);
 
     // Add in form validations
@@ -44,11 +44,11 @@ async function addVenue_process(req, res) {
             "venueDate":  req.body.venueDate,
             "venueTime": req.body.venueTime,
             "venuePrice": req.body.venuePrice,
-            "venuePoster": req.body.venuePoster
+            "venuePoster": req.file.path
 		});
 
 		flashMessage(res, 'success', 'Successfully created a venue', 'fas fa-sign-in-alt', true);
-		return res.redirect("/venue/addVenue");
+		return res.redirect("/venue/listVenue"); // don't use render
 	}
 	catch (error) {
 		//	Else internal server error
@@ -58,3 +58,15 @@ async function addVenue_process(req, res) {
 	}
 }
 
+
+
+
+/**
+ * Renders the listVenue page
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+async function listVenue_page(req, res) {
+	console.log("listVenue page accessed");
+	return res.render('venue/listVenue');
+}

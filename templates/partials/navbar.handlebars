@@ -16,7 +16,8 @@
 				</li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
-				{{#if user}}
+				{{#if user }}
+				{{!-- Only for admin nav bar --}}
 					<li class="nav-item dropdown">
 						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage Venue</a>
 						<div class="dropdown-menu">
@@ -32,8 +33,6 @@
 				</li>
 				
 			</ul>
-
-
 					<li class="nav-item">
 						<a href="/auth/logout" class="nav-link">Logout</a>
 					</li>
