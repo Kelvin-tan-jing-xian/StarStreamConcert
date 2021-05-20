@@ -65,3 +65,11 @@ router.post('/streamPage', (req, res) => {
 		comments: comments
 	}) // renders ./streamPage.handlebars
 });
+
+
+router.get('/profile', async function(req,res){
+	console.log ("profile page accessed");
+	return res.render('profile',{
+	});
+});
+

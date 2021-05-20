@@ -1,0 +1,36 @@
+
+
+<div class="row">
+	<div class="col-md-6 mx-auto">
+		<div class="card card-body">
+			<h3 class="text-center"><strong>PROFILE DETAILS</strong></h3>
+			<form action="/auth/login" method="post">
+				<div class="form-group">
+                    <br>
+                    <label> <strong>NAME:</strong> (query from database and display here)</label> <br>
+					<label for="email"> <strong>EMAIL:</strong> (query from database and display here)</label>
+					<input type="email" name="email" class="form-control" value="{{email}}" placeholder=" Update email" required>
+				</div>
+				
+				<button type="submit" class="btn btn-primary"><strong>Update details</strong></button>
+			</form>
+		</div>
+	</div>
+</div>
+
+<style>
+.center {
+  margin: auto;
+  width: 16%;
+  border: 3px solid black;
+  padding: 10px;
+  background-color:#E6E2DA ;
+}
+label{
+    font-size: 20px;
+}
+h3{
+    font-size: 35px;
+}
+
+</style>

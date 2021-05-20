@@ -1,27 +1,36 @@
 <div class="row">
 	<div class="col-md-6 mx-auto">
 		<div class="card card-body">
-			<img class="logo" src="/public/img/logo.png">
-			<h3 class="text-center">Account Register</h3>
+			<img class="logo" src="/public/img/Starstreamlogo.jpeg">
+			<h3 class="text-center">Create your account!</h3>
 			<form action="/auth/register" method="post">
 				<div class="form-group">
-					<label for="name">Name</label>
-					<input type="text" class="form-control" name="name" value="{{name}}" required>
+					<label for="name"><strong>Name</strong></label>
+					<input type="text" class="form-control" name="name" value="{{name}}" placeholder="E.g John" required>
 				</div>
 				<div class="form-group">
-					<label for="email">Email</label>
-					<input type="email" name="email" class="form-control" value="{{email}}" required>
+					<label for="email"><strong>Email</strong></label>
+					<input type="email" name="email" class="form-control" value="{{email}}" placeholder="E.g Example@gmail.com" required>
 				</div>
 				<div class="form-group">
-					<label for="password">Password</label>
+					<label for="password"><strong>Password</strong></label>
 					<input type="password" name="password" class="form-control" value="{{password}}" required>
 				</div>
 				<div class="form-group">
-					<label for="password2">Confirm Password</label>
-					<input type="password" name="password2" class="form-control" value="{{password2}}" required>
+					<label for="password2"><strong>Confirm password</strong></label>
+					<input type="password" name="password2" class="form-control" value="{{password2}}" placeholder="Re-enter password" required>
 				</div>
-				<button type="submit" class="btn btn-primary">Submit</button>
+				<div class="form-group">
+					<label><strong>User type</strong> </label><br>
+					<input type="radio" id="customer" name="role" value="{{customer}}"checked required>
+					<label for="customer">Customer</label>
+					<input type="radio" id="performer" name="role" value="performer">
+					<label for="customer">Performer</label>
+
+				</div>
+				<button type="submit" class="btn btn-primary"><strong>Submit</strong></button>
 			</form>
 		</div>
 	</div>
 </div>
+

@@ -33,6 +33,7 @@ export class ModelUser extends Model {
 			"password"   : { type: DataTypes.STRING(64),  allowNull: false },
 			"role"       : { type: DataTypes.ENUM(UserRole.User, UserRole.Admin), defaultValue: UserRole.User, allowNull: false },
 			"verified"   : { type: DataTypes.BOOLEAN,     allowNull: false, defaultValue: false }
+			
 		}, {
 			"sequelize": database,
 			"modelName": "Users",
