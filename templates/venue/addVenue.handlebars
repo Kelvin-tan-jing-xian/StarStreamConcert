@@ -16,12 +16,29 @@
                 <div class="row mb-2">
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
                         <label class="font-italic">Venue Date</label>
+                        <br>
                         <input type="date" id="datepicker" width="200" name="venueDate"/ required>
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="font-italic">venueTime</label>
                         <br>
-                        <input class="form-control" type="text" name="venueTime" id="venueTime" required>
+                        {{!-- radio buttons --}}
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="10am ~ 1pm" name="venueTime">
+                            <label class="form-check-label">10am ~ 1pm</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="3pm ~ 6pm" name="venueTime">
+                            <label class="form-check-label">3pm ~ 6pm</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="7pm ~ 10pm" name="venueTime">
+                            <label class="form-check-label">7pm ~ 10pm</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" value="12pm ~ 3am" name="venueTime">
+                            <label class="form-check-label">12pm ~ 3am</label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -30,7 +47,24 @@
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <label class="font-italic">venuePrice</label>
-                <input type="text" class="form-control" id="venuePrice" name="venuePrice" rows="7" required>
+                        <br>
+                        {{!-- radio buttons --}}
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="venuePrice" value="$2000/hr" name="venuePrice">
+                            <label class="form-check-label" for="venuePrice">$2000/hr</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="venuePrice" value="$2500/hr" name="venuePrice">
+                            <label class="form-check-label" for="venuePrice">$2500/hr</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="venuePrice" value="$3000/hr" name="venuePrice">
+                            <label class="form-check-label" for="venuePrice">$3000/hr</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="venuePrice" value="$3500/hr" name="venuePrice">
+                            <label class="form-check-label" for="venuePrice">$3500/hr</label>
+                        </div>
                         <br>
                         {{!--<div class="form-check form-check-inline">
                             <div class="form-group">
