@@ -86,14 +86,23 @@ router.post('/streamPage', async function (req, res) {
 
 });
 
-
 router.get('/profile', async function(req,res){
 	console.log ("profile page accessed");
 	return res.render('profile',{
 	});
 });
 
-	
-	
+router.get('/customerHomePage', async function(req,res){
+	console.log ("customerHomePage accessed");
+	return res.render('customerHomePage',{
+	});
+});
+
+router.get('/performerHomePage', async function(req,res){
+	console.log ("performerHomePage accessed");
+	return res.render('performerHomePage',{
+	});
+});
+
 
 

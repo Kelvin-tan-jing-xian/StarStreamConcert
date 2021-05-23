@@ -3,13 +3,14 @@
     <div class="card card-body">
         <h3>Add Venue</h3>
         <form enctype="multipart/form-data" action="/venue/addVenue" method="post" id="addVideo">
+
             <div class="form-group">
                 <label class="font-italic" for="venueName">Venue Name</label>
-                <input type="text" class="form-control" id="venueName" name="venueName" rows="7" required>
+                <input type="text" class="form-control" id="venueName" name="venueName" required>
             </div>
             <div class="form-group mb-4">
                 <label class="font-italic" for="venueStory">Venue Story</label>
-                <textarea class="form-control" id="venueStory" name="venueStory" rows="7"></textarea required>
+                <textarea class="form-control" id="venueStory" name="venueStory" ></textarea required>
             </div>
 
             <div class="form-group">
@@ -17,7 +18,7 @@
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
                         <label class="font-italic">Venue Date</label>
                         <br>
-                        <input type="date" id="datepicker" width="200" name="venueDate"/ required>
+                        <input id="datepicker" width="200" name="venueDate"/ required>
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="font-italic">venueTime</label>
@@ -95,9 +96,10 @@
 </div>
 
 <script>
+    var dateToday = new Date();
     $('#datepicker').datepicker({
-        format: 'dd/mm/yyyy',
-        value: new Date().toLocaleDateString('en-AUS'),
+        format: 'yyyy-mm-dd',
         uiLibrary: 'bootstrap4',
+        minDate: dateToday
     });
 </script>
