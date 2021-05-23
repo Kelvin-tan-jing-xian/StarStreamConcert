@@ -17,6 +17,15 @@
 			</ul>
 			<ul class="navbar-nav ml-auto">
 				{{#if user }}
+				{{!-- Only for performer nav bar --}}
+					<li class="nav-item dropdown">
+						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage Ticket</a>
+						<div class="dropdown-menu">
+							<a href="/ticket/RetrieveTickets" class="dropdown-item">Retrieve Tickets</a>
+							<a href="/ticket/CreateTickets"  class="dropdown-item">Create Ticket</a>
+						</div>
+					</li>
+
 				{{!-- Only for admin nav bar --}}
 					<li class="nav-item dropdown">
 						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage Venue</a>

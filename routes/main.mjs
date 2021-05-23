@@ -20,11 +20,11 @@ router.get("/dynamic/:path/:file*", async function (req, res) {
 import RouterAuth  from './auth.mjs';
 import RouterAdmin from './admin/admin.mjs';
 import RouterVenue from './venue.mjs';
-
+import RouterTicket from './ticket.mjs';
 router.use("/auth",  RouterAuth);
 router.use("/admin", RouterAdmin);
 router.use("/venue", RouterVenue);
-
+router.use("/ticket", RouterTicket);
 router.get("/", async function (req, res) {
 	return res.redirect("/home");
 });

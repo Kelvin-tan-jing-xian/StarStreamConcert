@@ -62,12 +62,11 @@ export class ModelTicket extends Model {
 	get role()  { return this.getDataValue("role"); }
 	get uuid()  { return this.getDataValue("uuid"); }
 	get concertDate() { return this.getDataValue("concertDate"); }
-	
-	//get concertName
-	//get artistName
-	// get concertStory
-	// get concertTime
-	// get concertPrice
-	// get concertPoster
-	// get concertVenue
+	get concertName() {return this.getDataValue("concertName"); }
+	get artistName() {return this.getDataValue("artistName"); }
+	get concertStory() {return this.getDataValue("concertStory"); }
+	get concertTime() {return this.getDataValue("concertTime"); }
+	get concertPrice() {return this.getDataValue('concertPrice'); }
+	get concertPoster() {return this.getDataValue("concertPoster")}
+	get concertVenue() {return this.getDataValue("concertVenue"); }
 }

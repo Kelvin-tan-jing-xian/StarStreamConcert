@@ -2,6 +2,7 @@ import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
 import { ModelVenue }    from '../data/Venue.mjs';
 import { UploadFile } from '../utils/multer.mjs';
+
 const router = Router();
 export default router;
 
@@ -9,7 +10,9 @@ export default router;
 
 router.get("/addVenue",     addVenue_page);
 router.post("/addVenue", UploadFile.single("venuePoster"), addVenue_process);
-router.get("/listVenue", listVenue_page);
+
+
+
 
 
 /**
@@ -28,7 +31,7 @@ async function addVenue_page(req, res) {
  * @param {import('express').Request}  req Express Request handle
  * @param {import('express').Response} res Express Response handle
  */
-async function addVenue_process(req, res) {
+ async function addVenue_process(req, res) {
 	console.log("addVenue contents received");
 	console.log(`${req.file.path}`);
 	console.log(req.body);
@@ -37,7 +40,6 @@ async function addVenue_process(req, res) {
     //
 	//	Create new venue, now that all the test above passed
 	try {
-        var dateToday = new Date();
 		const venue = await ModelVenue.create({
             "venueName":     req.body.venueName,
             "venueStory":    req.body.venueStory,
@@ -56,17 +58,4 @@ async function addVenue_process(req, res) {
 		console.error(error);
 		return res.status(500).end();
 	}
-}
-
-
-
-
-/**
- * Renders the listVenue page
- * @param {import('express')Request}  req Express Request handle
- * @param {import('express')Response} res Express Response handle
- */
-async function listVenue_page(req, res) {
-	console.log("listVenue page accessed");
-	return res.render('venue/listVenue');
 }
