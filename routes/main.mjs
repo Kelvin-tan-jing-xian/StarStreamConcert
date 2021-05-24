@@ -1,6 +1,6 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
-import { ModelComments }    from '../data/Comments.mjs';
+
 
 const router = Router();
 export default router;
@@ -21,10 +21,12 @@ import RouterAuth  from './auth.mjs';
 import RouterAdmin from './admin/admin.mjs';
 import RouterVenue from './venue.mjs';
 import RouterTicket from './ticket.mjs';
+import RouterComments from './comments.mjs';
 router.use("/auth",  RouterAuth);
 router.use("/admin", RouterAdmin);
 router.use("/venue", RouterVenue);
 router.use("/ticket", RouterTicket);
+router.use("", RouterComments);
 router.get("/", async function (req, res) {
 	return res.redirect("/home");
 });
@@ -55,35 +57,6 @@ router.get("/about", async function(req, res) {
 			{ text: "Error 6" }
 		]
 	});
-});
-
-// Comments Section
-router.get("/streamPage", async function(req, res) {
-	console.log("streamPage page accessed");
-	return res.render('streamPage', {
-		comments: ["Hello"]
-	});
-});
-
-// Create
-router.post('/streamPage', async function (req, res) {
-	console.log("Input form submitted");
-	try {
-		const comments = await ModelComments.create({
-            "name":     "TestUser",
-            "comments":    req.body.comments,
-		});
-
-		flashMessage(res, 'success', 'Successfully created a comments', true);
-		return res.redirect("/streamPage");
-	}
-	catch (error) {
-		//	Else internal server error
-		console.error(`Failed to create a new comment: ${req.body.comments} `);
-		console.error(error);
-		return res.status(500).end();
-	}
-
 });
 
 router.get('/profile', async function(req,res){
