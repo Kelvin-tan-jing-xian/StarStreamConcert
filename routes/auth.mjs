@@ -159,7 +159,6 @@ async function register_process(req, res) {
 				password: Hash.sha256().update(req.body.password).digest("hex"),
 				name:     req.body.name,
 
-
 		});
 
 		flashMessage(res, 'success', 'Successfully created an account. Please login', 'fas fa-sign-in-alt', true);

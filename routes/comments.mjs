@@ -1,10 +1,8 @@
 import { Router }       from 'express';
 import { ModelComments }    from '../data/Comments.mjs';
 
-
 const router = Router();
 export default router;
-
 
 
 router.get("/stream", comment_page);
@@ -26,7 +24,6 @@ async function comment_page(req, res) {
 		});
 		return res.render('stream', {
 			showComments: comment_Mod,
-            check: 'True'
 		});
 	}
 	catch(error){
@@ -71,6 +68,7 @@ async function comment_page(req, res) {
 
 		const data = {
 			"comments": req.body.update_comments,
+			'dateCreated': new Date(),
 		};
 		await (await contents.update(data)).save();	
 		return res.redirect(`/stream`);
