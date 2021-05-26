@@ -24,12 +24,20 @@
 					<li class="nav-item">
 						<a class="nav-link" href="/bookTicket">BookTicket</a>
 					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/feedback/addFeedback">GiveFeedback</a>
+					</li>
+
 					{{/if}}
 				{{!-- Only for performer nav bar, after logging in as performer, performerHomePage shows --}}
 					{{#if perf }}
 					<li class="nav-item">
 						<a class="nav-link" href="/venue/bookVenue">BookVenue</a>
 					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/feedback/addFeedback">GiveFeedback</a>
+					</li>
+
 					<div>						
 						<li class="nav-item dropdown">
 							<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage Ticket</a>
@@ -45,6 +53,11 @@
 					<li class="nav-item">
 						<a class="nav-link" href="/anything">CreateAdmin</a>
 					</li>
+					<li class="nav-item">
+											{{!-- follow the name of ur thing --}}
+						<a class="nav-link" href="feedback/listFeedback">ViewAllFeedback</a>
+					</li>
+
 
 					<li class="nav-item dropdown">
 						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage Venue</a>
