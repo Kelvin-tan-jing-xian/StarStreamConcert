@@ -28,56 +28,149 @@ router.use("/admin", RouterAdmin);
 router.use("/venue", RouterVenue);
 router.use("/ticket", RouterTicket);
 router.use("", RouterComments);
-router.use("", RouterPayment);
+router.use("/payment", RouterPayment);
 router.get("/", async function (req, res) {
-	return res.redirect("/home");
+	return res.redirect("/index");
+});
+
+// Root Home page
+router.get("/index", async function(req, res) {
+	console.log("index page accessed");
+	console.log(role);
+	if (role != undefined){
+		var role = roleResult(req.user.role);
+
+		var cust = role[0];
+		var perf = role[1];
+		var admin = role[2];
+		console.log("cust: " + cust);
+		console.log("perf: " + perf);
+		console.log("admin: " + admin);
+
+		return res.render('index', {
+			perf: perf,
+			cust: cust,
+			admin: admin
+
+		});
+	}
+	else{
+		// logout, just render index.handlebars
+		return res.render('index');
+	}
 });
 // ---------------- 
 //	TODO:	Common URL paths here
 router.get("/home",      async function(req, res) {
-	console.log("Home page accessed");
-	return res.render('index', {
-		title: "Hello  Not Today"
-	});
+	console.log("Home page accessed after logging in");
+	// After login
+	// if role column of ModelUser is customer
+	console.log(req.user.role);
+	// cannot have document bla
+	// accessing the role column of the users table
+	if (req.user.role == 'customer') {
+		return res.redirect('customerHomePage');
+	}
+	else if (req.user.role == 'performer') {
+		return res.redirect('performerHomePage');
+	}
+	else{
+		return res.redirect('adminHomePage');
+	}
 });
+// This function helps in showing different nav bars
+function roleResult(role){
+	if (role == 'performer') { // if user is performer, it cannot be customer
+		var perf = true;
+		var cust = false;
+		var admin = false;
+	}
+	else if (role == 'customer'){
+		// if user is performer, it cannot be customer
+		var cust = true;
+		var perf = false;
+		var admin = false;
+	}
+	else{
+		var cust = false;		
+		var perf = false;
+		var admin = true;
 
-router.get("/about", async function(req, res) {
-	console.log("About page accessed");
-	flashMessage(res, 'success', 'This is an important message', 'fas fa-sign-in-alt',        true);
-	flashMessage(res, 'danger',  'Unauthorised access',          'fas fa-exclamation-circle', false);
+	}
 
-	return res.render('about', {
-		author: "The awesome programmer",
-		values: [1, 2, 3, 4, 5, 6],
-		success_msg: "Yayayaya",
-		errors: [
-			{ text: "Error 1" },
-			{ text: "Error 2" },
-			{ text: "Error 3" },
-			{ text: "Error 4" },
-			{ text: "Error 5" },
-			{ text: "Error 6" }
-		]
-	});
-});
+	return [cust, perf, admin];
+}
+
 
 router.get('/profile', async function(req,res){
 	console.log ("profile page accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log(cust);
+	console.log(perf);
+	console.log(admin);
+
 	return res.render('profile',{
+		cust: cust,
+		perf: perf,
+		admin: admin
 	});
 });
 
 router.get('/customerHomePage', async function(req,res){
 	console.log ("customerHomePage accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log(cust);
+	console.log(perf);
+	console.log(admin);
+
 	return res.render('customerHomePage',{
+		// pass these values to navbar.handlebars
+		cust: cust,
+		perf: perf,
+		admin: admin
 	});
 });
 
 router.get('/performerHomePage', async function(req,res){
 	console.log ("performerHomePage accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log(cust);
+	console.log(perf);
+	console.log(admin);
+
 	return res.render('performerHomePage',{
+		cust: cust,
+		perf: perf,
+		admin: admin
 	});
 });
 
+router.get('/adminHomePage', async function(req,res){
+	console.log ("adminHomePage accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log(cust);
+	console.log(perf);
+	console.log(admin);
+
+	// render adminHomePage.handlebars
+	return res.render('adminHomePage',{
+		cust: cust,
+		perf: perf,
+		admin: admin
+
+	});
+});
 
 

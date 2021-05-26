@@ -31,7 +31,8 @@ export class ModelUser extends Model {
 			"name"       : { type: DataTypes.STRING(64),  allowNull: false },
 			"email"      : { type: DataTypes.STRING(128), allowNull: false },
 			"password"   : { type: DataTypes.STRING(64),  allowNull: false },
-			"role"       : { type: DataTypes.ENUM(UserRole.User, UserRole.Admin), defaultValue: UserRole.User, allowNull: false },
+												//  Must drop table if u change ur ENUM
+			"role"       : { type: DataTypes.ENUM(UserRole.Customer, UserRole.Performer, UserRole.Admin), defaultValue: UserRole.Customer, allowNull: false },
 			"verified"   : { type: DataTypes.BOOLEAN,     allowNull: false, defaultValue: false }
 			
 		}, {

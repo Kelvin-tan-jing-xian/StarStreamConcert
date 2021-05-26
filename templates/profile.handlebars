@@ -7,8 +7,8 @@
 			<form action="/auth/login" method="post">
 				<div class="form-group">
                     <br>
-                    <label> <strong>NAME:</strong> (query from database and display here)</label> <br>
-					<label for="email"> <strong>EMAIL:</strong> (query from database and display here)</label>
+                    <label> <strong>NAME:</strong> {{user.name}}</label> <br>
+					<label for="email"> <strong>EMAIL:</strong> {{user.email}}</label>
 					<input type="email" name="email" class="form-control" value="{{email}}" placeholder=" Update email" required>
 				</div>
 				

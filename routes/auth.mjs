@@ -81,31 +81,6 @@ async function login_process(req, res, next) {
 		failureRedirect: "/auth/login",
 		failureFlash:    true
 	})(req, res, next);
-
-	// try {
-	// 	const user = await ModelUser.findOne({where: {
-	// 		email: req.body.email,
-	// 		password: Hash.sha256().update(req.body.password).digest("hex")
-	// 	}});
-
-
-	// 	if (user == null) {
-	// 		errors = errors.concat({ text: "Invalid user credentials!" });
-	// 	}
-
-	// 	if (errors.length > 0) {
-	// 		throw new Error("There are validation errors");
-	// 	}
-	// 	else {
-	// 		flashMessage(res, 'success', 'Successfully login!', 'fas fa-sign-in-alt', true);
-	// 		return res.redirect("/home");
-	// 	}
-	// }
-	// catch (error) {
-	// 	console.error(`Credentials problem: ${req.body.email} ${req.body.password}`);
-	// 	console.error(error);
-	// 	return res.render('auth/login', { errors: errors });
-	// }
 }
 
 /**
@@ -158,6 +133,7 @@ async function register_process(req, res) {
 				email:    req.body.email,
 				password: Hash.sha256().update(req.body.password).digest("hex"),
 				name:     req.body.name,
+				role: req.body.role
 
 		});
 
@@ -179,5 +155,5 @@ async function register_process(req, res) {
  */
 async function logout_process(req, res) {
 	req.logout();
-	return res.redirect("/home");
+	return res.redirect("/index");
 }

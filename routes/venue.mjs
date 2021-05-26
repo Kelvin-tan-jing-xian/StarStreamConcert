@@ -7,14 +7,57 @@ const router = Router();
 export default router;
 
 
-
+router.use("/",                authorizer);	//..Applies to every route in this router
+// all routes starts with /venue
 router.get("/addVenue",     addVenue_page);
 router.post("/addVenue", UploadFile.single("venuePoster"), addVenue_process);
 router.get("/listVenue", listVenue_page);
 router.get("/updateVenue/:uuid", updateVenue_page);
 router.post('/updateVenue/:uuid', UploadFile.single('venuePoster'), updateVenue_process);
 router.delete('/deleteVenue/:uuid', deleteVenue_process);
+router.get('/bookVenue', bookVenue_page);
 
+// This function helps in showing different nav bars
+function roleResult(role){
+	if (role == 'performer') { // if user is performer, it cannot be customer
+		var perf = true;
+		var cust = false;
+		var admin = false;
+	}
+	else if (role == 'customer'){
+		// if user is performer, it cannot be customer
+		var cust = true;
+		var perf = false;
+		var admin = false;
+	}
+	else{
+		var cust = false;		
+		var perf = false;
+		var admin = true;
+
+	}
+
+	return [cust, perf, admin];
+}
+
+/**
+ * Authorize user
+ * @param {Request}  req Express request  object
+ * @param {Response} res Express response object
+ * @param {NextFunction} next Express next handle function
+**/
+function authorizer(req, res, next) {
+
+	if (req.user === undefined || req.isUnauthenticated()) {
+		return res.render("error", {
+			"code"   : 401,
+			"message": "Unauthorized. Please login!"
+		});	//	Unauthorized
+	}
+	else {
+		next();	// Okay No problem, allow to proceed
+	}
+}
 
 /**
  * Renders the addVenue page
@@ -23,8 +66,18 @@ router.delete('/deleteVenue/:uuid', deleteVenue_process);
  */
 async function addVenue_page(req, res) {
 	console.log("addVenue page accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log(cust);
+	console.log(perf);
+	console.log(admin);
+
 	return res.render('venue/addVenue', {
-		"mode": "create"
+		cust: cust,
+		perf: perf,
+		admin: admin
 	});
 }
 
@@ -71,9 +124,16 @@ async function addVenue_page(req, res) {
 async function listVenue_page(req, res) {
 	console.log("listVenue page accessed");
 	try{
+		var role = roleResult(req.user.role);
+		var cust = role[0];
+		var perf = role[1];
+		var admin = role[2];
+		console.log(cust);
+		console.log(perf);
+		console.log(admin);
 		const total = await ModelVenue.count();
-		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1;
-		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 10) : 10;
+		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1; // page number, can have 10 pages maximum
+		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 venue per page
 		const pageTotal = Math.floor(total / pageSize);
 
 		const venues = await ModelVenue.findAll({
@@ -86,10 +146,63 @@ async function listVenue_page(req, res) {
 		});		
 		// venues[0].update()	//	This will crash... if raw is enabled
 		return res.render('venue/listVenue', {
+			cust       : cust,
+			perf       : perf,
+			admin      : admin,
 			"venues"   : venues,
 			"pageTotal": pageTotal,
 			"pageIdx"  : pageIdx,
 			"pageSize" : pageSize
+		});
+
+	}
+	catch(error){
+		console.error("Failed to retrieve list of venues");
+		console.error(error);
+		return res.status(500).end();
+
+	}
+}
+
+/**
+ * Renders the bookVenue page
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+async function bookVenue_page(req, res) {
+	console.log("bookVenue page accessed");
+	try{
+
+		var role = roleResult(req.user.role);
+		var cust = role[0];
+		var perf = role[1];
+		var admin = role[2];
+		console.log("cust: " + cust);
+		console.log("perf: " + perf);
+		console.log("admin: " + admin);
+
+		const total = await ModelVenue.count();
+		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1; // page number, can have 10 pages maximum
+		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 venue per page
+		const pageTotal = Math.floor(total / pageSize);
+
+		const venues = await ModelVenue.findAll({
+			offset: (pageIdx - 1) * pageSize,
+			limit : pageSize,
+			order : [
+				['venueName', 'ASC']
+			],
+			raw: true
+		});		
+		// venues[0].update()	//	This will crash... if raw is enabled
+		return res.render('venue/bookVenue', {
+			"venues"   : venues,
+			"pageTotal": pageTotal,
+			"pageIdx"  : pageIdx,
+			"pageSize" : pageSize,
+			cust: cust,
+			perf: perf,
+			admin: admin
 		});
 
 	}
@@ -156,6 +269,7 @@ async function updateVenue_process(req, res) {
 		const replaceFile = (req.file)? true : false;
 
 		switch (contents.length) {
+			// /feedback/RetrieveFeedback
 			case 0      : return res.redirect(410, "/venue/listVenue")
 			case 1      : break;
 			     default: return res.status(409, "/venue/listVenue")
@@ -167,6 +281,8 @@ async function updateVenue_process(req, res) {
 		
 		//	Save previous file path...
 		const previous_file = contents[0].venuePoster;
+
+		
 		const data          = {
 			"venueName"         : req.body.venueName,
 			"venueStory"         : req.body.venueStory,
@@ -218,7 +334,7 @@ async function updateVenue_process(req, res) {
  async function deleteVenue_process(req, res) {
 
 	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
-
+	// if uuid doesnt match with uuidv4, give error
 	if (!regex_uuidv4.test(req.params.uuid))
 		return res.status(400);
 	

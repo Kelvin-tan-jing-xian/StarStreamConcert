@@ -31,19 +31,10 @@
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic"></p>
-                            <a href="/venue/updateVenue/{{uuid}}" class="card-link">
-                                <i class="fas fa-pencil-alt"></i>
-                                Edit
+                            <a href="/payment/venuePayment" class="card-link">
+                                Book Now
                             </a>
-                            <form method="POST" action="/venue/deleteVenue/{{uuid}}?_method=DELETE"
-                                id="toggle-delete-{{uuid}}">
-                                <a href="javascript:;" class="card-link btn-delete"
-                                    onclick="if (confirm('Confirm delete?')) parentNode.submit();"
-                                    data-title="Confirm delete?">
-                                    <i class="far fa-trash-alt"></i>
-                                    Delete
-                                </a>
-                            </form>
+
                         </div>
                     </div>
                 </div>
@@ -65,8 +56,7 @@
             </div>
         </div>
         {{/each}}
-        <!-- Page management, can ignore first -->
 
-{{else}}
-<h3>No venues jotted</h3>
-{{/if}}
+        {{else}}
+        <h3>No venues jotted</h3>
+        {{/if}}

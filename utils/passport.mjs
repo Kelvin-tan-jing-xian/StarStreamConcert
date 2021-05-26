@@ -19,6 +19,7 @@ export function initialize_passport(server) {
 				throw new Error ("Invalid user id");
 			}
 			else {
+				// no errors
 				return done(null, user);
 			}
 		}
