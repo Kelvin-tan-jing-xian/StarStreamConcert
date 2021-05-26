@@ -1,5 +1,5 @@
 import { Router }       from 'express';
-
+import { ModelVenue } from '../data/Venue.mjs';
 const router = Router();
 export default router;
 
@@ -50,10 +50,14 @@ async function venuePayment_page(req, res) {
 	console.log("cust: " + cust);
 	console.log("perf: " + perf);
 	console.log("admin: " + admin);
-
+	const venues = await ModelVenue.findAll({
+		raw: true
+	});		
+	console.log("venues is a list of objects:" + venues);
 	return res.render('payment/venuePayment', {
 		cust: cust,
 		perf: perf,
-		admin: admin
+		admin: admin,
+		"venues": venues
 	});
 }
