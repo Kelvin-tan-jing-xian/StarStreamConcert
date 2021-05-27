@@ -2,19 +2,40 @@ import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
 import { ModelFeedback }    from '../data/Feedback.mjs';
 
-
 const router = Router();
 export default router;
 
 
 
 router.get("/addFeedback",     addFeedback_page);
-router.post("/addFeedback",  addFeedback_process);
+router.post("/addFeedback" , addFeedback_process);
 router.get("/listFeedback", listFeedback_page);
 router.get("/updateFeedback/:uuid", updateFeedback_page);
 router.post('/updateFeedback/:uuid', updateFeedback_process);
 router.delete('/deleteFeedback/:uuid', deleteFeedback_process);
 
+// This function helps in showing different nav bars
+function roleResult(role){
+	if (role == 'performer') { // if user is performer, it cannot be customer
+		var perf = true;
+		var cust = false;
+		var admin = false;
+	}
+	else if (role == 'customer'){
+		// if user is performer, it cannot be customer
+		var cust = true;
+		var perf = false;
+		var admin = false;
+	}
+	else{
+		var cust = false;		
+		var perf = false;
+		var admin = true;
+
+	}
+
+	return [cust, perf, admin];
+}
 
 /**
  * Renders the addFeedback page
@@ -23,8 +44,18 @@ router.delete('/deleteFeedback/:uuid', deleteFeedback_process);
  */
 async function addFeedback_page(req, res) {
 	console.log("feedback page accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log("cust: " + cust);
+	console.log("perf: " + perf);
+	console.log("admin: " + admin);
+
 	return res.render('feedback/addFeedback', {
-		"mode": "create"
+		cust: cust,
+		perf: perf,
+		admin: admin
 	});
 }
 
@@ -43,18 +74,19 @@ async function addFeedback_page(req, res) {
 	//	Create new feedback, now that all the test above passed
 	try {
 		console.log('Im inside the try block!');
+	
 		const feedback = await ModelFeedback.create({
-            "Rating":     req.body.Rating,
-            "feedbackType":    req.body.feedbackType,
-            "feedbackResponse":  req.body.feedbackResponse
-
-           
+			"name": req.body.name,
+      		"Rating":     req.body.Rating,
+          	"feedbackType":    req.body.feedbackType,
+        	"feedbackResponse":  req.body.feedbackResponse	
+			
 		});
 
 		flashMessage(res, 'success', 'Successfully created a feedback', 'fas fa-sign-in-alt', true);
 		return res.redirect("/feedback/listFeedback"); // don't use render
-	}
-	catch (error) {
+		}
+		catch (error) {
 		//	Else internal server error
 		console.error(`Failed to create a new feedback: ${req.body.Rating} `);
 		console.error(error);

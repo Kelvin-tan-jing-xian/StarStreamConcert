@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="/public/css/comments.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+<iframe class="video" src="https://www.youtube.com/embed/gfoBC0SSBDQ" title="YouTube video player"
+    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+</iframe>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-center row">
+        <div class="d-flex flex-column col-md-8">
+            <div class="coment-bottom bg-white p-2 px-4">
+                <form method="post" action="">
+                    <div class="d-flex flex-row add-comment-section mt-4 mb-4">
+                        <input type="text" name="comments" class="form-control mr-3" placeholder="Write your comments here..." required>
+                        <button class="btn btn-primary" type="submit">Comment</button>
+                    </div>
+                </form>
+                {{#if comments}}
+                {{#each comments}}
+                <div class="commented-section mt-2">
+                    <div class="d-flex justify-content-between flex-row align-items-center commented-user">
+                        <h5 class="mr-2">Test User</h5>
+                        <span class="mb-1 ml-2">4 hours ago</span>
+                    </div>
+                
+                    <div class="comment-text-sm">
+                        <span> {{ this }} </span>
+                    </div>
+                
+                    <div class="action d-flex justify-content-between mt-2 align-items-center">
+                        <div class="reply">
+                            <small>Reply</small>
+                            <span class="dots"></span>
+                            <small>Edit</small>
+                            <span class="dots"></span>
+                            <small>Delete</small>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
