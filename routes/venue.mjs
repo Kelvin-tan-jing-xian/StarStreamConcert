@@ -1,6 +1,6 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
-import { ModelVenue }    from '../data/Venue.mjs';
+import { ModelVenue }    from '../data/venue.mjs';
 import { UploadFile } from '../utils/multer.mjs';
 
 const router = Router();
@@ -9,9 +9,11 @@ export default router;
 
 router.use("/",                authorizer);	//..Applies to every route in this router
 // all routes starts with /venue
+// delete all Venue naming
 router.get("/addVenue",     addVenue_page);
 router.post("/addVenue", UploadFile.single("venuePoster"), addVenue_process);
 router.get("/listVenue", listVenue_page);
+// change all /updateVenue to /update
 router.get("/updateVenue/:uuid", updateVenue_page);
 router.post('/updateVenue/:uuid', UploadFile.single('venuePoster'), updateVenue_process);
 router.delete('/deleteVenue/:uuid', deleteVenue_process);
@@ -92,7 +94,9 @@ async function addVenue_page(req, res) {
 	console.log(`${req.file.path}`);
 	console.log(req.body);
 
-    // Add in form validations
+    // Add in form validations, do server vadlidation
+	// return 400 error if server validation fails
+
     //
 	//	Create new venue, now that all the test above passed
 	try {
@@ -254,6 +258,7 @@ async function updateVenue_process(req, res) {
 		//	Please verify your contents
 		if (!req.body["venueName"])
 			throw Error("Missing venueName");
+		// if a have a new file, delete old file 
 	}
 	catch(error) {
 		console.error(`Malformed request to update venue ${req.params["uuid"]}`);

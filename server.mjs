@@ -33,7 +33,7 @@ Server.engine(
   })
 );
 //	Let express know where to access static files
-//	Host them at locahost/public
+//	Host them at localhost/public
 Server.use("/public", Express.static("public"));
 
 /**

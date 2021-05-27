@@ -1,12 +1,12 @@
 import Hash   from 'hash.js'
 import ORM    from 'sequelize';
-import { ModelTicket } from './Ticket.mjs';
+import { ModelTicket } from './ticket.mjs';
 const { Sequelize } = ORM;
 
 import { ModelUser } from './User.mjs';
-import { ModelVenue } from './Venue.mjs';
-import { ModelComments } from './Comments.mjs';
-import { ModelFeedback } from './Feedback.mjs';
+import { ModelVenue } from './venue.mjs';
+import { ModelComments } from './comments.mjs';
+import { ModelFeedback } from './feedback.mjs';
 
 /**
  * @param database {ORM.Sequelize}

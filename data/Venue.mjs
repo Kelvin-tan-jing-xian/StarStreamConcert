@@ -1,15 +1,8 @@
-import ORM from 'sequelize'
+import ORM from 'sequelize';
+import { UserRole } from './user.mjs'
+
 const { Sequelize, DataTypes, Model } = ORM;
 
-/**
- * For enumeration use
-**/
-export class UserRole {
-	static get User() { return "user"; }
-	static get Customer() { return "customer"; }
-	static get Performer() { return "performer"; }
-	static get Admin() { return "admin"; }
-}
 
 /**
  * A database entity model that represents contents in the database.
@@ -29,7 +22,8 @@ export class ModelVenue extends Model {
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"dateUpdated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"venueName"  : { type: DataTypes.STRING(64),  allowNull: false },
-			"venueStory" : { type: DataTypes.STRING(12800), allowNull: false },
+			// 4096
+			"venueStory" : { type: DataTypes.STRING(4096), allowNull: false },
 			"venueDate"  : { type: DataTypes.DATEONLY,  allowNull: false },
 			"venueTime"  : {  type: DataTypes.STRING(64), allowNull: false},
 			"venuePrice" : {  type: DataTypes.STRING(64), allowNull: false},

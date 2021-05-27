@@ -48,3 +48,4 @@ async function ensure_admin(req, res, next) {
 async function dashboard_page(req, res) {
 	return res.render("admin/dashboard");
 }
+

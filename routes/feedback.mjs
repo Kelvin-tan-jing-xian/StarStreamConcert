@@ -1,6 +1,6 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
-import { ModelFeedback }    from '../data/Feedback.mjs';
+import { ModelFeedback }    from '../data/feedback.mjs';
 
 const router = Router();
 export default router;
