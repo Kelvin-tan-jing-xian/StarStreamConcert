@@ -21,12 +21,14 @@ import RouterAuth  from './auth.mjs';
 import RouterAdmin from './admin/admin.mjs';
 import RouterVenue from './venue.mjs';
 import RouterTicket from './ticket.mjs';
+import RouterFeedback from './feedback.mjs';
 import RouterComments from './comments.mjs';
 import RouterPayment from './payment.mjs';
 router.use("/auth",  RouterAuth);
 router.use("/admin", RouterAdmin);
 router.use("/venue", RouterVenue);
 router.use("/ticket", RouterTicket);
+router.use("/feedback", RouterFeedback);
 router.use("", RouterComments);
 router.use("/payment", RouterPayment);
 router.get("/", async function (req, res) {
@@ -172,5 +174,6 @@ router.get('/adminHomePage', async function(req,res){
 
 	});
 });
+
 
 
