@@ -63,7 +63,7 @@ async function login_process(req, res, next) {
 		}
 
 		if (! regexPwd.test(req.body.password)) {
-			errors = errors.concat({ text: "Password requires minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character!" });
+			errors = errors.concat({ text: "Password Requires minimum 8 characters, at least 1 Uppercase letter, 1 Lowercase Letter, 1 number and 1 Special Character!" });
 		}
 
 		if (errors.length > 0) {
@@ -97,7 +97,7 @@ async function register_process(req, res) {
 	//	Common Sense
 	try {
 		if (! regexName.test(req.body.name)) {
-			errors = errors.concat({ text: "Invalid name provided! It must be minimum 3 characters and starts with a alphabet." });
+			errors = errors.concat({ text: "Invalid name provided! It must have minimum 3 characters and starts with a letter." });
 		}
 
 		if (! regexEmail.test(req.body.email)) {
@@ -111,7 +111,7 @@ async function register_process(req, res) {
 		}
 
 		if (! regexPwd.test(req.body.password)) {
-			errors = errors.concat({ text: "Password requires minimum eight characters, at least one uppercase letter, one lowercase letter and one number!" });
+			errors = errors.concat({ text: "Password Requires Minimum 8 characters, at least 1 Uppercase letter, 1 Lower Case Letter , 1 Number and 1 Special Character" });
 		}
 		else if (req.body.password !== req.body.password2) {
 			errors = errors.concat({ text: "Password do not match!" });
