@@ -5,10 +5,10 @@ const router = Router();
 export default router;
 
 
-router.get("/stream", comment_page);
-router.post("/stream", process_comment);
-router.post('/updateComment/:uuid', process_updateComment);
-router.delete("/deleteComment/:uuid", process_deleteComment);
+router.get("/stream", retrieve_comments);
+router.post("/stream", create_comments);
+router.post('/updateComment/:uuid', update_comment);
+router.delete("/deleteComment/:uuid", delete_comment);
 
 
 /**
@@ -16,11 +16,11 @@ router.delete("/deleteComment/:uuid", process_deleteComment);
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
-async function comment_page(req, res) {
+async function retrieve_comments(req, res) {
 	console.log("Stream comment page accessed");
 	try{
 		const comment_Mod = await ModelComments.findAll({
-			attributes: ['uuid', 'comments', 'dateCreated']
+			attributes: ['uuid','name', 'comments', 'dateCreated']
 		});
 		return res.render('stream', {
 			showComments: comment_Mod,
@@ -37,13 +37,13 @@ async function comment_page(req, res) {
  * @param {import('express').Request}  req Express Request handle
  * @param {import('express').Response} res Express Response handle
  */
- async function process_comment(req, res) {
+ async function create_comments(req, res) {
 	console.log("Comments input received");
 
 	//	Create new comment
 	try {
 		const comments = await ModelComments.create({
-            "name":     "TestUser",
+            "name":     req.user.name,
             "comments":    req.body.comments,
 		});
 		return res.redirect("/stream");
@@ -61,7 +61,7 @@ async function comment_page(req, res) {
  * @param {Request}  req Express request object
  * @param {Response} res Express response object
  */
- async function process_updateComment(req, res) {
+ async function update_comment(req, res) {
 
 	try {
 		const contents = await ModelComments.findOne({where: { "uuid": req.params["uuid"] } });
@@ -85,7 +85,7 @@ async function comment_page(req, res) {
  * @param {Request}  req Express request  object
  * @param {Response} res Express response object
  */
-async function process_deleteComment(req, res) {
+async function delete_comment(req, res) {
 	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[0-9A-F]{4}-[0-9A-F]{12}$/i
 
 	if (!regex_uuidv4.test(req.params.uuid))

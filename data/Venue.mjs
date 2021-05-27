@@ -29,7 +29,7 @@ export class ModelVenue extends Model {
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"dateUpdated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"venueName"  : { type: DataTypes.STRING(64),  allowNull: false },
-			"venueStory" : { type: DataTypes.STRING(128), allowNull: false },
+			"venueStory" : { type: DataTypes.STRING(12800), allowNull: false },
 			"venueDate"  : { type: DataTypes.DATEONLY,  allowNull: false },
 			"venueTime"  : {  type: DataTypes.STRING(64), allowNull: false},
 			"venuePrice" : {  type: DataTypes.STRING(64), allowNull: false},

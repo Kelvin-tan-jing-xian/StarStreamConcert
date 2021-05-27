@@ -9,31 +9,33 @@
     <div class="card card0 border-0">
         <div class="row d-flex">
             <div class="col-lg-6">
+                {{#each venues}}
                 <div class="card1 bg-light pb-5">
                     <div class="row px-3 justify-content-center mt-5 mb-2"> 
-                        <img src="" class="image"> 
+                        <img src="/{{venuePoster}}" class="image"> 
                     </div>
                     <div class="row px-3 text-center justify-content-center mb-2">
-                        <h4>Venue Name</h4> 
+                        <h4>{{venueName}}</h4> 
                     </div>
                     <div class="row px-3 text-center justify-content-center mb-2">
-                        <p class="text-wrap mr-5 ml-5">This is the venue description.This is the venue description.This is the venue description.This is the venue description.This is the venue description.</p>
+                        <p class="text-wrap mr-5 ml-5">{{venueStory}}</p> 
                     </div>
                     <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
-                        <h5>Date: </h5>
-                        <h5>Mon, 11 Oct 2021</h5>
+                        <h5>Date:</h5>
+                        <h5>{{venueDate}}</h5>
                     </div>
                     <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
                         <h5>Time: </h5>
-                        <h5>8:00 PM</h5>
+                        <h5>{{venueTime}}</h5>
                     </div>
 
                     <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
-                        <h5>Price</h5> 
-                        <h5>$128.00 </h5> 
+                        <h5>Price:</h5> 
+                        <h5>{{venuePrice}} </h5> 
                     </div>
                 </div>
             </div>
+            {{/each}}
             {{!-- Payment Detail --}}
             <div class="col-lg-6">
                 <div class="card2 card border-0 px-4 py-5">
