@@ -6,6 +6,7 @@ const { Sequelize } = ORM;
 import { ModelUser } from './User.mjs';
 import { ModelVenue } from './Venue.mjs';
 import { ModelComments } from './Comments.mjs';
+import { ModelFeedback } from './Feedback.mjs';
 
 /**
  * @param database {ORM.Sequelize}
@@ -18,6 +19,7 @@ export function initialize_models(database) {
 		ModelVenue.initialize(database);
 		ModelTicket.initialize(database);
 		ModelComments.initialize(database);
+		ModelFeedback.initialize(database);
 		console.log("Building ORM model relations and indices");
 		//	Create relations between models or tables
 		//	Setup foreign keys, indexes etc
