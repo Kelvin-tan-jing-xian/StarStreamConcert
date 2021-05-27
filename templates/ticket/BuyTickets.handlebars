@@ -38,19 +38,11 @@
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic"></p>
-                            <a href="/ticket/UpdateTickets/{{uuid}}" class="card-link">
-                                <i class="fas fa-pencil-alt"></i>
-                                Edit
+                            <a href="/payment/venuePayment" class="card-link">
+                                Book Now
                             </a>
-                            <form method="POST" action="/ticket/DeleteTickets/{{uuid}}?_method=DELETE"
-                                id="toggle-delete-{{uuid}}">
-                                <a href="javascript:;" class="card-link btn-delete"
-                                    onclick="if (confirm('Confirm delete?')) parentNode.submit();"
-                                    data-title="Confirm delete?">
-                                    <i class="far fa-trash-alt"></i>
-                                    Delete
-                                </a>
-                            </form>
+
+                        </div>
                         </div>
                     </div>
                 </div>
