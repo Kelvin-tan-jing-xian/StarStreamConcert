@@ -1,7 +1,15 @@
 import ORM from 'sequelize'
-import { UserRole } from './user.mjs'
 const { Sequelize, DataTypes, Model } = ORM;
 
+/**
+ * For enumeration use
+**/
+export class UserRole {
+	static get User() { return "user"; }
+	static get Customer() { return "customer"; }
+	static get Performer() { return "performer"; }
+	static get Admin() { return "admin"; }
+}
 
 /**
  * A database entity model that represents contents in the database.
