@@ -1,7 +1,7 @@
 <!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
 <div class="container">
     <div class="card card-body">
-        <h3>Add Venue</h3>
+        <h3>Create Venue</h3>
         <form enctype="multipart/form-data" action="/venue/create" method="post" >
 
             <div class="form-group">
@@ -30,7 +30,7 @@
             </div>
             <div class="form-group mb-4">
                 <label class="font-italic" for="venueStory">Venue Story</label>
-                <textarea class="form-control" id="venueStory" name="venueStory" ></textarea required>
+                <textarea class="form-control" id="venueStory" name="venueStory" required></textarea>
             </div>
 
             <div class="form-group">
@@ -38,14 +38,14 @@
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
                         <label class="font-italic">Venue Date</label>
                         <br>
-                        <input id="datepicker" width="200" name="venueDate"/ required>
+                        <input id="datepicker" width="200" name="venueDate" required>
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="font-italic">venueTime</label>
                         <br>
                         {{!-- radio buttons --}}
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="10am ~ 1pm" name="venueTime">
+                            <input class="form-check-input" type="radio" value="10am ~ 1pm" name="venueTime" checked>
                             <label class="form-check-label">10am ~ 1pm</label>
                         </div>
                         <div class="form-check form-check-inline">
@@ -71,7 +71,7 @@
                         <br>
                         {{!-- radio buttons --}}
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" id="venuePrice" value="$2000/hr" name="venuePrice">
+                            <input class="form-check-input" type="radio" id="venuePrice" value="$2000/hr" name="venuePrice" checked>
                             <label class="form-check-label" for="venuePrice">$2000/hr</label>
                         </div>
                         <div class="form-check form-check-inline">
@@ -98,9 +98,9 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <label class="font-italic">venuePoster</label>
                         <br>
-                        <input type="file" name="venuePoster" required>
-                       
-                        <br>
+                        <input type="file" id="file" onchange="return fileValidation()" name="venuePoster" accept="image/png,image/jpeg,image/jpg,image/gif" required>
+                        <!-- Image preview -->
+                        <div id="imagePreview"></div>
                         {{!-- <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" id="other" value="other" name="other">
                             <label class="form-check-label" for="other">Other</label>
@@ -110,7 +110,7 @@
 
             </div>
             <br>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" onclick="validateDate(form)" class="btn btn-primary">Save</button>
         </form>
     </div>
 </div>
@@ -118,8 +118,53 @@
 <script>
     var dateToday = new Date();
     $('#datepicker').datepicker({
-        format: 'yyyy-mm-dd',
+        format: 'yyyy/mm/dd',
         uiLibrary: 'bootstrap4',
         minDate: dateToday
     });
+
+    // Validate date field format 
+    function validateDate(form) {
+        // regular expression to match required date format
+        re = /^\d{4}\/\d{1,2}\/\d{1,2}$/;
+
+        if (form.venueDate.value != '' && !form.venueDate.value.match(re)) {
+            alert("Invalid date format: " + form.venueDate.value);
+            form.venueDate.focus();
+            return false;
+        }
+
+        alert("All input fields have been validated!");
+        return true;
+    }
+
+    function fileValidation() {
+        var fileInput = document.getElementById('file');
+
+        var filePath = fileInput.value;
+
+        // Allowing file type
+        var allowedExtensions =
+            /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+
+        if (!allowedExtensions.exec(filePath)) {
+            alert('Invalid file type');
+            fileInput.value = '';
+            return false;
+        }
+        else {
+            // Image preview if the uploaded file extension follows the file type.
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById(
+                        'imagePreview').innerHTML =
+                        '<img src="' + e.target.result
+                        + '"/>';
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    }
 </script>

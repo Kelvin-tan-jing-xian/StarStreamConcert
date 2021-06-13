@@ -19,9 +19,10 @@
                     <div class="form-group col">
                         <label class="font-italic" for="venuePoster">venuePoster</label>
                         <br>
-                        <input type="file" id="venuePoster" name="venuePoster" accept="image/png,image/jpeg,image/jpg,image/gif">
-                            {{!-- To display error message --}}
-                        <div class="font-weight-bold text-danger small" id="posterErr" style="display:none"></div>
+                        <input onchange="return fileValidation()" type="file" id="file" name="venuePoster" accept="image/png,image/jpeg,image/jpg,image/gif" required>
+                        <!-- Image preview -->
+                        <div id="imagePreview"></div>
+
                     </div>
                 </div>
             
@@ -29,7 +30,7 @@
                     <div class="row mb-2">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
                             <label class="font-italic">venueDate</label>
-                            <input id="datepicker" width="200" name="venueDate" value="{{ content.venueDate }}" />
+                            <input id="datepicker" width="200" name="venueDate" value="{{ content.venueDate }}" required/>
                         </div>
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                             <label class="font-italic">venueTime</label>
@@ -93,8 +94,8 @@
             
                 <br>
             
-                <button id="btnSubmit" type="submit" class="btn btn-primary">Save</button>
-                <a id="btnCancel" class="btn btn-primary" href="/venue/retrieve">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a class="btn btn-primary" href="/venue/retrieve">Cancel</a>
             </form>
             
 <script>
@@ -102,16 +103,53 @@
     // 2. value or default date assigned to a string
     var dateToday = new Date();
     $('#datepicker').datepicker({
-        format: 'yyyy-mm-dd',
+        format: 'yyyy/mm/dd',
         uiLibrary: 'bootstrap4',
         minDate: dateToday
     });
 
-    function preventMinusSign(myfield, e) {
-        console.log('inputted');
-        // prevent - from being entered
-        $("#venuePrice").keyup(function () {
-            $(this).val().replace(/[-]/g, "");
-        });
+    function validateDate(form) {
+        // regular expression to match required date format
+        re = /^\d{4}\/\d{1,2}\/\d{1,2}$/;
+
+        if (form.venueDate.value != '' && !form.venueDate.value.match(re)) {
+            alert("Invalid date format: " + form.venueDate.value);
+            form.venueDate.focus();
+            return false;
+        }
+
+        alert("Date field has been validated!");
+        return true;
     }
+
+    function fileValidation() {
+        var fileInput = document.getElementById('file');
+
+        var filePath = fileInput.value;
+
+        // Allowing file type
+        var allowedExtensions =
+            /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+
+        if (!allowedExtensions.exec(filePath)) {
+            alert('Invalid file type');
+            fileInput.value = '';
+            return false;
+        }
+        else {
+            // Image preview if the uploaded file extension follows the file type.
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById(
+                        'imagePreview').innerHTML =
+                        '<img src="' + e.target.result
+                        + '"/>';
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    }
+
 </script>
