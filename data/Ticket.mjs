@@ -28,7 +28,7 @@ export class ModelTicket extends Model {
 			"concertPrice":   { type: DataTypes.STRING(64), allowNull: false },
 			"concertPoster": { type: DataTypes.STRING(64), allowNull: false},
 			"concertVenue": { type: DataTypes.STRING(64), allowNull: false},
-			"role"       : { type: DataTypes.ENUM(UserRole.User,UserRole.Performer, UserRole.Admin), defaultValue: UserRole.Performer, allowNull: false },
+			"role"       : { type: DataTypes.ENUM(UserRole.User, UserRole.Admin), defaultValue: UserRole.User, allowNull: false },
 			"verified"   : { type: DataTypes.BOOLEAN,     allowNull: false, defaultValue: false }
 		}, {
 			"sequelize": database,
