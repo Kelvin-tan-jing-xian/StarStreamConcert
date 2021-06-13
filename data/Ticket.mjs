@@ -26,10 +26,6 @@ export class ModelTicket extends Model {
 			"concertDate"      : { type: DataTypes.DATE(), allowNull: false },
 			"concertTime"   : { type: DataTypes.STRING(64),  allowNull: false },
 			"concertPrice":   { type: DataTypes.STRING(64), allowNull: false },
-			"concertPoster": { type: DataTypes.STRING(64), allowNull: false},
-			"concertVenue": { type: DataTypes.STRING(64), allowNull: false},
-			"role"       : { type: DataTypes.ENUM(UserRole.User, UserRole.Admin), defaultValue: UserRole.User, allowNull: false },
-			"verified"   : { type: DataTypes.BOOLEAN,     allowNull: false, defaultValue: false }
 		}, {
 			"sequelize": database,
 			"modelName": "Tickets",
