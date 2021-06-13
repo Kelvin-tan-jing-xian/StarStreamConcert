@@ -5,7 +5,6 @@
     <div class="card card-body">
         <h3 class="text-primary">Venues</h3>
         {{#each venues}}
-
         <div class="card border-primary mb-2 w-100 mx-auto">
             <div class="card-header">
                 <h5 class="card-title">{{venueName}}</h5>
@@ -31,10 +30,19 @@
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic"></p>
-                            <a href="/payment/venuePayment" class="card-link">
-                                Book Now
+                            <a href="/venue/update/{{uuid}}" class="card-link">
+                                <i class="fas fa-pencil-alt"></i>
+                                Edit
                             </a>
-
+                            <form method="POST" action="/venue/delete/{{uuid}}?_method=DELETE"
+                                id="toggle-delete-{{uuid}}">
+                                <a href="javascript:;" class="card-link btn-delete"
+                                    onclick="if (confirm('Confirm delete?')) parentNode.submit();"
+                                    data-title="Confirm delete?">
+                                    <i class="far fa-trash-alt"></i>
+                                    Delete
+                                </a>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -56,7 +64,8 @@
             </div>
         </div>
         {{/each}}
+        <!-- Page management, can ignore first -->
 
-        {{else}}
-        <h3>No venues jotted</h3>
-        {{/if}}
+{{else}}
+<h3>No venues jotted</h3>
+{{/if}}

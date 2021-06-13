@@ -22,28 +22,28 @@
 					{{!-- Only for customer nav bar --}}
 					{{#if cust }}
 					<li class="nav-item">
-						<a class="nav-link" href="/ticket/BuyTickets">Buy Ticket</a>
+						<a class="nav-link" href="/stream/book">BookStream</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="/feedback/addFeedback">GiveFeedback</a>
+						<a class="nav-link" href="/feedback/create">GiveFeedback</a>
 					</li>
 
 					{{/if}}
 				{{!-- Only for performer nav bar, after logging in as performer, performerHomePage shows --}}
 					{{#if perf }}
 					<li class="nav-item">
-						<a class="nav-link" href="/venue/bookVenue">BookVenue</a>
+						<a class="nav-link" href="/venue/book">BookVenue</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="/feedback/addFeedback">GiveFeedback</a>
+						<a class="nav-link" href="/feedback/create">GiveFeedback</a>
 					</li>
 
 					<div>						
 						<li class="nav-item dropdown">
-							<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage Ticket</a>
+							<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage stream</a>
 							<div class="dropdown-menu">
-								<a href="/ticket/RetrieveTickets" class="dropdown-item">Retrieve Tickets</a>
-								<a href="/ticket/CreateTickets"  class="dropdown-item">Create Ticket</a>
+								<a href="/stream/retrieve" class="dropdown-item">Retrieve</a>
+								<a href="/stream/create"  class="dropdown-item">Create</a>
 							</div>
 						</li>
 					</div>
@@ -55,15 +55,15 @@
 					</li>
 					<li class="nav-item">
 											{{!-- follow the name of ur thing --}}
-						<a class="nav-link" href="feedback/listFeedback">ViewAllFeedback</a>
+						<a class="nav-link" href="feedback/retrieve">ViewAllFeedback</a>
 					</li>
 
 
 					<li class="nav-item dropdown">
 						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage Venue</a>
 						<div class="dropdown-menu">
-							<a href="/venue/listVenue" class="dropdown-item">List Venues</a>
-							<a href="/venue/addVenue"  class="dropdown-item">Add Venue</a>
+							<a href="/venue/retrieve" class="dropdown-item">Retrieve</a>
+							<a href="/venue/create"  class="dropdown-item">Create</a>
 						</div>
 					</li>
 				{{/if}}

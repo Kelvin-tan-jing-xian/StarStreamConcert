@@ -1,4 +1,5 @@
 <!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
+<h1>CHANGE THIS TO BOOTSTRAP TABLE FOR ADMIN</h1>
 <div class="row">
     {{#if feedbacks}}
 
@@ -19,7 +20,7 @@
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-4">
                             <p class="font-italic">Feedback response</p>
-                            <p class="text-info">{{feedbackResponse}}</p>
+                            <p class="text-info">{{feedbackGiven}}</p>
                         </div>
                      {{!-- Display ur reply field here --}}
                         {{!-- <div class="col-sm-12 col-md-6 col-lg-4">
@@ -29,11 +30,11 @@
 
                         <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic"></p>
-                            <a href="/feedback/updateFeedback/{{uuid}}" class="card-link">
+                            <a href="/feedback/update/{{uuid}}" class="card-link">
                                 <i class="fas fa-pencil-alt"></i>
                                 Edit
                             </a>
-                            <form method="POST" action="/feedback/deleteFeedback/{{uuid}}?_method=DELETE"
+                            <form method="POST" action="/feedback/delete/{{uuid}}?_method=DELETE"
                                 id="toggle-delete-{{uuid}}">
                                 <a href="javascript:;" class="card-link btn-delete"
                                     onclick="if (confirm('Confirm delete?')) parentNode.submit();"
@@ -57,7 +58,7 @@
                 <div id="collapse-{{uuid}}" class="collapse" aria-labelledby="heading-{{uuid}}"
                     data-parent="#storyAccordion">
                     <div class="card-body">
-                        {{feedbackResponse}}
+                        {{feedbackGiven}}
                     </div>
                 </div>
             </div>

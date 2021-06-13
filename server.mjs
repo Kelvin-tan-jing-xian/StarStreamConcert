@@ -33,7 +33,7 @@ Server.engine(
   })
 );
 //	Let express know where to access static files
-//	Host them at locahost/public
+//	Host them at localhost/public
 Server.use("/public", Express.static("public"));
 
 /**
@@ -85,6 +85,7 @@ Server.use(FlashMessenger.middleware);
  */
 Server.use(function (req, res, next) {
   res.locals.user = req.user || null;
+  res.locals.stream = req.stream || null;
   next();
 });
 

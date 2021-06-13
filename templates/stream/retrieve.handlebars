@@ -1,10 +1,11 @@
 <!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
+<h1>CHANGE THIS PAGE TO BOOTSTRAP TABLE FOR ADMIN</h1>
 <div class="row">
-    {{#if tickets}}
+    {{#if streams}}
 
     <div class="card card-body">
         <h3 class="text-primary">Concerts</h3>
-        {{#each tickets}}
+        {{#each streams}}
         <div class="card border-primary mb-2 w-100 mx-auto">
             <div class="card-header">
                 <h5 class="card-title">{{concertName}}</h5>
@@ -38,11 +39,19 @@
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic"></p>
-                            <a href="/payment/venuePayment" class="card-link">
-                                Book Now
+                            <a href="/stream/update/{{uuid}}" class="card-link">
+                                <i class="fas fa-pencil-alt"></i>
+                                Edit
                             </a>
-
-                        </div>
+                            <form method="POST" action="/stream/delete/{{uuid}}?_method=DELETE"
+                                id="toggle-delete-{{uuid}}">
+                                <a href="javascript:;" class="card-link btn-delete"
+                                    onclick="if (confirm('Confirm delete?')) parentNode.submit();"
+                                    data-title="Confirm delete?">
+                                    <i class="far fa-trash-alt"></i>
+                                    Delete
+                                </a>
+                            </form>
                         </div>
                     </div>
                 </div>

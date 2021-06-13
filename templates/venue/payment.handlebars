@@ -1,0 +1,221 @@
+<link rel="stylesheet" href="/public/css/payment.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+
+<div class="container-fluid px-1 px-md-5 px-lg-1 px-xl-5 py-5 mx-auto">
+    <div class="card card0 border-0">
+        <div class="row d-flex">
+            <div class="col-lg-6">
+                <div class="card1 bg-light pb-5">
+                    <div class="row px-3 justify-content-center mt-5 mb-2"> 
+                        <img src="/{{content.venuePoster}}" class="image"> 
+                    </div>
+                    <div class="row px-3 text-center justify-content-center mb-2">
+                        <h4>{{content.venueName}}</h4> 
+                    </div>
+                    <div class="row px-3 text-center justify-content-center mb-2">
+                        <p class="text-wrap mr-5 ml-5">{{content.venueStory}}</p> 
+                    </div>
+                    <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
+                        <h5>Date:</h5>
+                        <h5>{{content.venueDate}}</h5>
+                    </div>
+                    <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
+                        <h5>Time: </h5>
+                        <h5>{{content.venueTime}}</h5>
+                    </div>
+
+                    <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
+                        <h5>Price:</h5> 
+                        <h5>{{content.venuePrice}} </h5> 
+                    </div>
+                </div>
+            </div>
+            {{!-- Payment Detail --}}
+            <div class="col-lg-6">
+                <div class="card2 card border-0 px-4 py-5">
+                    <h4 class="mb-3 text-center">Payment Details</h4>
+                    {{!-- CARD NUMBER  --}}
+                    <form action="/venue/myPurchases/{{content.uuid}}" method="GET">
+                        <div class="row px-3 mt-3">
+                            <label class="mb-0">
+                                <h6 class="mb-2 text-sm">Card Number</h6>
+                            </label>
+                            <input type="tel" name="card_number" pattern="[0-9]{4}[0-9]{4}[0-9]{4}[0-9]{4}" placeholder="xxxx xxxx xxxx xxxx" required>
+                        </div>
+                        {{!-- EXPIRY DATE & CVV --}}
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="mb-0">
+                                    <h6 class="mb-2 text-sm">Expiry Date</h6>
+                                </label>
+                                <input type="text" name="expiry_date" placeholder="MM / YY" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="mb-0">
+                                    <h6 class="mb-2 text-sm">CVV</h6>
+                                </label>
+                                <input type="tel" name="cvv" pattern="[0-9]{3}"  placeholder="***" required>
+                            </div>
+                        </div>
+                        {{!-- CARD NAME --}}
+                        <div class="row px-3 mt-3">
+                            <label class="mb-0">
+                                <h6 class="mb-2 text-sm">Card Name</h6>
+                            </label>
+                            <input type="text" name="card_name" placeholder="Edison Lim" required>
+                        </div>
+                        {{!-- EMAIL ADDRESS --}}
+                        <div class="row px-3 mt-3">
+                            <label class="mb-0">
+                                <h6 class="mb-2 text-sm">Email Address</h6>
+                            </label>
+                            <input type="email" name="email" placeholder="example@gmail.com" required>
+                        </div>
+                        {{!-- BUTTON --}}
+                        <div class="row mb-2 mt-4 justify-content-center">
+                            <div class="col-md-5">
+                                <button  class="btn-1" onclick="show_alert()">Continue</button>
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <h1>Do you wanna pay using NETS instead?</h1>
+                    <h1>Please enter the amount to pay and then click submit</h1>
+                    <input type="number" name="amount" id="price">
+                    <button onclick="generate_qr_code(null)">Submit</button>
+                    <img src="null" id="qr_code">
+                    <button ><a href="/venue/myPurchases/{{content.uuid}}" onclick="show_alert()">I have paid already</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function show_alert() {
+        alert("Thank you for your payment!");
+    }
+    /**
+     * Make a request to generate the QR code
+     * @param {InputEvent} event
+     **/
+    async function generate_qr_code(event) {
+        // payment.mjs/generate route
+        const response = await fetch("/payment/generate", {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify({
+                amount: document.getElementById("price").value
+            })
+        });
+        if (response.ok) {
+            const content = await response.json();
+            preview_qr_code(content.qr_code);
+
+            //	Start auto ping
+            setTimeout(ping_transaction_status, 1000, 0, content);
+        }
+    }
+
+    /**
+     * Displays the QR code
+     * @param {string} qr_code
+     **/
+    function preview_qr_code(qr_code) {
+        document.getElementById("qr_code").src = `data:image;base64,${qr_code}`;
+    }
+
+    /**
+     * Make a HTTP request to query the generated transaction
+     * @param {JSON}   transaction
+     * @param {number} attempt
+     **/
+    async function ping_transaction_status(attempt, transaction) {
+
+        if (attempt > 5)
+            return void_transaction(transaction);
+
+        try {
+            const response = await fetch("/payment/query", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    txn_identifier: transaction.txn_identifier,
+                    transaction_date: transaction.transaction_date,
+                    transaction_time: transaction.transaction_time,
+                    stan: transaction.stan,
+                    amount: transaction.amount
+                })
+            });
+
+            if (!response.ok) { throw new Error("Failed to query transaction"); }
+            const content = await response.json();
+            const status = content.status;
+
+            switch (status) {
+                case 0:
+                    console.log(`Awaiting for payment: ${attempt}`);
+                    return setTimeout(ping_transaction_status, 1000, attempt + 1, transaction);
+                    break;
+
+                case 1:
+                    console.log(`Payment succeeded`);
+                    break;
+
+                case -1:
+                    console.log(`Payment cancelled`);
+                    // Hide qr code, set image to X
+                    break;
+            }
+        }
+        catch (error) {
+            console.error(error);
+            console.error(`Failed to ping transaction :${transaction.txn_identifier}`);
+        }
+    }
+
+
+    async function void_transaction(transaction) {
+        try {
+            const response = await fetch("/payment/void", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    txn_identifier: transaction.txn_identifier,
+                    transaction_date: transaction.transaction_date,
+                    transaction_time: transaction.transaction_time,
+                    stan: transaction.stan,
+                    amount: transaction.amount
+                })
+            });
+
+            if (!response.ok) { throw new Error("Failed to void transaction"); }
+            const content = await response.json();
+            const status = content.status;
+
+            switch (status) {
+                case 1:
+                    console.log(`Transaction cancelled successfully`);
+                    // TODO: Do any UX changes here
+                    break;
+
+                default:
+                    console.log(`No action required`);
+                    break;
+            }
+        }
+        catch (error) {
+            console.error(error);
+            console.error(`Failed to void transaction :${transaction.txn_identifier}`);
+        }
+    }
+</script>

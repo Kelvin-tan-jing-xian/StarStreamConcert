@@ -1,8 +1,8 @@
 <!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
 <div class="container">
 	<div class="card card-body">
-		<h3>Ticket Details</h3>
-		<form enctype="multipart/form-data" action="/ticket/CreateTickets" method="post" >
+		<h3>Stream Details</h3>
+		<form enctype="multipart/form-data" action="/stream/create" method="post" >
 			<div class="form-group">
 				<label class="font-italic" for="concertName">Concert Name</label>
 				<input class="form-control" id="concertName" name="concertName" rows="7"></input>
@@ -54,7 +54,7 @@
 			<div class="form-group">
 				<div class="row">
 					<div class="col-12 col-sm-12 col-md-6 col-lg-6">
-						<label class="font-italic">Price of Tickets</label>
+						<label class="font-italic">Price of Streams</label>
 						<br>
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" name="concertPrice" id="concertPrice" value="$40">

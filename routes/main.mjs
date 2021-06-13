@@ -1,7 +1,6 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
 
-
 const router = Router();
 export default router;
 
@@ -20,16 +19,16 @@ router.get("/dynamic/:path/:file*", async function (req, res) {
 import RouterAuth  from './auth.mjs';
 import RouterAdmin from './admin/admin.mjs';
 import RouterVenue from './venue.mjs';
-import RouterTicket from './ticket.mjs';
+import RouterStream from './stream.mjs';
 import RouterFeedback from './feedback.mjs';
 import RouterComments from './comments.mjs';
 import RouterPayment from './payment.mjs';
 router.use("/auth",  RouterAuth);
 router.use("/admin", RouterAdmin);
 router.use("/venue", RouterVenue);
-router.use("/ticket", RouterTicket);
+router.use("/stream", RouterStream);
 router.use("/feedback", RouterFeedback);
-router.use("", RouterComments);
+router.use("/comments", RouterComments);
 router.use("/payment", RouterPayment);
 router.get("/", async function (req, res) {
 	return res.redirect("/index");
@@ -113,11 +112,10 @@ router.get('/profile', async function(req,res){
 	console.log(cust);
 	console.log(perf);
 	console.log(admin);
-
 	return res.render('profile',{
 		cust: cust,
 		perf: perf,
-		admin: admin
+		admin: admin,
 	});
 });
 
@@ -175,5 +173,6 @@ router.get('/adminHomePage', async function(req,res){
 	});
 });
 
+// router.get("/error")
 
 

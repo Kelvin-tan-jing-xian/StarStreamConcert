@@ -1,10 +1,10 @@
 <!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
 <div class="row">
-    {{#if tickets}}
+    {{#if streams}}
 
     <div class="card card-body">
         <h3 class="text-primary">Concerts</h3>
-        {{#each tickets}}
+        {{#each streams}}
         <div class="card border-primary mb-2 w-100 mx-auto">
             <div class="card-header">
                 <h5 class="card-title">{{concertName}}</h5>
@@ -38,42 +38,34 @@
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic"></p>
-                            <a href="/ticket/UpdateTickets/{{uuid}}" class="card-link">
-                                <i class="fas fa-pencil-alt"></i>
-                                Edit
+                            <a href="/stream/payment/{{uuid}}" class="card-link">
+                                Buy Tickets
                             </a>
-                            <form method="POST" action="/ticket/DeleteTickets/{{uuid}}?_method=DELETE"
-                                id="toggle-delete-{{uuid}}">
-                                <a href="javascript:;" class="card-link btn-delete"
-                                    onclick="if (confirm('Confirm delete?')) parentNode.submit();"
-                                    data-title="Confirm delete?">
-                                    <i class="far fa-trash-alt"></i>
-                                    Delete
-                                </a>
-                            </form>
+
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="accordion" id="storyAccordion">
-                <div class="card-header" id="heading-{{uuid}}">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{uuid}}"
-                        aria-expanded="false" aria-controls="collapse-{{uuid}}">
-                        Story<i class="fas fa-chevron-down"></i>
-                    </button>
-                </div>
+        </div>
+        <div class="accordion" id="storyAccordion">
+            <div class="card-header" id="heading-{{uuid}}">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{uuid}}"
+                    aria-expanded="false" aria-controls="collapse-{{uuid}}">
+                    Story<i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
 
-                <div id="collapse-{{uuid}}" class="collapse" aria-labelledby="heading-{{uuid}}"
-                    data-parent="#storyAccordion">
-                    <div class="card-body">
-                        {{concertStory}}
-                    </div>
+            <div id="collapse-{{uuid}}" class="collapse" aria-labelledby="heading-{{uuid}}"
+                data-parent="#storyAccordion">
+                <div class="card-body">
+                    {{concertStory}}
                 </div>
             </div>
         </div>
-        {{/each}}
-        <!-- Page management, can ignore first -->
+    </div>
+    {{/each}}
+    <!-- Page management, can ignore first -->
 
-{{else}}
-<h3>No Concerts jotted</h3>
-{{/if}}
+    {{else}}
+    <h3>No Concerts jotted</h3>
+    {{/if}}

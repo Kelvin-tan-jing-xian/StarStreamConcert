@@ -1,6 +1,9 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
+// must be caps
 import { ModelVenue }    from '../data/Venue.mjs';
+// must be caps
+import { UserRole, ModelUser } from '../data/User.mjs';
 import { UploadFile } from '../utils/multer.mjs';
 
 const router = Router();
@@ -9,14 +12,17 @@ export default router;
 
 router.use("/",                authorizer);	//..Applies to every route in this router
 // all routes starts with /venue
-router.get("/addVenue",     addVenue_page);
-router.post("/addVenue", UploadFile.single("venuePoster"), addVenue_process);
-router.get("/listVenue", listVenue_page);
-router.get("/updateVenue/:uuid", updateVenue_page);
-router.post('/updateVenue/:uuid', UploadFile.single('venuePoster'), updateVenue_process);
-router.delete('/deleteVenue/:uuid', deleteVenue_process);
-router.get('/bookVenue', bookVenue_page);
-
+// these CRUD only for admin
+router.get("/create", ensure_admin, create_page);
+router.post("/create", UploadFile.single("venuePoster"), create_process);
+router.get("/retrieve", ensure_admin, retrieve_page);
+router.get("/update/:uuid", ensure_admin, update_page);
+router.post('/update/:uuid', ensure_admin, UploadFile.single('venuePoster'), update_process);
+router.delete('/delete/:uuid', ensure_admin, delete_process);
+// performer book and pay venue
+router.get('/book', book_page);
+router.get("/payment/:uuid", payment_page);
+router.get("/myPurchases/:uuid", myPurchases_page);
 // This function helps in showing different nav bars
 function roleResult(role){
 	if (role == 'performer') { // if user is performer, it cannot be customer
@@ -58,14 +64,30 @@ function authorizer(req, res, next) {
 		next();	// Okay No problem, allow to proceed
 	}
 }
+/**
+ * Ensure Logged in user is admin
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
+ */
+async function ensure_admin(req, res, next) {
+	/** @type {ModelUser} */
+	const user = req.user;
+	if (user.role != UserRole.Admin) {
+		return res.sendStatus(403).end();
+	}
+	else {
+		return next();
+	}
+}
 
 /**
- * Renders the addVenue page
+ * Renders the create page
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
-async function addVenue_page(req, res) {
-	console.log("addVenue page accessed");
+async function create_page(req, res) {
+	console.log("create page accessed");
 	var role = roleResult(req.user.role);
 	var cust = role[0];
 	var perf = role[1];
@@ -74,7 +96,7 @@ async function addVenue_page(req, res) {
 	console.log(perf);
 	console.log(admin);
 
-	return res.render('venue/addVenue', {
+	return res.render('venue/create', {
 		cust: cust,
 		perf: perf,
 		admin: admin
@@ -83,12 +105,12 @@ async function addVenue_page(req, res) {
 
 
 /**
- * Process the addVenue form body
+ * Process the create form body
  * @param {import('express').Request}  req Express Request handle
  * @param {import('express').Response} res Express Response handle
  */
- async function addVenue_process(req, res) {
-	console.log("addVenue contents received");
+ async function create_process(req, res) {
+	console.log("create contents received");
 	console.log(`${req.file.path}`);
 	console.log(req.body);
 
@@ -106,7 +128,7 @@ async function addVenue_page(req, res) {
 		});
 
 		flashMessage(res, 'success', 'Successfully created a venue', 'fas fa-sign-in-alt', true);
-		return res.redirect("/venue/listVenue"); // don't use render
+		return res.redirect("/venue/retrieve"); // don't use render
 	}
 	catch (error) {
 		//	Else internal server error
@@ -117,12 +139,12 @@ async function addVenue_page(req, res) {
 }
 
 /**
- * Renders the listVenue page
+ * Renders the retrieve page
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
-async function listVenue_page(req, res) {
-	console.log("listVenue page accessed");
+async function retrieve_page(req, res) {
+	console.log("retrieve page accessed");
 	try{
 		var role = roleResult(req.user.role);
 		var cust = role[0];
@@ -131,28 +153,18 @@ async function listVenue_page(req, res) {
 		console.log(cust);
 		console.log(perf);
 		console.log(admin);
-		const total = await ModelVenue.count();
-		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1; // page number, can have 10 pages maximum
-		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 venue per page
-		const pageTotal = Math.floor(total / pageSize);
 
 		const venues = await ModelVenue.findAll({
-			offset: (pageIdx - 1) * pageSize,
-			limit : pageSize,
 			order : [
 				['venueName', 'ASC']
 			],
 			raw: true
 		});		
-		// venues[0].update()	//	This will crash... if raw is enabled
-		return res.render('venue/listVenue', {
+		return res.render('venue/retrieve', {
 			cust       : cust,
 			perf       : perf,
 			admin      : admin,
 			"venues"   : venues,
-			"pageTotal": pageTotal,
-			"pageIdx"  : pageIdx,
-			"pageSize" : pageSize
 		});
 
 	}
@@ -165,12 +177,12 @@ async function listVenue_page(req, res) {
 }
 
 /**
- * Renders the bookVenue page
+ * Renders the book page
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
-async function bookVenue_page(req, res) {
-	console.log("bookVenue page accessed");
+async function book_page(req, res) {
+	console.log("book page accessed");
 	try{
 
 		var role = roleResult(req.user.role);
@@ -182,12 +194,12 @@ async function bookVenue_page(req, res) {
 		console.log("admin: " + admin);
 
 		const total = await ModelVenue.count();
-		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1; // page number, can have 10 pages maximum
+		const pageNumber   = req.query.page    ? parseInt(req.query.page,  10) : 1; // page number, can have 10 pages maximum
 		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 venue per page
 		const pageTotal = Math.floor(total / pageSize);
 
 		const venues = await ModelVenue.findAll({
-			offset: (pageIdx - 1) * pageSize,
+			offset: (pageNumber - 1) * pageSize,
 			limit : pageSize,
 			order : [
 				['venueName', 'ASC']
@@ -195,10 +207,10 @@ async function bookVenue_page(req, res) {
 			raw: true
 		});		
 		// venues[0].update()	//	This will crash... if raw is enabled
-		return res.render('venue/bookVenue', {
+		return res.render('venue/book', {
 			"venues"   : venues,
 			"pageTotal": pageTotal,
-			"pageIdx"  : pageIdx,
+			"pageNumber"  : pageNumber,
 			"pageSize" : pageSize,
 			cust: cust,
 			perf: perf,
@@ -215,17 +227,17 @@ async function bookVenue_page(req, res) {
 }
 
 /**
- * Renders the venue update page, Basically the same page as addVenue with
+ * Renders the venue update page, Basically the same page as create with
  * prefills and cancellation.
  * @param {Request}  req Express request  object
  * @param {Response} res Express response object
  */
- async function updateVenue_page(req, res) {
+ async function update_page(req, res) {
 	try {
-		const content = await ModelVenue.findOne({where: { "uuid": req.params["uuid"] }});
+		const content = await ModelVenue.findOne({where: { "uuid": req.params.uuid }});
 		if (content) {
-			// render to updateVenue.handlebars
-			return res.render('venue/updateVenue', {
+			// render to update.handlebars
+			return res.render('venue/update', {
 				"mode"   : "update",
 				"content": content
 			});
@@ -248,41 +260,42 @@ async function bookVenue_page(req, res) {
  * @param {Request}  req Express request object
  * @param {Response} res Express response object
  */
-async function updateVenue_process(req, res) {
+async function update_process(req, res) {
 
 	try {
 		//	Please verify your contents
-		if (!req.body["venueName"])
+		if (!req.body.venueName)
 			throw Error("Missing venueName");
 	}
 	catch(error) {
-		console.error(`Malformed request to update venue ${req.params["uuid"]}`);
+		console.error(`Malformed request to update venue ${req.params.uuid}`);
 		console.error(req.body);
 		console.error(error);
 		return res.status(400).end();
 	}
 
 	try {
-		const contents = await ModelVenue.findAll({where: { "uuid": req.params["uuid"] } });
+		const contents = await ModelVenue.findAll({where: { "uuid": req.params.uuid } });
 
 		//	Whether this update request need to swap files?
 		const replaceFile = (req.file)? true : false;
 
 		switch (contents.length) {
-			// /feedback/RetrieveFeedback
-			case 0      : return res.redirect(410, "/venue/listVenue")
+				// The HyperText Transfer Protocol (HTTP) 410 Gone client error response code indicates that access to 
+				// the target resource is no longer available at the origin server and that this condition is likely to 
+				// be permanent
+			case 0      : return res.redirect(410, "/venue/retrieve")
 			case 1      : break;
-			     default: return res.status(409, "/venue/listVenue")
+			//The HTTP 409 Conflict response status code indicates a request conflict with current state of the target resource.
+			default     : return res.status(409, "/venue/retrieve")
 		}
 		/** @type {string} */
-		req.body["venueDate"] = Array.isArray(req.body["venueDate"])? req.body["venueDate"].join(',') : req.body["venueDate"];
+		req.body.venueDate = Array.isArray(req.body["venueDate"])? req.body["venueDate"].join(',') : req.body["venueDate"];
 		/** @type {string} */
-		req.body["venueTime"] = Array.isArray(req.body["venueTime"])? req.body["venueTime"].join(',') : req.body["venueTime"];
+		req.body.venueTime = Array.isArray(req.body["venueTime"])? req.body["venueTime"].join(',') : req.body["venueTime"];
 		
 		//	Save previous file path...
 		const previous_file = contents[0].venuePoster;
-
-		
 		const data          = {
 			"venueName"         : req.body.venueName,
 			"venueStory"         : req.body.venueStory,
@@ -308,7 +321,7 @@ async function updateVenue_process(req, res) {
 		// }
 		
 		flashMessage(res, 'success', "Venue updated", 'fas fa-sign-in-alt', true);
-		return res.redirect(`/venue/updateVenue/${req.params.uuid}`);
+		return res.redirect(`/venue/update/${req.params.uuid}`);
 	}
 	catch(error) {
 		console.error(`Failed to update venue ${req.params.uuid}`);
@@ -322,7 +335,7 @@ async function updateVenue_process(req, res) {
 		
 		flashMessage(res, "error", "The server met an unexpected error", 'fas fa-sign-in-alt', true);
 
-		return res.redirect(500, "/venue/listVenue")
+		return res.redirect(500, "/venue/retrieve")
 	}	
 }
 
@@ -331,7 +344,7 @@ async function updateVenue_process(req, res) {
  * @param {Request}  req Express request  object
  * @param {Response} res Express response object
  */
- async function deleteVenue_process(req, res) {
+ async function delete_process(req, res) {
 
 	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
 	// if uuid doesnt match with uuidv4, give error
@@ -359,7 +372,7 @@ async function updateVenue_process(req, res) {
 			// });
 
 			console.log(`Deleted venue: ${req.params.uuid}`);
-			return res.redirect("/venue/listVenue");
+			return res.redirect("/venue/retrieve");
 		}
 		//	There should only be one, so this else should never occur anyway
 		else {
@@ -373,3 +386,88 @@ async function updateVenue_process(req, res) {
 		return res.status(500);
 	}
 }
+
+/**
+ * Renders the venue payment page.
+ * @param {Request}  req Express request object
+ * @param {Response} res Express response object
+ */
+async function payment_page(req, res) {
+	console.log("venuePayment page accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log("cust: " + cust);
+	console.log("perf: " + perf);
+	console.log("admin: " + admin);
+	try {
+		const content = await ModelVenue.findOne({where: { "uuid": req.params.uuid }});
+		console.log("Is content a list? "+ content);
+		if (content) {
+			return res.render('venue/payment', {
+				cust: cust,
+				perf: perf,
+				admin: admin,
+				"content": content
+			});
+		}
+		else {
+			console.error(`Failed to access venue payment page ${req.params["uuid"]}`);
+			console.error(error);
+			return res.status(410).end();
+		}
+	}
+	catch (error) {
+		console.error(`Failed to access venue payment page ${req.params["uuid"]}`);
+		console.error(error);
+		return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
+	}
+
+}
+
+/**
+ * Renders myPurchases page.
+ * @param {Request}  req Express request object
+ * @param {Response} res Express response object
+ */
+async function myPurchases_page(req, res) {
+	console.log("myPurchases page accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	try {
+		// we need req.params.uuid to find the venue that you chose to buy 
+		const contents = await ModelVenue.findAll({where: { "uuid": req.params.uuid}});
+		const data = {
+			"user_id": req.user.uuid
+		};
+		await (await contents[0].update(data)).save();
+		const venues = await ModelVenue.findAll({
+			where: {
+				"user_id": req.user.uuid
+			},
+			order : [
+				['venueName', 'ASC']
+			],
+			raw: true
+		});		
+
+		return res.render('venue/myPurchases', {
+			cust: cust,
+			perf: perf,
+			admin: admin,
+			"venues": venues
+		});
+		
+	}
+	catch (error) {
+		console.error(`Failed to access myPurchases page ${req.params["uuid"]}`);
+		console.error(error);
+		return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
+	}
+
+}
+
+

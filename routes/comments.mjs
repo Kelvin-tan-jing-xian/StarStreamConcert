@@ -4,25 +4,25 @@ import { ModelComments }    from '../data/Comments.mjs';
 const router = Router();
 export default router;
 
-
-router.get("/stream", retrieve_comments);
-router.post("/stream", create_comments);
-router.post('/updateComment/:uuid', update_comment);
-router.delete("/deleteComment/:uuid", delete_comment);
+// customer can create, update, delete own comments
+router.get("/create", create_retrieve_page);
+router.post("/create", create_process);
+router.post("/update/:uuid", update_process);
+router.delete("/delete/:uuid", delete_process);
 
 
 /**
- * Renders the stream page and Retrieve comments
+ * Renders the create page and Retrieve comments
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
-async function retrieve_comments(req, res) {
-	console.log("Stream comment page accessed");
+async function create_retrieve_page(req, res) {
+	console.log("create comment page accessed");
 	try{
 		const comment_Mod = await ModelComments.findAll({
 			attributes: ['uuid','name', 'comments', 'dateCreated']
 		});
-		return res.render('stream', {
+		return res.render('comments/create', {
 			showComments: comment_Mod,
 		});
 	}
@@ -37,7 +37,7 @@ async function retrieve_comments(req, res) {
  * @param {import('express').Request}  req Express Request handle
  * @param {import('express').Response} res Express Response handle
  */
- async function create_comments(req, res) {
+ async function create_process(req, res) {
 	console.log("Comments input received");
 
 	//	Create new comment
@@ -46,7 +46,7 @@ async function retrieve_comments(req, res) {
             "name":     req.user.name,
             "comments":    req.body.comments,
 		});
-		return res.redirect("/stream");
+		return res.redirect("/comments/create");
 	}
 	catch (error) {
 		//	Else internal server error
@@ -57,11 +57,11 @@ async function retrieve_comments(req, res) {
 }
 
 /**
- * Renders the stream page and Update Comment
+ * Renders the create page and Update Comment
  * @param {Request}  req Express request object
  * @param {Response} res Express response object
  */
- async function update_comment(req, res) {
+ async function update_process(req, res) {
 
 	try {
 		const contents = await ModelComments.findOne({where: { "uuid": req.params["uuid"] } });
@@ -71,12 +71,12 @@ async function retrieve_comments(req, res) {
 			'dateCreated': new Date(),
 		};
 		await (await contents.update(data)).save();	
-		return res.redirect(`/stream`);
+		return res.redirect(`/comments/create`);
 	}
 	catch(error) {
 		console.error(`Failed to update comment: ${req.params.uuid}`);
 		console.error(error);
-		return res.redirect(500, "/stream")
+		return res.redirect(500, "/comments/create")
 	}	
 }
 
@@ -85,7 +85,7 @@ async function retrieve_comments(req, res) {
  * @param {Request}  req Express request  object
  * @param {Response} res Express response object
  */
-async function delete_comment(req, res) {
+async function delete_process(req, res) {
 	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[0-9A-F]{4}-[0-9A-F]{12}$/i
 
 	if (!regex_uuidv4.test(req.params.uuid))
@@ -97,7 +97,7 @@ async function delete_comment(req, res) {
             if (del == 1) {    
                 console.log(`Deleting comment for uuid: ${req.params.uuid}`);
                 console.log(`Comment deleted`);
-                return res.redirect("/stream");
+                return res.redirect("/comments/create");
             }
             else {
                 console.error(`More than one entries of: ${req.params.uuid}, Total: ${del}`);

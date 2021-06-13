@@ -1,25 +1,25 @@
 
-            <h3>Update Venue</h3>
-            <form action="/venue/updateVenue/{{content.uuid}}" method="post" id="content-form"
+            <h3>Update Streams</h3>
+            <form action="/stream/update/{{content.uuid}}" method="post" id="content-form"
                 enctype="multipart/form-data">
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
-                            <label class="font-italic" for="venueName">venueName</label>
-                            <input type="text" class="form-control typeahead" name="venueName" value="{{content.venueName}}"
+                            <label class="font-italic" for="ConcertName">concertName</label>
+                            <input type="text" class="form-control typeahead" name="concertName" value="{{content.concertName}}"
                                 id="content-title" data-provide="typeahead" autocomplete="off" rows="7" required>
                         </div>
             
                         <div class="form-group mb-4">
-                            <label class="font-italic" for="venueStory">venueStory</label>
-                            <textarea class="form-control" id="venueStory" name="venueStory" required>{{content.venueStory}}</textarea>
+                            <label class="font-italic" for="concertStory">concertStory</label>
+                            <textarea class="form-control" id="concertStory" name="concertStory" required>{{content.concertStory}}</textarea>
                         </div>
                     </div>
             
                     <div class="form-group col">
-                        <label class="font-italic" for="venuePoster">venuePoster</label>
+                        <label class="font-italic" for="concertPoster">concertPoster</label>
                         <br>
-                        <input type="file" id="venuePoster" name="venuePoster" accept="image/png,image/jpeg,image/jpg,image/gif">
+                        <input type="file" id="concertPoster" name="concertPoster" accept="image/png,image/jpeg,image/jpg,image/gif">
                             {{!-- To display error message --}}
                         <div class="font-weight-bold text-danger small" id="posterErr" style="display:none"></div>
                     </div>
@@ -28,26 +28,26 @@
                 <div class="form-group">
                     <div class="row mb-2">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
-                            <label class="font-italic">venueDate</label>
-                            <input id="datepicker" width="200" name="venueDate" value="{{ content.venueDate }}" />
+                            <label class="font-italic">concertDate</label>
+                            <input id="datepicker" width="200" name="concertDate" value="{{ content.concertDate }}" />
                         </div>
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                            <label class="font-italic">venueTime</label>
+                            <label class="font-italic">concertTime</label>
                             <br>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="10am ~ 1pm" name="venueTime" checked>
+                            <input class="form-check-input" type="radio" value="10am ~ 1pm" name="concertTime" checked>
                             <label class="form-check-label">10am ~ 1pm</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="3pm ~ 6pm" name="venueTime">
+                            <input class="form-check-input" type="radio" value="3pm ~ 6pm" name="concertTime">
                             <label class="form-check-label">3pm ~ 6pm</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="7pm ~ 10pm" name="venueTime">
+                            <input class="form-check-input" type="radio" value="7pm ~ 10pm" name="concertTime">
                             <label class="form-check-label">7pm ~ 10pm</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="12pm ~ 3am" name="venueTime">
+                            <input class="form-check-input" type="radio" value="12pm ~ 3am" name="concertTime">
                             <label class="form-check-label">12pm ~ 3am</label>
                         </div>
                     </div>
@@ -56,26 +56,26 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                            <label class="font-italic">venuePrice</label>
+                            <label class="font-italic">concertPrice</label>
                             <br>
             
                             <div class="form-check form-check-inline">
                                 {{!-- radio buttons --}}
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="$2000/hr" name="venuePrice" checked>
-                                    <label class="form-check-label" for="venuePrice">$2000/hr</label>
+                                    <input class="form-check-input" type="radio" id="concertPrice" value="$40" name="concertPrice" checked>
+                                    <label class="form-check-label" for="concertPrice">$40</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="$2500/hr" name="venuePrice">
-                                    <label class="form-check-label" for="venuePrice">$2500/hr</label>
+                                    <input class="form-check-input" type="radio" id="concertPrice" value="$50" name="concertPrice">
+                                    <label class="form-check-label" for="concertPrice">$50</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="$3000/hr" name="venuePrice">
-                                    <label class="form-check-label" for="venuePrice">$3000/hr</label>
+                                    <input class="form-check-input" type="radio" id="concertPrice" value="$60" name="concertPrice">
+                                    <label class="form-check-label" for="concertPrice">$60</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="$3500/hr" name="venuePrice">
-                                    <label class="form-check-label" for="venuePrice">$3500/hr</label>
+                                    <input class="form-check-input" type="radio" id="concertPrice" value="$70" name="concertPrice">
+                                    <label class="form-check-label" for="concertPrice">$70</label>
                                 </div>
                                 <br>
                                 {{!--<div class="form-check form-check-inline">
@@ -94,7 +94,7 @@
                 <br>
             
                 <button id="btnSubmit" type="submit" class="btn btn-primary">Save</button>
-                <a id="btnCancel" class="btn btn-primary" href="/venue/listVenue">Cancel</a>
+                <a id="btnCancel" class="btn btn-primary" href="/stream/retrieve">Cancel</a>
             </form>
             
 <script>
@@ -110,7 +110,7 @@
     function preventMinusSign(myfield, e) {
         console.log('inputted');
         // prevent - from being entered
-        $("#venuePrice").keyup(function () {
+        $("#concertPrice").keyup(function () {
             $(this).val().replace(/[-]/g, "");
         });
     }

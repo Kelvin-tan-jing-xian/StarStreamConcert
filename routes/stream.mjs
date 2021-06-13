@@ -1,6 +1,7 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
-import { ModelTicket }    from '../data/Ticket.mjs';
+import { ModelStream }    from '../data/stream.mjs';
+import { ModelTicket } from '../data/ticket.mjs';
 import { UploadFile } from '../utils/multer.mjs';
 
 const router = Router();
@@ -8,15 +9,16 @@ export default router;
 
 
 router.use("/",                authorizer);	//..Applies to every route in this router
-// all routes starts with /ticket
-router.get("/CreateTickets",     CreateTickets_page);
-router.post("/CreateTickets", UploadFile.single("concertPoster"), CreateTickets_process);
-router.get("/RetrieveTickets", RetrieveTickets_page);
-router.get("/UpdateTickets/:uuid", UpdateTickets_page);
-router.post('/UpdateTickets/:uuid', UploadFile.single('concertPoster'), UpdateTickets_process);
-router.delete('/DeleteTickets/:uuid', DeleteTickets_process);
-router.get('/BuyTickets', BuyTickets_page);
-
+// all routes starts with /stream
+router.get("/create",     create_page);
+router.post("/create", UploadFile.single("concertPoster"), create_process);
+router.get("/retrieve", retrieve_page);
+router.get("/update/:uuid", update_page);
+router.post('/update/:uuid', UploadFile.single('concertPoster'), update_process);
+router.delete('/delete/:uuid', delete_process);
+router.get('/book', book_page);
+router.get("/payment/:uuid", payment_page);
+router.get("/myPurchases/:uuid", myPurchases_page);
 
 
 // This function helps in showing different nav bars
@@ -26,7 +28,7 @@ function roleResult(role){
 		var cust = false;
 		var admin = false;
 	}
-	else if (role == 'performer'){
+	else if (role == 'customer'){
 		// if user is performer, it cannot be customer
 		var cust = true;
 		var perf = false;
@@ -63,12 +65,12 @@ function authorizer(req, res, next) {
 
 
 /**
- * Renders the CreatesTickets page
+ * Renders the Create page
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
-async function CreateTickets_page(req, res) {
-	console.log("CreateTickets page accessed");
+async function create_page(req, res) {
+	console.log("create page accessed");
 	var role = roleResult(req.user.role);
 	var cust = role[0];
 	var perf = role[1];
@@ -77,7 +79,7 @@ async function CreateTickets_page(req, res) {
 	console.log("perf: " + perf);
 	console.log("admin: " + admin);
 
-	return res.render('ticket/CreateTickets', {
+	return res.render('stream/create', {
 		cust: cust,
 		perf: perf,
 		admin: admin
@@ -86,20 +88,20 @@ async function CreateTickets_page(req, res) {
 
 
 /**
- * Process the CreateTickets form body
+ * Process the create form body
  * @param {import('express').Request}  req Express Request handle
  * @param {import('express').Response} res Express Response handle
  */
-async function CreateTickets_process(req, res) {
-	console.log("CreateTickets contents received");
+async function create_process(req, res) {
+	console.log("create contents received");
 	console.log(`${req.file.path}`);
 	console.log(req.body);
 
     // Add in form validations
     //
-	//	Create new ticket, now that all the test above passed
+	//	Create new stream, now that all the test above passed
 	try {
-		const ticket = await ModelTicket.create({
+		const stream = await ModelStream.create({
             "concertName":     req.body.concertName,
 			"artistName": req.body.artistName,
             "concertStory":    req.body.concertStory,
@@ -110,24 +112,24 @@ async function CreateTickets_process(req, res) {
 			"concertVenue" : req.body.concertVenue,
 		});
 
-		flashMessage(res, 'success', 'Successfully created a ticket', 'fas fa-sign-in-alt', true);
-		return res.redirect("/ticket/RetrieveTickets");
+		flashMessage(res, 'success', 'Successfully created a stream', 'fas fa-sign-in-alt', true);
+		return res.redirect("/stream/retrieve");
 	}
 	catch (error) {
 		//	Else internal server error
-		console.error(`Failed to create a new ticket: ${req.body.concertName} `);
+		console.error(`Failed to create a new stream: ${req.body.concertName} `);
 		console.error(error);
 		return res.status(500).end();
 	}
 }
 
 /**
- * Renders the RetrieveTickets page
+ * Renders the retrieve page
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
- async function RetrieveTickets_page(req, res) {
-	console.log("RetrieveTickets page accessed");
+ async function retrieve_page(req, res) {
+	console.log("retrieve page accessed");
 	try{
 		var role = roleResult(req.user.role);
 		var cust = role[0];
@@ -136,12 +138,12 @@ async function CreateTickets_process(req, res) {
 		console.log("cust: " + cust);
 		console.log("perf: " + perf);
 		console.log("admin: " + admin);
-		const total = await ModelTicket.count();
+		const total = await ModelStream.count();
 		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1; // page number, can have 10 pages maximum
-		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 ticket per page
+		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 stream per page
 		const pageTotal = Math.floor(total / pageSize);
 	
-		const tickets = await ModelTicket.findAll({
+		const streams = await ModelStream.findAll({
 			offset: (pageIdx - 1) * pageSize,
 			limit : pageSize,
 			order : [
@@ -149,20 +151,19 @@ async function CreateTickets_process(req, res) {
 			],
 			raw: true
 		});		
-		// tickets[0].update()	//	This will crash... if raw is enabled
 
-		return res.render('ticket/RetrieveTickets', {
+		return res.render('stream/retrieve', {
 			cust: cust,
 			perf: perf,
 			admin: admin,
-			"tickets"   : tickets,
+			"streams"   : streams,
 			"pageTotal": pageTotal,
 			"pageIdx"  : pageIdx,
 			"pageSize" : pageSize
 		});
 	}	
 	catch(error){
-	console.error("Failed to retrieve list of tickets");
+	console.error("Failed to retrieve list of streams");
 	console.error(error);
 	return res.status(500).end();
 
@@ -170,12 +171,12 @@ async function CreateTickets_process(req, res) {
 }
 
 /**
- * Renders the BuyTickets page
+ * Renders the book page
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
- async function BuyTickets_page(req, res) {
-	console.log("BuyTickets page accessed");
+ async function book_page(req, res) {
+	console.log("book page accessed");
 	try{
 
 		var role = roleResult(req.user.role);
@@ -186,22 +187,22 @@ async function CreateTickets_process(req, res) {
 		console.log("perf: " + perf);
 		console.log("admin: " + admin);
 
-		const total = await ModelTicket.count();
+		const total = await ModelStream.count();
 		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1; // page number, can have 10 pages maximum
-		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 tickets per page
+		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 streams per page
 		const pageTotal = Math.floor(total / pageSize);
 
-		const tickets = await ModelTicket.findAll({
+		const streams = await ModelStream.findAll({
 			offset: (pageIdx - 1) * pageSize,
 			limit : pageSize,
 			order : [
-				['ticketName', 'ASC']
+				['concertName', 'ASC']
 			],
 			raw: true
 		});		
-		// tickets[0].update()	//	This will crash... if raw is enabled
-		return res.render('ticket/BuyTickets', {
-			"tickets"   : tickets,
+		// streams[0].update()	//	This will crash... if raw is enabled
+		return res.render('stream/book', {
+			"streams"   : streams,
 			"pageTotal": pageTotal,
 			"pageIdx"  : pageIdx,
 			"pageSize" : pageSize,
@@ -212,7 +213,7 @@ async function CreateTickets_process(req, res) {
 
 	}
 	catch(error){
-		console.error("Failed to retrieve list of tickets");
+		console.error("Failed to retrieve list of streams");
 		console.error(error);
 		return res.status(500).end();
 
@@ -220,29 +221,30 @@ async function CreateTickets_process(req, res) {
 }
 
 /**
- * Renders the ticket update page, Basically the same page as CreateTickets with
+ * Renders the stream update page, Basically the same page as create with
  * prefills and cancellation.
  * @param {Request}  req Express request  object
  * @param {Response} res Express response object
  */
- async function UpdateTickets_page(req, res) {
+ async function update_page(req, res) {
 	try {
-		const content = await ModelTicket.findOne({where: { "uuid": req.params["uuid"] }});
+		const content = await ModelStream.findOne({where: { "uuid": req.params["uuid"] }});
+		console.log("Is content a list? :" + content);
 		if (content) {
-			// render to UpdateTickets.handlebars
-			return res.render('ticket/UpdateTickets', {
+			// render to update.handlebars
+			return res.render('stream/update', {
 				"mode"   : "update",
 				"content": content
 			});
 		}
 		else {
-			console.error(`Failed to retrieve ticket ${req.params["uuid"]}`);
+			console.error(`Failed to retrieve stream ${req.params["uuid"]}`);
 			console.error(error);
 			return res.status(410).end();
 		}
 	}
 	catch (error) {
-		console.error(`Failed to retrieve ticket ${req.params["uuid"]}`);
+		console.error(`Failed to retrieve stream ${req.params["uuid"]}`);
 		console.error(error);
 		return res.status(500).end();	//	Internal server error	# Usually should not even happen !! :)
 	}
@@ -253,7 +255,7 @@ async function CreateTickets_process(req, res) {
  * @param {Request}  req Express request object
  * @param {Response} res Express response object
  */
- async function UpdateTickets_process(req, res) {
+ async function update_process(req, res) {
 
 	try {
 		//	Please verify your contents
@@ -261,23 +263,23 @@ async function CreateTickets_process(req, res) {
 			throw Error("Missing concertName");
 	}
 	catch(error) {
-		console.error(`Malformed request to update tickets ${req.params["uuid"]}`);
+		console.error(`Malformed request to update streams ${req.params["uuid"]}`);
 		console.error(req.body);
 		console.error(error);
 		return res.status(400).end();
 	}
 
 	try {
-		const contents = await ModelTicket.findAll({where: { "uuid": req.params["uuid"] } });
+		const contents = await ModelStream.findAll({where: { "uuid": req.params["uuid"] } });
 
 		//	Whether this update request need to swap files?
 		const replaceFile = (req.file)? true : false;
 
 		switch (contents.length) {
 			// /feedback/RetrieveFeedback
-			case 0      : return res.redirect(410, "/ticket/RetrieveTickets")
+			case 0      : return res.redirect(410, "/stream/retrieve")
 			case 1      : break;
-			     default: return res.status(409, "/ticket/RetrieveTickets")
+			     default: return res.status(409, "/stream/retrieve")
 		}
 		/** @type {string} */
 		req.body["concertDate"] = Array.isArray(req.body["concertDate"])? req.body["concertDate"].join(',') : req.body["concertDate"];
@@ -315,11 +317,11 @@ async function CreateTickets_process(req, res) {
 		// 	remove_file(previous_file);
 		// }
 		
-		flashMessage(res, 'success', "Ticket updated", 'fas fa-sign-in-alt', true);
-		return res.redirect(`/ticket/UpdateTickets/${req.params.uuid}`);
+		flashMessage(res, 'success', "stream updated", 'fas fa-sign-in-alt', true);
+		return res.redirect(`/stream/update/${req.params.uuid}`);
 	}
 	catch(error) {
-		console.error(`Failed to update ticket ${req.params.uuid}`);
+		console.error(`Failed to update stream ${req.params.uuid}`);
 		console.error(error);
 
 		//	Clean up and remove file if error
@@ -330,16 +332,16 @@ async function CreateTickets_process(req, res) {
 		
 		flashMessage(res, "error", "The server met an unexpected error", 'fas fa-sign-in-alt', true);
 
-		return res.redirect(500, "/ticket/RetrieveTickets")
+		return res.redirect(500, "/stream/retrieve")
 	}	
 }
 
 /**
- * Handles the deletion of tickets.
+ * Handles the deletion of streams.
  * @param {Request}  req Express request  object
  * @param {Response} res Express response object
  */
- async function DeleteTickets_process(req, res) {
+ async function delete_process(req, res) {
 
 	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
 	// if uuid doesnt match with uuidv4, give error
@@ -351,23 +353,23 @@ async function CreateTickets_process(req, res) {
 	// const user = req.user;
 
 	try {
-		const targets = await ModelTicket.findAll({where: { "uuid": req.params.uuid }});
+		const targets = await ModelStream.findAll({where: { "uuid": req.params.uuid }});
 
 		switch(targets.length) {
 			case 0      : return res.status(409);
-			case 1      : console.log("Found 1 eligible ticket to be deleted"); break;
+			case 1      : console.log("Found 1 eligible stream to be deleted"); break;
 			     default: return res.status(409);
 		}
-		const affected = await ModelTicket.destroy({where: { "uuid": req.params.uuid}});
+		const affected = await ModelStream.destroy({where: { "uuid": req.params.uuid}});
 
 		if (affected == 1) {
 			//	Delete all files associated
 			// targets.forEach((target) => { 
-			// 	remove_file(target.ticketPoster);
+			// 	remove_file(target.streamPoster);
 			// });
 
-			console.log(`Deleted ticket: ${req.params.uuid}`);
-			return res.redirect("/ticket/RetrieveTickets");
+			console.log(`Deleted stream: ${req.params.uuid}`);
+			return res.redirect("/stream/retrieve");
 		}
 		//	There should only be one, so this else should never occur anyway
 		else {
@@ -376,8 +378,99 @@ async function CreateTickets_process(req, res) {
 		}
 	}
 	catch (error) {
-		console.error(`Failed to delete ticket: ${req.params.uuid}`);
+		console.error(`Failed to delete stream: ${req.params.uuid}`);
 		console.error(error);
 		return res.status(500);
 	}
+}
+/**
+ * Renders the stream payment page
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function payment_page(req, res) {
+	console.log("stream payment page accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log("cust: " + cust);
+	console.log("perf: " + perf);
+	console.log("admin: " + admin);
+	try {
+		const content = await ModelStream.findOne({where : {"uuid": req.params.uuid}});
+		if (content) {
+			return res.render('stream/payment', {
+				cust: cust,
+				perf: perf,
+				admin: admin,
+				"content": content
+	});
+
+		} 
+		else 
+		{
+			console.error(`Failed to access stream payment page ${req.params.uuid}`);
+			console.error(error);
+			return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
+
+		}
+	} 
+	catch (error) {
+		console.error(`Failed to access stream payment page ${req.params["uuid"]}`);
+		console.error(error);
+		return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
+
+	}
+}
+
+/**
+ * Renders myPurchases page.
+ * @param {Request}  req Express request object
+ * @param {Response} res Express response object
+ */
+async function myPurchases_page(req, res) {
+	console.log("myPurchases page accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	try {
+		// we need req.params.uuid to find the stream that you chose to buy 
+		const ticket = await ModelTicket.create({
+			// how to access stream uuid from ModelStream?
+			"stream_id": req.stream.uuid,
+			"user_id": req.user.uuid,
+			"concertName": req.body.concertName,
+			"artistName": req.body.artistName,
+			"concertDate": req.body.concertDate,
+			"concertTime": req.body.concertTime,
+			"concertPrice": req.body.concertPrice
+		});
+		flashMessage(res, 'success', 'Successfully created a ticket', 'fas fa-sign-in-alt', true);
+
+		const tickets = await ModelTicket.findAll({
+			where: {
+				"user_id": req.user.uuid
+			},
+			order : [
+				['concertName', 'ASC']
+			],
+			raw: true
+		});		
+
+		return res.render('stream/myPurchases', {
+			cust: cust,
+			perf: perf,
+			admin: admin,
+			"tickets": tickets
+		});
+		
+	}
+	catch (error) {
+		console.error(`Failed to access myPurchases page ${req.params["uuid"]}`);
+		console.error(error);
+		return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
+	}
+
 }
