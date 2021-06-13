@@ -26,6 +26,7 @@ export class ModelVenue extends Model {
 	static initialize(database) {
 		ModelVenue.init({
 			"uuid"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
+			"user_id"    : { type: DataTypes.CHAR(36),    defaultValue: "", allowNull: false},
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"dateUpdated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"venueName"  : { type: DataTypes.STRING(64),  allowNull: false },

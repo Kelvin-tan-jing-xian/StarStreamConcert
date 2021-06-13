@@ -31,12 +31,11 @@ export class ModelFeedback extends Model {
 			"dateUpdated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"name": {type: DataTypes.STRING(64), defaultValue:"IDK", allowNull: false},
 			"Rating"  : { type: DataTypes.STRING(64),  allowNull: false },
-			"feedbackResponse" : { type: DataTypes.STRING(128), allowNull: false },
+			"feedbackGiven" : { type: DataTypes.STRING(128), allowNull: false },
 			"feedbackType" : {  type: DataTypes.STRING(64), allowNull: false},
 			"reply": { type: DataTypes.STRING(64), defaultValue: "", allowNull: false},
 											// If u change the ENUM(), need to drop and recreate
 			"role"       : { type: DataTypes.ENUM(UserRole.Customer, UserRole.Performer), defaultValue: UserRole.Customer, allowNull: false },
-			"verified"   : { type: DataTypes.BOOLEAN,     allowNull: false, defaultValue: false }
 		}, {
 			"sequelize": database,
 			"modelName": "Feedbacks",
@@ -60,5 +59,4 @@ export class ModelFeedback extends Model {
 
 	get role()  { return this.getDataValue("role"); }
 	get uuid()  { return this.getDataValue("uuid"); }
-	get feedbackResponse() { return this.getDataValue("feedbackResponse"); }
 }

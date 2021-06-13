@@ -1,0 +1,34 @@
+<!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
+<div class="row">
+    {{#if tickets}}
+
+    <div class="card card-body">
+        <h3 class="text-primary">My Ticket Purchases</h3>
+        {{#each tickets}}
+        <div class="card border-primary mb-2 w-100 mx-auto">
+            <div class="card-header">
+                <h5 class="card-title">{{concertName}}</h5>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-8">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6 col-lg-3">
+                            <p class="font-italic">Concert Time</p>
+                            <p class="text-info">{{concertTime}}</p>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <p class="font-italic">Concert Price</p>
+                            <p class="text-info">{{concertPrice}}</p>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-2">
+                            <p class="font-italic">Concert Date</p>
+                            <p class="text-info">{{concertDate }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+        {{else}}
+        <h3>You have not purchased any tickets</h3>
+        {{/if}}

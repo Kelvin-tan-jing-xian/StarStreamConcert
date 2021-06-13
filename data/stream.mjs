@@ -1,13 +1,22 @@
 import ORM from 'sequelize'
 const { Sequelize, DataTypes, Model } = ORM;
 
+/**
+ * For enumeration use
+**/
+export class UserRole {
+	static get Admin() { return "admin"; }
+	static get User()  { return "user";  }
+	static get Customer() { return "customer";}
+	static get Performer() { return "performer";}
+}
 
 /**
  * A database entity model that represents contents in the database.
  * This model is specifically designed for streams
  * @see "https://sequelize.org/master/manual/model-basics.html#taking-advantage-of-models-being-classes"
 **/
-export class ModelTicket extends Model {
+export class ModelStream extends Model {
 	/**
 	 * Initializer of the model
 	 * @see Model.init
@@ -15,26 +24,25 @@ export class ModelTicket extends Model {
 	 * @param {Sequelize} database The configured Sequelize handle
 	**/
 	static initialize(database) {
-		ModelTicket.init({
+		ModelStream.init({
 			"uuid"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
-            "stream_id"  : { type: DataTypes.CHAR(36)},
-            "user_id"    : { type: DataTypes.CHAR(36)},
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"dateUpdated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"concertName"       : { type: DataTypes.STRING(64),  allowNull: false },
 			"artistName" : { type: DataTypes.STRING(64), allowNull: false },
+			"concertStory": {type: DataTypes.STRING(64), allowNull: false },
 			"concertDate"      : { type: DataTypes.DATE(), allowNull: false },
 			"concertTime"   : { type: DataTypes.STRING(64),  allowNull: false },
 			"concertPrice":   { type: DataTypes.STRING(64), allowNull: false },
 			"concertPoster": { type: DataTypes.STRING(64), allowNull: false},
 			"concertVenue": { type: DataTypes.STRING(64), allowNull: false},
-			"role"       : { type: DataTypes.ENUM(UserRole.User,UserRole.Performer, UserRole.Admin), defaultValue: UserRole.Performer, allowNull: false },
+			"role"       : { type: DataTypes.ENUM(UserRole.Customer, UserRole.Performer, UserRole.Admin), defaultValue: UserRole.Performer, allowNull: false },
 			"verified"   : { type: DataTypes.BOOLEAN,     allowNull: false, defaultValue: false }
 		}, {
 			"sequelize": database,
-			"modelName": "Tickets",
+			"modelName": "Streams",
 			"hooks"    : {
-				"afterUpdate": ModelTicket._auto_update_timestamp
+				"afterUpdate": ModelStream._auto_update_timestamp
 			}
 		});
 	}
@@ -51,4 +59,14 @@ export class ModelTicket extends Model {
 		instance.dateUpdated = Sequelize.literal('CURRENT_TIMESTAMP');
 	}
 
+	get role()  { return this.getDataValue("role"); }
+	get uuid()  { return this.getDataValue("uuid"); }
+	get concertDate() { return this.getDataValue("concertDate"); }
+	get concertName() {return this.getDataValue("concertName"); }
+	get artistName() {return this.getDataValue("artistName"); }
+	get concertStory() {return this.getDataValue("concertStory"); }
+	get concertTime() {return this.getDataValue("concertTime"); }
+	get concertPrice() {return this.getDataValue('concertPrice'); }
+	get concertPoster() {return this.getDataValue("concertPoster")}
+	get concertVenue() {return this.getDataValue("concertVenue"); }
 }

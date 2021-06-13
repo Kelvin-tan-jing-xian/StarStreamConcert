@@ -37,6 +37,7 @@ export class ModelUser extends Model {
 			
 		}, {
 			"sequelize": database,
+			// can be "user"
 			"modelName": "Users",
 			"hooks"    : {
 				"afterUpdate": ModelUser._auto_update_timestamp

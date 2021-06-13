@@ -1,18 +1,21 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
+// must be caps
 import { ModelFeedback }    from '../data/Feedback.mjs';
+// must be caps
+import { UserRole, ModelUser } from '../data/User.mjs';
 
 const router = Router();
 export default router;
 
 
 
-router.get("/addFeedback",     addFeedback_page);
-router.post("/addFeedback" , addFeedback_process);
-router.get("/listFeedback", listFeedback_page);
-router.get("/updateFeedback/:uuid", updateFeedback_page);
-router.post('/updateFeedback/:uuid', updateFeedback_process);
-router.delete('/deleteFeedback/:uuid', deleteFeedback_process);
+router.get("/create",     create_page);
+router.post("/create" , create_process);
+router.get("/retrieve", ensure_admin, retrieve_page);
+router.get("/update/:uuid", ensure_admin, update_page);
+router.post('/update/:uuid', ensure_admin, update_process);
+router.delete('/delete/:uuid', ensure_admin, delete_process);
 
 // This function helps in showing different nav bars
 function roleResult(role){
@@ -36,13 +39,29 @@ function roleResult(role){
 
 	return [cust, perf, admin];
 }
+/**
+ * Ensure Logged in user is admin
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
+ */
+async function ensure_admin(req, res, next) {
+	/** @type {ModelUser} */
+	const user = req.user;
+	if (user.role != UserRole.Admin) {
+		return res.sendStatus(403).end();
+	}
+	else {
+		return next();
+	}
+}
 
 /**
- * Renders the addFeedback page
+ * Renders the create page
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
-async function addFeedback_page(req, res) {
+async function create_page(req, res) {
 	console.log("feedback page accessed");
 	var role = roleResult(req.user.role);
 	var cust = role[0];
@@ -52,7 +71,7 @@ async function addFeedback_page(req, res) {
 	console.log("perf: " + perf);
 	console.log("admin: " + admin);
 
-	return res.render('feedback/addFeedback', {
+	return res.render('feedback/create', {
 		cust: cust,
 		perf: perf,
 		admin: admin
@@ -61,11 +80,11 @@ async function addFeedback_page(req, res) {
 
 
 /**
- * Process the addFeedback form body
+ * Process the create form body
  * @param {import('express').Request}  req Express Request handle
  * @param {import('express').Response} res Express Response handle
  */
- async function addFeedback_process(req, res) {
+ async function create_process(req, res) {
 	console.log("feedbackPage contents received");
 	console.log(req.body);
 
@@ -76,31 +95,31 @@ async function addFeedback_page(req, res) {
 		console.log('Im inside the try block!');
 	
 		const feedback = await ModelFeedback.create({
-			"name": req.body.name,
-      		"Rating":     req.body.Rating,
+			"name": req.user.name,
+      		"Rating":     req.body.rating,
           	"feedbackType":    req.body.feedbackType,
-        	"feedbackResponse":  req.body.feedbackResponse	
-			
+        	"feedbackGiven":  req.body.feedbackGiven,	
+			"role": req.user.role
 		});
 
 		flashMessage(res, 'success', 'Successfully created a feedback', 'fas fa-sign-in-alt', true);
-		return res.redirect("/feedback/listFeedback"); // don't use render
+		return res.redirect("/home"); // don't use render
 		}
 		catch (error) {
 		//	Else internal server error
-		console.error(`Failed to create a new feedback: ${req.body.Rating} `);
+		console.error(`Failed to create a new feedback: ${req.body.rating} `);
 		console.error(error);
 		return res.status(500).end();
 	}
 }
 
 /**
- * Renders the listFeedback page
+ * Renders the retrieve page
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
-async function listFeedback_page(req, res) {
-	console.log("listFeedback page accessed");
+async function retrieve_page(req, res) {
+	console.log("retrieve page accessed");
 	try{
 		const total = await ModelFeedback.count();
 		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1;
@@ -111,12 +130,12 @@ async function listFeedback_page(req, res) {
 			offset: (pageIdx - 1) * pageSize,
 			limit : pageSize,
 			order : [
-				['Rating', 'ASC']
+				['rating', 'ASC']
 			],
 			raw: true
 		});		
 		// venues[0].update()	//	This will crash... if raw is enabled
-		return res.render('feedback/listFeedback', {
+		return res.render('feedback/retrieve', {
 			"feedbacks"   : feedbacks,
 			"pageTotal": pageTotal,
 			"pageIdx"  : pageIdx,
@@ -133,17 +152,17 @@ async function listFeedback_page(req, res) {
 }
 
 /**
- * Renders the feedback update page, Basically the same page as addFeedback with
+ * Renders the feedback update page, Basically the same page as create with
  * prefills and cancellation.
  * @param {Request}  req Express request  object
  * @param {Response} res Express response object
  */
- async function updateFeedback_page(req, res) {
+ async function update_page(req, res) {
 	try {
 		const content = await ModelFeedback.findOne({where: { "uuid": req.params["uuid"] }});
 		if (content) {
-			// render to updateVenue.handlebars
-			return res.render('feedback/updateFeedback', {
+			// render to update.handlebars
+			return res.render('feedback/update', {
 				"mode"   : "update",
 				"content": content
 			});
@@ -166,12 +185,12 @@ async function listFeedback_page(req, res) {
  * @param {Request}  req Express request object
  * @param {Response} res Express response object
  */
-async function updateFeedback_process(req, res) {
+async function update_process(req, res) {
 
 	try {
 		//	Please verify your contents
-		if (!req.body["Rating"])
-			throw Error("Missing Rating");
+		if (!req.body["rating"])
+			throw Error("Missing rating");
 	}
 	catch(error) {
 		console.error(`Malformed request to update feedback ${req.params["uuid"]}`);
@@ -186,9 +205,9 @@ async function updateFeedback_process(req, res) {
 
 
 		switch (contents.length) {
-			case 0      : return res.redirect(410, "/feedback/listFeedback")
+			case 0      : return res.redirect(410, "/feedback/retrieve")
 			case 1      : break;
-			     default: return res.status(409, "/feedback/listFeedback")
+			     default: return res.status(409, "/feedback/retrieve")
 		}
 		
 		/** @type {string} */
@@ -196,8 +215,8 @@ async function updateFeedback_process(req, res) {
 		
 		
 		const data          = {
-			"Rating"         : req.body.Rating,
-			"feedbackResponse"         : req.body.feedbackResponse,
+			"rating"         : req.body.rating,
+			"feedbackGiven"         : req.body.feedbackGiven,
 			"feedbackType"      : req.body.feedbackType,
 			// "reply": req.body.reply
 
@@ -207,7 +226,7 @@ async function updateFeedback_process(req, res) {
 	
 		
 		flashMessage(res, 'success', "Feedback updated", 'fas fa-sign-in-alt', true);
-		return res.redirect(`/feedback/updateFeedback/${req.params.uuid}`);
+		return res.redirect(`/feedback/update/${req.params.uuid}`);
 	}
 	catch(error) {
 		console.error(`Failed to update feedback ${req.params.uuid}`);
@@ -216,7 +235,7 @@ async function updateFeedback_process(req, res) {
 		
 		flashMessage(res, "error", "The server met an unexpected error", 'fas fa-sign-in-alt', true);
 
-		return res.redirect(500, "/feedback/listFeedback")
+		return res.redirect(500, "/feedback/retrieve")
 	}	
 }
 
@@ -225,7 +244,7 @@ async function updateFeedback_process(req, res) {
  * @param {Request}  req Express request  object
  * @param {Response} res Express response object
  */
- async function deleteFeedback_process(req, res) {
+ async function delete_process(req, res) {
 
 	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
 
@@ -254,7 +273,7 @@ async function updateFeedback_process(req, res) {
 			// });
 
 			console.log(`Deleted feedback: ${req.params.uuid}`);
-			return res.redirect("/feedback/listFeedback");
+			return res.redirect("/feedback/retrieve");
 		}
 		//	There should only be one, so this else should never occur anyway
 		else {

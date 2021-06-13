@@ -3,6 +3,8 @@ import { flashMessage } from '../utils/flashmsg.mjs';
 import { ModelUser }    from '../data/User.mjs';
 import Hash             from 'hash.js';
 import Passport         from 'passport';
+import ORM   from 'sequelize';
+const { Op } = ORM;
 
 const router = Router();
 export default router;
@@ -22,6 +24,35 @@ router.post("/login",    login_process);
 router.get("/register",  register_page);
 router.post("/register", register_process);
 router.get("/logout",    logout_process);
+router.get("/retrieve", retrieve_page);
+router.get("/retrieve-data", retrieve_data);
+
+// This function helps in showing different nav bars
+function roleResult(role){
+	if (role == 'performer') { // if user is performer, it cannot be customer
+		var perf = true;
+		var cust = false;
+		var admin = false;
+	}
+	else if (role == 'customer'){
+		// if user is performer, it cannot be customer
+		var cust = true;
+		var perf = false;
+		var admin = false;
+	}
+	else{
+		var cust = false;		
+		var perf = false;
+		var admin = true;
+
+	}
+
+	return [cust, perf, admin];
+}
+
+
+
+
 
 /**
  * Renders the login page
@@ -156,4 +187,39 @@ async function register_process(req, res) {
 async function logout_process(req, res) {
 	req.logout();
 	return res.redirect("/index");
+}
+
+/**
+ * Draw Bootstrap table
+ * @param {import('express').Request}  req 
+ * @param {import('express').Response} res 
+ */
+async function retrieve_page(req, res) {
+	return res.render("auth/retrieve");
+}
+
+/**
+ * Provides bootstrap table with data
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+async function retrieve_data(req, res) {
+	console.log("retrieved data");
+	try{
+
+
+		const users = await ModelUser.findAll({
+			raw: true
+		});		
+		return res.json({
+			"total": users.length,
+			"rows":  users
+		});
+	}
+	catch(error){
+		console.error("Failed to retrieve all users");
+		console.error(error);
+		return res.status(500).end();
+
+	}
 }
