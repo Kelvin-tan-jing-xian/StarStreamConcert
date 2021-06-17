@@ -26,9 +26,11 @@ export class ModelComments extends Model {
 	static initialize(database) {
 		ModelComments.init({
 			"uuid"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
+			"user_id"   : { type: DataTypes.CHAR(36), 	  allowNull: false},
             "name"       : { type: DataTypes.STRING(64),  allowNull: false },
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"comments"   : { type: DataTypes.STRING(500), allowNull: false },
+			"validUser"	 : { type: DataTypes.BOOLEAN,    allowNull: false },
 		}, {
 			"sequelize": database,
 			"modelName": "Comments",
@@ -51,6 +53,7 @@ export class ModelComments extends Model {
 	}
 
 	get uuid()  { return this.getDataValue("uuid"); }
+	get user_id()  { return this.getDataValue("user_id"); }
     get name()  { return this.getDataValue("name"); }
     get dateCreated() { return this.getDataValue("dateCreated"); }
 	get comments() { return this.getDataValue("comments"); }

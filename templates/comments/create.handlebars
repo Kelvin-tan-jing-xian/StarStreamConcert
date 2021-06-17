@@ -23,7 +23,6 @@
                         <button class="btn btn-primary" type="submit">Comment</button>
                     </div>
                 </form>
-                {{#if showComments}}
                     {{#each showComments}}
                         <div class="commented-section mt-2">
                             <div class="d-flex justify-content-between flex-row align-items-center commented-user mb-3">
@@ -31,18 +30,20 @@
                                     <h5 class="mr-2 mb-0">{{name}}</h5>
                                     <span class="mt-0 ml-0 text-muted" style="font-size: 13px;">{{ dateCreated }}</span>
                                 </div>
-                                <div class="dropdown">
-                                    <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i style='font-size:15px' class='fas text-muted'>&#xf142;</i>
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <button type="button" class="dropdown-item" data-toggle="collapse" data-target="#i"  >Edit</button>
-                                        {{!-- ?_method=DELETE is needed --}}
-                                        <form method="post" action="/comments/delete/{{uuid}}?_method=DELETE"> 
-                                            <a class="dropdown-item" href="javascript:;" onclick="if (confirm('Confirm delete?')) parentNode.submit();" data-title="Confirm delete?">Delete</a>
-                                        </form>
+                                {{#if validUser}}
+                                    <div class="dropdown">
+                                        <button class="btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i style='font-size:15px' class='fas text-muted'>&#xf142;</i>
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <button type="button" class="dropdown-item" data-toggle="collapse" data-target="#i"  >Edit</button>
+                                            {{!-- ?_method=DELETE is needed --}}
+                                            <form method="post" action="/comments/delete/{{uuid}}?_method=DELETE"> 
+                                                <a class="dropdown-item" href="javascript:;" onclick="if (confirm('Confirm delete?')) parentNode.submit();" data-title="Confirm delete?">Delete</a>
+                                            </form>
+                                        </div>
                                     </div>
-                                </div>
+                                {{/if}}
                             </div>
 
                             <div class="comment-text-sm">
@@ -61,7 +62,6 @@
                             <hr>
                         </div>
                     {{/each}}
-                {{/if}}
             </div>
         </div>
     </div>

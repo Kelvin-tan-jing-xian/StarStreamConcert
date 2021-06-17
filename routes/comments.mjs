@@ -1,6 +1,8 @@
 import { Router }       from 'express';
 import { ModelComments }    from '../data/Comments.mjs';
+import ORM   from 'sequelize';
 
+const { Op } = ORM;
 const router = Router();
 export default router;
 
@@ -20,8 +22,33 @@ async function create_retrieve_page(req, res) {
 	console.log("create comment page accessed");
 	try{
 		const comment_Mod = await ModelComments.findAll({
-			attributes: ['uuid','name', 'comments', 'dateCreated']
+			attributes: ['uuid','name', 'comments', 'dateCreated', 'user_id', "validUser"]
 		});
+		if (req.user.role == "admin" || req.user.role == "performer" ) {
+			const change = await ModelComments.update({ validUser: true }, {
+				where: {
+				  uuid: {[Op.not]: null,}
+				}
+			});
+		}
+		else {
+			for (var i = 0; i < comment_Mod.length; i++) {
+				if (comment_Mod[i].user_id == req.user.uuid) {
+					const change = await ModelComments.update({ validUser: true }, {
+						where: {
+					  	uuid: comment_Mod[i].uuid
+						}
+				  	});
+				}
+				else{
+					const change = await ModelComments.update({ validUser: false }, {
+						where: {
+						  uuid: comment_Mod[i].uuid
+						}
+					  });
+				}
+			};
+		} 
 		return res.render('comments/create', {
 			showComments: comment_Mod,
 		});
@@ -43,8 +70,10 @@ async function create_retrieve_page(req, res) {
 	//	Create new comment
 	try {
 		const comments = await ModelComments.create({
-            "name":     req.user.name,
-            "comments":    req.body.comments,
+            "name"		:  req.user.name,
+            "comments"	:  req.body.comments,
+			"user_id"  	:  req.user.uuid,
+			"validUser" :  true,
 		});
 		return res.redirect("/comments/create");
 	}
