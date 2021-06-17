@@ -1,3 +1,51 @@
-<h1>This is performer home page</h1>
-<h1>Showcase your talents with no regrets!</h1>
-<h2>Gonna do a search venue function here</h2>
+<section id="search" class="search-wrap">
+    <h1>Showcase your talents with no regrets!</h1>
+
+    <h1>Search for your preferred venue!</h1>
+    <form action="/venue/search" class="search-form">
+        <i class="fas fa-search"></i>
+        <input type="search" name="term" placeholder="star theatre, star gallery etc..." id="">
+        <input type="submit" class="btn btn-primary" value="Search">
+    </form>
+    <h1>Click below to view your venue purchases</h1>
+    <a href="venue/viewMyPurchases">My Venue Purchases</a>
+</section>
+
+<style>
+    /* Home Search */
+    .search-wrap {
+    background: url('../img/showcase.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    width: 100%;
+    padding: 1.3rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .search-wrap h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 1.5rem;
+    text-align: center;
+    }
+
+
+    .search-form input[type='submit']:hover {
+        color:blue;
+    }
+
+    .search-form {
+    }
+    /* Everything in the search form */
+    .search-form i {
+    color: #333;
+    }
+
+
+    input[type="search"] {
+        flex-basis: 600px;
+    }
+</style>

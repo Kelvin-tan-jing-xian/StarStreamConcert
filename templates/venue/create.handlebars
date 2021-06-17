@@ -38,7 +38,7 @@
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
                         <label class="font-italic">Venue Date</label>
                         <br>
-                        <input id="datepicker" width="200" name="venueDate" required>
+                        <input id="datepicker" width="200" name="venueDate" pattern="\d{1,4}-\d{1,2}-\d{1,2}" placeholder="yyyy-mm-dd"  required >
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="font-italic">venueTime</label>
@@ -110,7 +110,7 @@
 
             </div>
             <br>
-            <button type="submit" onclick="validateDate(form)" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>
 </div>
@@ -118,25 +118,11 @@
 <script>
     var dateToday = new Date();
     $('#datepicker').datepicker({
-        format: 'yyyy/mm/dd',
+        format: 'yyyy-mm-dd',
         uiLibrary: 'bootstrap4',
         minDate: dateToday
     });
 
-    // Validate date field format 
-    function validateDate(form) {
-        // regular expression to match required date format
-        re = /^\d{4}\/\d{1,2}\/\d{1,2}$/;
-
-        if (form.venueDate.value != '' && !form.venueDate.value.match(re)) {
-            alert("Invalid date format: " + form.venueDate.value);
-            form.venueDate.focus();
-            return false;
-        }
-
-        alert("All input fields have been validated!");
-        return true;
-    }
 
     function fileValidation() {
         var fileInput = document.getElementById('file');

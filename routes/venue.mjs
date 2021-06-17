@@ -5,7 +5,9 @@ import { ModelVenue }    from '../data/Venue.mjs';
 // must be caps
 import { UserRole, ModelUser } from '../data/User.mjs';
 import { UploadFile } from '../utils/multer.mjs';
-
+import FileSys from 'fs';
+import ORM   from 'sequelize';
+const { Op } = ORM;
 const router = Router();
 export default router;
 
@@ -23,6 +25,31 @@ router.delete('/delete/:uuid', ensure_admin, delete_process);
 router.get('/book', book_page);
 router.get("/payment/:uuid", payment_page);
 router.get("/myPurchases/:uuid", myPurchases_page);
+router.get("/viewMyPurchases", viewMyPurchases_page);
+router.get("/search", (req, res) => {
+	try {
+		var role = roleResult(req.user.role);
+		var cust = role[0];
+		var perf = role[1];
+		var admin = role[2];
+		console.log(cust);
+		console.log(perf);
+		console.log(admin);
+		const { term } = req.query;
+		ModelVenue.findAll({ where: { "venueName" : { [Op.like]: term }}})
+		.then(venues => res.render('venue/book',{
+			venues,
+			cust: cust,
+			perf: perf,
+			admin: admin
+
+		}));
+
+	} 
+	catch (error) {
+		console.error(error);
+	}
+});
 // This function helps in showing different nav bars
 function roleResult(role){
 	if (role == 'performer') { // if user is performer, it cannot be customer
@@ -118,6 +145,20 @@ async function create_page(req, res) {
     //
 	//	Create new venue, now that all the test above passed
 	try {
+		if (!req.body.venueName) {
+			throw Error("Missing venueName");
+		}
+		if (!req.body.venueStory) {
+			throw Error("Missing venueStory");
+		}
+		if (!req.body.venueDate) {
+			throw Error("Missing venueDate");
+		}
+		// this works
+		if (!req.body.venuePoster) {
+			throw Error("Missing venuePoster");
+		}
+
 		const venue = await ModelVenue.create({
             "venueName":     req.body.venueName,
             "venueStory":    req.body.venueStory,
@@ -234,11 +275,21 @@ async function book_page(req, res) {
  */
  async function update_page(req, res) {
 	try {
+		var role = roleResult(req.user.role);
+		var cust = role[0];
+		var perf = role[1];
+		var admin = role[2];
+		console.log("cust: " + cust);
+		console.log("perf: " + perf);
+		console.log("admin: " + admin);
+
 		const content = await ModelVenue.findOne({where: { "uuid": req.params.uuid }});
 		if (content) {
 			// render to update.handlebars
 			return res.render('venue/update', {
-				"mode"   : "update",
+				cust: cust,
+				perf:perf,
+				admin: admin,
 				"content": content
 			});
 		}
@@ -261,64 +312,38 @@ async function book_page(req, res) {
  * @param {Response} res Express response object
  */
 async function update_process(req, res) {
-
 	try {
-		//	Please verify your contents
-		if (!req.body.venueName)
+		if (!req.body.venueName) {
 			throw Error("Missing venueName");
-	}
-	catch(error) {
-		console.error(`Malformed request to update venue ${req.params.uuid}`);
-		console.error(req.body);
-		console.error(error);
-		return res.status(400).end();
-	}
-
-	try {
+		}
+		if (!req.body.venueStory) {
+			throw Error("Missing venueStory");
+		}
+		if (!req.body.venueDate) {
+			throw Error("Missing venueDate");
+		}
+		// this works
+		if (!req.body.venuePoster) {
+			throw Error("Missing venuePoster");
+		}
 		const contents = await ModelVenue.findAll({where: { "uuid": req.params.uuid } });
 
-		//	Whether this update request need to swap files?
-		const replaceFile = (req.file)? true : false;
-
-		switch (contents.length) {
-				// The HyperText Transfer Protocol (HTTP) 410 Gone client error response code indicates that access to 
-				// the target resource is no longer available at the origin server and that this condition is likely to 
-				// be permanent
-			case 0      : return res.redirect(410, "/venue/retrieve")
-			case 1      : break;
-			//The HTTP 409 Conflict response status code indicates a request conflict with current state of the target resource.
-			default     : return res.status(409, "/venue/retrieve")
-		}
-		/** @type {string} */
-		req.body.venueDate = Array.isArray(req.body["venueDate"])? req.body["venueDate"].join(',') : req.body["venueDate"];
-		/** @type {string} */
-		req.body.venueTime = Array.isArray(req.body["venueTime"])? req.body["venueTime"].join(',') : req.body["venueTime"];
-		
-		//	Save previous file path...
-		const previous_file = contents[0].venuePoster;
-		const data          = {
-			"venueName"         : req.body.venueName,
-			"venueStory"         : req.body.venueStory,
-			"venueDate"      : req.body.venueDate,
-			"venueTime"      : req.body.venueTime,
+		const data = {
+			"venueName": req.body.venueName,
+			"venueStory": req.body.venueStory,
+			"venueDate": req.body.venueDate,
+			"venueTime": req.body.venueTime,
 			"venuePrice": req.body.venuePrice,
 			"venuePoster":req.file.path
 		};
 
-		//	Assign new file if necessary
-		// if (replaceFile) {
-		// 	data["venuePoster"] = `${venuePoster}/${req.file.filename}`;
-		// }
 		if (req.body.venuePoster) {
 			data["venuePoster"] = req.body.venuePoster;
+
 		}
 		
 		await (await contents[0].update(data)).save();
 
-		//	Remove old file when success and replacing file
-		// if (replaceFile) {
-		// 	remove_file(previous_file);
-		// }
 		
 		flashMessage(res, 'success', "Venue updated", 'fas fa-sign-in-alt', true);
 		return res.redirect(`/venue/update/${req.params.uuid}`);
@@ -444,6 +469,7 @@ async function myPurchases_page(req, res) {
 			"user_id": req.user.uuid
 		};
 		await (await contents[0].update(data)).save();
+
 		const venues = await ModelVenue.findAll({
 			where: {
 				"user_id": req.user.uuid
@@ -470,4 +496,33 @@ async function myPurchases_page(req, res) {
 
 }
 
+async function viewMyPurchases_page(req, res){
+	console.log("myPurchases page accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	try {
+		const venues = await ModelVenue.findAll({
+		where: { 
+			"user_id" : req.user.uuid,
+		},
+		raw: true
+
+		});
+		return res.render("venue/myPurchases", {
+			cust: cust,
+			perf: perf,
+			admin: admin,
+			"venues": venues
+		});
+
+	} 
+	catch (error) {
+		console.error(`Failed to access myPurchases page ${req.user["uuid"]}`);
+		console.error(error);
+		return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
+
+	}
+}
 

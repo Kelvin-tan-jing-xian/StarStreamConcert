@@ -41,10 +41,14 @@ export const UploadProductImage = Multer({ dest:   `${Path}/product`, fileFilter
 **/
 export async function DeleteFile(...files) {
 	for (let file of files) {
-		if (FileSys.existsSync(file.destination))
+		if (FileSys.existsSync(file.destination)){
 			return FileSys.unlinkSync(file.destination);
-		else
+
+		}
+		else {
 			console.warn(`Attempting to delete non-existing file(s) ${file}`);
+
+		}
 	}
 }
 

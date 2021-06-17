@@ -5,19 +5,39 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
-                            <label class="font-italic" for="venueName">venueName</label>
-                            <input type="text" class="form-control typeahead" name="venueName" value="{{content.venueName}}"
-                                id="content-title" data-provide="typeahead" autocomplete="off" rows="7" required>
+                            <label class="font-italic" for="venueName">Venue Name</label>
+                            <br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="Star Theatre" name="venueName"  checked >
+                                <label class="form-check-label">Star Theatre</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio"  value="Star Lodge" name="venueName"  >
+                                <label class="form-check-label">Star Lodge</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="Star Terrace" name="venueName" >
+                                <label class="form-check-label">Star Terrace</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="Star Gallery" name="venueName">
+                                <label class="form-check-label">Star Gallery</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="Star Loft" name="venueName">
+                                <label class="form-check-label">Star Loft</label>
+                            </div>
+
                         </div>
             
                         <div class="form-group mb-4">
-                            <label class="font-italic" for="venueStory">venueStory</label>
+                            <label class="font-italic" for="venueStory">Venue Story</label>
                             <textarea class="form-control" id="venueStory" name="venueStory" required>{{content.venueStory}}</textarea>
                         </div>
                     </div>
             
                     <div class="form-group col">
-                        <label class="font-italic" for="venuePoster">venuePoster</label>
+                        <label class="font-italic" for="venuePoster">Venue Poster</label>
                         <br>
                         <input onchange="return fileValidation()" type="file" id="file" name="venuePoster" accept="image/png,image/jpeg,image/jpg,image/gif" required>
                         <!-- Image preview -->
@@ -29,11 +49,11 @@
                 <div class="form-group">
                     <div class="row mb-2">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
-                            <label class="font-italic">venueDate</label>
-                            <input id="datepicker" width="200" name="venueDate" value="{{ content.venueDate }}" required/>
+                            <label class="font-italic">Venue Date</label>
+                            <input id="datepicker" width="200" name="venueDate" value="{{ content.venueDate }}" pattern="\d{1,4}-\d{1,2}-\d{1,2}" placeholder="yyyy-mm-dd" required/>
                         </div>
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                            <label class="font-italic">venueTime</label>
+                            <label class="font-italic">Venue Time</label>
                             <br>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" value="10am ~ 1pm" name="venueTime" checked>
@@ -57,7 +77,7 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                            <label class="font-italic">venuePrice</label>
+                            <label class="font-italic">Venue Price</label>
                             <br>
             
                             <div class="form-check form-check-inline">
@@ -103,24 +123,11 @@
     // 2. value or default date assigned to a string
     var dateToday = new Date();
     $('#datepicker').datepicker({
-        format: 'yyyy/mm/dd',
+        format: 'yyyy-mm-dd',
         uiLibrary: 'bootstrap4',
         minDate: dateToday
     });
 
-    function validateDate(form) {
-        // regular expression to match required date format
-        re = /^\d{4}\/\d{1,2}\/\d{1,2}$/;
-
-        if (form.venueDate.value != '' && !form.venueDate.value.match(re)) {
-            alert("Invalid date format: " + form.venueDate.value);
-            form.venueDate.focus();
-            return false;
-        }
-
-        alert("Date field has been validated!");
-        return true;
-    }
 
     function fileValidation() {
         var fileInput = document.getElementById('file');
