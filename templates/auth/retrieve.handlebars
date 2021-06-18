@@ -1,12 +1,73 @@
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+<link href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css" rel="stylesheet">
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/addrbar/bootstrap-table-addrbar.min.js"></script>
+<script
+    src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+
+
+<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
 
 <h1>Retrieve all users</h1>
 <table 
     data-toggle="table" 
-    data-url="/auth/retrieve-data">
+    data-search="true"
+	data-pagination="true"
+	data-side-pagination="server"
+    data-server-sort="false"
+	data-addrbar="true"
+    data-show-export="true"
+	data-filter-control="true"
+    data-url="/auth/retrieve-data"
+
+    data-show-columns="true"
+    data-show-columns-toggle-all="true"
+    data-detail-view="true"
+    data-click-to-select="true"
+    data-detail-formatter="detailFormatter"
+    
+    data-minimum-count-columns="2"
+    data-show-pagination-switch="true"
+    data-page-list="[10, 25, 50, 100, all]"
+    data-show-footer="true"
+    data-response-handler="responseHandler">
     <thead>
         <tr>
-            <th data-field="name">Name</th>
-            <th data-field="email">Email</th>
+            <th data-field="name" data-sortable="true" >Name</th>
+            <th data-field="email" data-sortable="true">Email</th>
+            <th data-field="role" data-sortable="true">Role</th>
+            <th data-field="verified" data-sortable="true">Verified</th>
+            <th data-field="dateCreated" data-sortable="true">Date Created</th>
+            <th data-field="dateUpdated" data-sortable="true">Date Updated</th>
+            <th data-field="action" data-formatter="actionFormatter">User Action</th>
         </tr>
     </thead>
 </table>
+
+<script>
+
+    function detailFormatter(index, row) {
+        var html = []
+        $.each(row, function (key, value) {
+            html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+        })
+        return html.join('')
+    };
+    var selections = [];
+    function responseHandler(res) {
+            $.each(res.rows, function (i, row) {
+                row.state = $.inArray(row.id, selections) !== -1
+            })
+            return res
+    };
+
+    function actionFormatter(index, row){
+        var html = [];
+        $.each(row, function(key, value){
+            if (key == 'uuid'){
+                html.push('<a class="remove" href="?remove=' + value +'" title="Remove"><i class="fa fa-trash"></i></a>')
+            }
+        })
+        return html.join('')
+    }
+</script>

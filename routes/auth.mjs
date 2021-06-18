@@ -195,7 +195,19 @@ async function logout_process(req, res) {
  * @param {import('express').Response} res 
  */
 async function retrieve_page(req, res) {
-	return res.render("auth/retrieve");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log("cust: " + cust);
+	console.log("perf: " + perf);
+	console.log("admin: " + admin);
+
+	return res.render("auth/retrieve", {
+		cust: cust,
+		perf: perf,
+		admin: admin
+	});
 }
 
 /**
@@ -204,16 +216,39 @@ async function retrieve_page(req, res) {
  * @param {import('express')Response} res Express Response handle
  */
 async function retrieve_data(req, res) {
-	console.log("retrieved data");
 	try{
+		let pageSize = parseInt(req.query.limit);
+		let offset = parseInt(req.query.offset);
+		let sortBy = (req.query.sort)? req.query.sort : "dateCreated";
+		let sortOrder = (req.query.order)? req.query.order : "desc";
+		let search = req.query.search;
 
+		if (pageSize < 0) {
+			throw new HttpError(400, "Invalid page size");
+		}
+		if (offset < 0) {
+			throw new HttpError(400, "Invalid offset index");
+		}
+		/** @type {import('sequelize/types').WhereOptions} */
+		const conditions = (search)? {
+			[Op.or]: {
+				"name": { [Op.substring]: search},
+				"email": { [Op.substring]: search}
+			}
+		} : undefined;
+		const total = await ModelUser.count({where : conditions});
+		const pageTotal = Math.ceil(total / pageSize);
 
-		const users = await ModelUser.findAll({
-			raw: true
+		const pageContents = await ModelUser.findAll({
+			offset: offset,
+			limit: pageSize,
+			order: [[sortBy, sortOrder.toUpperCase()]],
+			where: conditions,
+			raw: true // Data only, model excluded
 		});		
 		return res.json({
-			"total": users.length,
-			"rows":  users
+			"total": total,
+			"rows":  pageContents
 		});
 	}
 	catch(error){
