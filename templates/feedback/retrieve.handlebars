@@ -5,10 +5,11 @@
 
     <div class="card card-body">
         <h3 class="text-primary">Feedbacks</h3>
-        {{#each Feedbacks}}
+        {{#each feedbacks}}
 
         <div class="card border-primary mb-2 w-100 mx-auto">
             <div class="card-header">
+                <p class="font-italic">Rating: </p>
                 <h5 class="card-title">{{Rating}}</h5>
             </div>
             
@@ -23,12 +24,12 @@
                             <p class="text-info">{{feedbackGiven}}</p>
                         </div>
                      {{!-- Display ur reply field here --}}
-                        {{!-- <div class="col-sm-12 col-md-6 col-lg-4">
+                        <div class="col-sm-12 col-md-6 col-lg-4">
                             <p class="font-italic">Feedback reply</p>
                             <p class="text-info">{{reply}}</p>
-                        </div> --}}
+                        </div> 
 
-                        <div class="col-sm-12 col-md-6 col-lg-2">
+                        <div class="col-sm-12 col-md-6 col-lg-4">
                             <p class="font-italic"></p>
                             <a href="/feedback/update/{{uuid}}" class="card-link">
                                 <i class="fas fa-pencil-alt"></i>
@@ -47,21 +48,7 @@
                     </div>
                 </div>
             </div>
-            <div class="accordion" id="storyAccordion">
-                <div class="card-header" id="heading-{{uuid}}">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{uuid}}"
-                        aria-expanded="false" aria-controls="collapse-{{uuid}}">
-                        Story<i class="fas fa-chevron-down"></i>
-                    </button>
-                </div>
-
-                <div id="collapse-{{uuid}}" class="collapse" aria-labelledby="heading-{{uuid}}"
-                    data-parent="#storyAccordion">
-                    <div class="card-body">
-                        {{feedbackGiven}}
-                    </div>
-                </div>
-            </div>
+     
         </div>
         {{/each}}
 

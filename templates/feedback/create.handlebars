@@ -1,3 +1,70 @@
+<style>
+.Rating {
+      float:left;
+  }
+
+  /* :not(:checked) is a filter, so that browsers that don’t support :checked don’t
+     follow these rules. Every browser that supports :checked also supports :not(), so
+     it doesn’t make the test unnecessarily selective */
+  /* When the star is clicked,*/
+  .Rating:not(:checked) > input {
+      position:absolute;
+      clip:rect(0,0,0,0);
+  }
+  /* Ensures that the star rating is from left to right,and random wordings do not appear*/
+  .Rating:not(:checked) > label {
+      float:right;
+      width:1em;
+      padding:0 .1em;
+      overflow:hidden;
+      white-space:nowrap;
+      cursor:pointer;
+      font-size:200%;
+      line-height:1.2;
+      color:#ddd;
+      text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5);
+  }
+
+  .Rating:not(:checked) > label:before {
+      content: '★';
+  }
+  /*After stars are pressed, the color will be dark gold*/
+  .Rating > input:checked ~ label {
+      color: #f70;
+      text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5);
+  }
+  /*When the stars are hovered, the color is gold*/
+  .Rating:not(:checked) > label:hover,
+  .Rating:not(:checked) > label:hover ~ label {
+      color: gold;
+      text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+  }
+  /*To make sure that color is consistent and doesnt suddenly change when hovered*/
+  .Rating > input:checked + label:hover,
+  .Rating > input:checked + label:hover ~ label,
+  .Rating > input:checked ~ label:hover,
+  .Rating > input:checked ~ label:hover ~ label,
+  .Rating > label:hover ~ input:checked ~ label {
+      color: #ea0;
+      text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+  }
+
+
+.feedbackGiven{
+    float:left;
+}  
+</style>
+
+
+
+
+
+
+
+
+
+
+
 <!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
 <div class="container">
     <div class="card card-body">
@@ -6,28 +73,28 @@
             <div class="form-group">
                 <label class="font-italic" for="rating">Please rate your overall experience</label>
                 <br>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="1" value="1" name="rating" checked>
-                    <label class="form-check-label" for="1">1</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="2" value="2" name="rating">
-                    <label class="form-check-label" for="2">2</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="3" value="3" name="rating">
-                    <label class="form-check-label" for="3">3</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="4" value="4" name="rating">
-                    <label class="form-check-label" for="4">4</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" id="5" value="5" name="rating">
-                    <label class="form-check-label" for="5">5</label>
+                <div class="Rating">
+                    <input type="radio" id="5" value="5" name="rating" >
+                    <label for="5">5</label>
+                
+                    <input  type="radio" id="4" value="4" name="rating">
+                    <label  for="4">4</label>
+               
+                    <input  type="radio" id="3" value="3" name="rating">
+                    <label  for="3">3</label>
+               
+                    <input  type="radio" id="2" value="2" name="rating">
+                    <label  for="2">2</label>
+              
+                    <input  type="radio" id="1" value="1" name="rating">
+                    <label for="1">1</label>
+                    
                 </div>
             </div>
+
             <div class="form-group mb-4">
+                <br>
+                <br>
                 <label class="font-italic" for="feedbackGiven">Feel free to leave any feedback:</label>
                 <textarea class="form-control" id="feedbackGiven" name="feedbackGiven" required></textarea>
             </div>
