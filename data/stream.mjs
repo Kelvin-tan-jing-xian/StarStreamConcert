@@ -31,7 +31,7 @@ export class ModelStream extends Model {
 			"concertName"       : { type: DataTypes.STRING(64),  allowNull: false },
 			"artistName" : { type: DataTypes.STRING(64), allowNull: false },
 			"concertStory": {type: DataTypes.STRING(64), allowNull: false },
-			"concertDate"      : { type: DataTypes.DATE(), allowNull: false },
+			"concertDate"      : { type: DataTypes.DATEONLY, allowNull: false },
 			"concertTime"   : { type: DataTypes.STRING(64),  allowNull: false },
 			"concertPrice":   { type: DataTypes.STRING(64), allowNull: false },
 			"concertPoster": { type: DataTypes.STRING(64), allowNull: false},

@@ -20,13 +20,14 @@
 				<div class="row mb-2">
 					<div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
 						<label class="font-italic">Date of Concert</label>
-						<input type="date" id="datepicker" width="200" name="concertDate" />
+						<br>
+                        <input id="datepicker" width="200" name="concertDate" pattern="\d{1,4}-\d{1,2}-\d{1,2}" placeholder="yyyy-mm-dd" onchange="return checkDate(concertDate)" required />
 					</div>
 					<div class="col-12 col-sm-12 col-md-12 col-lg-6">
 						<label class="font-italic">Concert Time</label>
 						<br>
 						<div class="form-check form-check-inline">
-							<input class="form-check-input" type="radio" name="concertTime" id="10am ~ 1pm" value="10am ~ 1pm">
+							<input class="form-check-input" type="radio" name="concertTime" id="10am ~ 1pm" value="10am ~ 1pm" checked>
 							<label class="form-check-label" for="10am ~ 1pm">10am ~ 1pm</label>
 						</div>
 						<div class="form-check form-check-inline">
@@ -57,7 +58,7 @@
 						<label class="font-italic">Price of Streams</label>
 						<br>
 						<div class="form-check form-check-inline">
-							<input class="form-check-input" type="radio" name="concertPrice" id="concertPrice" value="$40">
+							<input class="form-check-input" type="radio" name="concertPrice" id="concertPrice" value="$40" checked>
 							<label class="form-check-label" for="concertPrice">$40</label>
 						</div>
 						<div class="form-check form-check-inline">
@@ -82,8 +83,10 @@
 				<div class="form-group">
 				<label class="font-italic" for="concertPoster">Concert Image URL</label>
 				<br>
-				<input type="file" id="concertPoster" name="concertPoster" rows="7"/>
+				<input type="file" id="file" onchange="return fileValidation()" name="concertPoster" rows="7" accept="image/png,image/jpeg,image/jpg,image/gif" required/>
+				<div id="imagePreview"></div>
 				</div>
+				
 
 
 					<div class="col-12 col-sm-12 col-md-6 col-lg-6">
@@ -123,9 +126,56 @@
 
 
 <script>
-		$('#datepicker').datepicker({
-			format: 'dd/mm/yyyy',
-			value: new Date().toLocaleDateString('en-AUS'),
-			uiLibrary: 'bootstrap4',
-		});
+	var dateToday = new Date();
+    $('#datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        uiLibrary: 'bootstrap4',
+        minDate: dateToday
+    });
+
+
+	function checkDate(form)
+  {
+	// regular expression to match required date format
+    re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+
+    if(form.startdate.value != '' && !form.startdate.value.match(re)) {
+      alert("Invalid date format: " + form.startdate.value);
+      form.startdate.focus();
+      return false;
+	}
+	alert("All input fields have been validated!");
+    return true;
+  }
+
+
+function fileValidation() {
+        var fileInput = document.getElementById('file');
+
+        var filePath = fileInput.value;
+
+        // Allowing file type
+        var allowedExtensions =
+            /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+
+        if (!allowedExtensions.exec(filePath)) {
+            alert('Invalid file type');
+            fileInput.value = '';
+            return false;
+        }
+        else {
+            // Image preview if the uploaded file extension follows the file type.
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById(
+                        'imagePreview').innerHTML =
+                        '<img src="' + e.target.result
+                        + '"/>';
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    }
 </script>

@@ -19,9 +19,10 @@
                     <div class="form-group col">
                         <label class="font-italic" for="concertPoster">concertPoster</label>
                         <br>
-                        <input type="file" id="concertPoster" name="concertPoster" accept="image/png,image/jpeg,image/jpg,image/gif">
+                        <input onchange="return fileValidation()" type="file" id="file" name="concertPoster" accept="image/png,image/jpeg,image/jpg,image/gif" required>
                             {{!-- To display error message --}}
                         <div class="font-weight-bold text-danger small" id="posterErr" style="display:none"></div>
+                        <div id="imagePreview"></div>
                     </div>
                 </div>
             
@@ -29,7 +30,7 @@
                     <div class="row mb-2">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
                             <label class="font-italic">concertDate</label>
-                            <input id="datepicker" width="200" name="concertDate" value="{{ content.concertDate }}" />
+                            <input id="datepicker" width="200" name="concertDate" value="{{ content.concertDate }}" pattern="\d{1,4}-\d{1,2}-\d{1,2}" placeholder="yyyy-mm-dd" required/>
                         </div>
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                             <label class="font-italic">concertTime</label>
@@ -97,10 +98,9 @@
                 <a id="btnCancel" class="btn btn-primary" href="/stream/retrieve">Cancel</a>
             </form>
             
+
 <script>
-    // 1. Variable is correct x.ssss
-    // 2. value or default date assigned to a string
-    var dateToday = new Date();
+	var dateToday = new Date();
     $('#datepicker').datepicker({
         format: 'yyyy-mm-dd',
         uiLibrary: 'bootstrap4',
@@ -113,5 +113,50 @@
         $("#concertPrice").keyup(function () {
             $(this).val().replace(/[-]/g, "");
         });
+    }
+    
+	function checkDate(form)
+  {
+	// regular expression to match required date format
+    re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+
+    if(form.startdate.value != '' && !form.startdate.value.match(re)) {
+      alert("Invalid date format: " + form.startdate.value);
+      form.startdate.focus();
+      return false;
+	}
+	alert("All input fields have been validated!");
+    return true;
+  }
+
+
+function fileValidation() {
+        var fileInput = document.getElementById('file');
+
+        var filePath = fileInput.value;
+
+        // Allowing file type
+        var allowedExtensions =
+            /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+
+        if (!allowedExtensions.exec(filePath)) {
+            alert('Invalid file type');
+            fileInput.value = '';
+            return false;
+        }
+        else {
+            // Image preview if the uploaded file extension follows the file type.
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById(
+                        'imagePreview').innerHTML =
+                        '<img src="' + e.target.result
+                        + '"/>';
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
     }
 </script>
