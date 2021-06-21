@@ -154,10 +154,6 @@ async function create_page(req, res) {
 		if (!req.body.venueDate) {
 			throw Error("Missing venueDate");
 		}
-		// this works
-		if (!req.body.venuePoster) {
-			throw Error("Missing venuePoster");
-		}
 
 		const venue = await ModelVenue.create({
             "venueName":     req.body.venueName,
@@ -321,10 +317,6 @@ async function update_process(req, res) {
 		}
 		if (!req.body.venueDate) {
 			throw Error("Missing venueDate");
-		}
-		// this works
-		if (!req.body.venuePoster) {
-			throw Error("Missing venuePoster");
 		}
 		const contents = await ModelVenue.findAll({where: { "uuid": req.params.uuid } });
 

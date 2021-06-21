@@ -1,4 +1,5 @@
-import ORM from 'sequelize'
+import ORM from 'sequelize';
+
 const { Sequelize, DataTypes, Model } = ORM;
 
 /**
