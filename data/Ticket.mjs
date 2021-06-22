@@ -1,4 +1,5 @@
-import ORM from 'sequelize'
+import ORM from 'sequelize';
+import { UserRole } from '../data/user.mjs';
 const { Sequelize, DataTypes, Model } = ORM;
 
 
