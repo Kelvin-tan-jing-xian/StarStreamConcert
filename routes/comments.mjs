@@ -7,10 +7,10 @@ const router = Router();
 export default router;
 
 // customer can create, update, delete own comments
-router.get("/create", create_retrieve_page);
-router.post("/create", create_process);
-router.post("/update/:uuid", update_process);
-router.delete("/delete/:uuid", delete_process);
+router.get("/create/:stream_id", create_retrieve_page);
+router.post("/create/:stream_id", create_process);
+router.post("/update/:stream_id/:uuid", update_process);
+router.delete("/delete/:stream_id/:uuid", delete_process);
 
 
 /**
@@ -22,7 +22,11 @@ async function create_retrieve_page(req, res) {
 	console.log("create comment page accessed");
 	try{
 		const comment_Mod = await ModelComments.findAll({
-			attributes: ['uuid','name', 'comments', 'dateCreated', 'user_id', "validUser"]
+			where: {
+				stream_id: {
+					[Op.eq]: req.params["stream_id"],
+				}
+			}
 		});
 		if (req.user.role == "admin" || req.user.role == "performer" ) {
 			const change = await ModelComments.update({ validUser: true }, {
@@ -51,6 +55,7 @@ async function create_retrieve_page(req, res) {
 		} 
 		return res.render('comments/create', {
 			showComments: comment_Mod,
+			stream_id 	: req.params["stream_id"],
 		});
 	}
 	catch(error){
@@ -73,9 +78,10 @@ async function create_retrieve_page(req, res) {
             "name"		:  req.user.name,
             "comments"	:  req.body.comments,
 			"user_id"  	:  req.user.uuid,
+			"stream_id" :  req.params["stream_id"],
 			"validUser" :  true,
 		});
-		return res.redirect("/comments/create");
+		return res.redirect("/comments/create/" + req.params["stream_id"]);
 	}
 	catch (error) {
 		//	Else internal server error
@@ -93,14 +99,21 @@ async function create_retrieve_page(req, res) {
  async function update_process(req, res) {
 
 	try {
-		const contents = await ModelComments.findOne({where: { "uuid": req.params["uuid"] } });
+		const contents = await ModelComments.findOne({
+			where: { 
+				[Op.and]: [
+					{"uuid": req.params["uuid"]},
+					{"stream_id": req.params["stream_id"]},
+				]
+			} 
+		});
 
 		const data = {
 			"comments": req.body.update_comments,
 			'dateCreated': new Date(),
 		};
 		await (await contents.update(data)).save();	
-		return res.redirect(`/comments/create`);
+		return res.redirect(`/comments/create/` + req.params["stream_id"]);
 	}
 	catch(error) {
 		console.error(`Failed to update comment: ${req.params.uuid}`);
@@ -121,12 +134,19 @@ async function delete_process(req, res) {
 		return res.status(400);
 
         try {
-            const del = await ModelComments.destroy({where: { "uuid": req.params.uuid}});
+            const del = await ModelComments.destroy({
+				where: { 
+					[Op.and]: [
+						{"uuid": req.params["uuid"]},
+						{"stream_id": req.params["stream_id"]},
+					]
+				} 
+			});
     
             if (del == 1) {    
                 console.log(`Deleting comment for uuid: ${req.params.uuid}`);
                 console.log(`Comment deleted`);
-                return res.redirect("/comments/create");
+                return res.redirect("/comments/create/" + req.params["stream_id"]);
             }
             else {
                 console.error(`More than one entries of: ${req.params.uuid}, Total: ${del}`);
