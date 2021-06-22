@@ -64,3 +64,14 @@ export async function DeleteFilePath(...files) {
 			console.warn(`Attempting to delete non-existing file(s) ${file}`);
 	}
 }
+
+/**
+ * Removes a specified file created by this middleware.
+ * @param {string} path The resource path
+ */
+export function remove_file(path) {
+	if (FileSys.existsSync(`${path}`))
+		FileSys.unlinkSync(`${path}`);
+	else
+		console.warn(`${path} doesn't exists`);
+}

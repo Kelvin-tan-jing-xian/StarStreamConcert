@@ -26,7 +26,7 @@ export class ModelVenue extends Model {
 			"venueStory" : { type: DataTypes.STRING(12800), allowNull: false },
 			"venueDate"  : { type: DataTypes.DATEONLY,  allowNull: false },
 			"venueTime"  : {  type: DataTypes.STRING(64), allowNull: false},
-			"venuePrice" : {  type: DataTypes.STRING(64), allowNull: false},
+			"venuePrice" : {  type: DataTypes.DECIMAL, allowNull: false},
 			"venuePoster": {  type: DataTypes.STRING(128),allowNull: false},  // change to false once you can file upload
 			"role"       : { type: DataTypes.ENUM(UserRole.Customer, UserRole.Performer, UserRole.Admin), defaultValue: UserRole.Admin, allowNull: false },
 			"verified"   : { type: DataTypes.BOOLEAN,     allowNull: false, defaultValue: false }
