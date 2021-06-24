@@ -12,6 +12,26 @@ router.post("/create/:stream_id", create_process);
 router.post("/update/:stream_id/:uuid", update_process);
 router.delete("/delete/:stream_id/:uuid", delete_process);
 
+function roleResult(role) {
+	if (role == "performer") {
+	  // if user is performer, it cannot be customer
+	  var perf = true;
+	  var cust = false;
+	  var admin = false;
+	} else if (role == "customer") {
+	  // if user is performer, it cannot be customer
+	  var cust = true;
+	  var perf = false;
+	  var admin = false;
+	} else {
+	  var cust = false;
+	  var perf = false;
+	  var admin = true;
+	}
+  
+	return [cust, perf, admin];
+  }
+
 
 /**
  * Renders the create page and Retrieve comments
@@ -21,6 +41,10 @@ router.delete("/delete/:stream_id/:uuid", delete_process);
 async function create_retrieve_page(req, res) {
 	console.log("create comment page accessed");
 	try{
+		var role = roleResult(req.user.role);
+    	var cust = role[0];
+   		var perf = role[1];
+    	var admin = role[2];
 		const comment_Mod = await ModelComments.findAll({
 			where: {
 				stream_id: {
@@ -56,6 +80,9 @@ async function create_retrieve_page(req, res) {
 		return res.render('comments/create', {
 			showComments: comment_Mod,
 			stream_id 	: req.params["stream_id"],
+			cust: cust,
+         	perf: perf,
+          	admin: admin,
 		});
 	}
 	catch(error){

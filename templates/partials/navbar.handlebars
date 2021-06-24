@@ -1,96 +1,136 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary mb-3">
+<link rel="stylesheet" href="/public/css/navbar.css">
+
+<nav class="navbar navbar-expand-sm navbar-dark">
 	<div class="container">
-		<a class="navbar-brand" href="/"><strong>Star Stream</strong></a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
-				  aria-expanded="false"
-				  aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarNav">
-			<ul class="navbar-nav">
-				<li class="nav-item">
-					<a class="nav-link" href="/home">Home</a>
-				</li>
+        {{#if user }}
+            {{#if cust}}
+                <a class="navbar-brand" href="/customerHomePage"><strong>st<span>a</span>rstre<span>a</span>m</strong></a>
+            {{/if}}
+            {{#if perf}}
+                <a class="navbar-brand" href="/performerHomePage"><strong>st<span>a</span>rstre<span>a</span>m</strong></a>
+            {{/if}}
+            {{#if admin}}
+                <a class="navbar-brand" href="/adminHomePage"><strong>st<span>a</span>rstre<span>a</span>m</strong></a>
+            {{/if}}
 
-				{{!-- <li class="nav-item">
-					<a class="nav-link" href="/anything">Anything</a>
-				</li> --}}
-			</ul>
-			<ul class="navbar-nav ml-auto">
-				
-				{{#if user }}
-					{{!-- Only for customer nav bar --}}
-					{{#if cust }}
-					<li class="nav-item">
-						<a class="nav-link" href="/stream/book">BookStream</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="/feedback/create">GiveFeedback</a>
-					</li>
+     
+                <ul class="navbar-nav">
+            
+                    {{!-- Customer Navbar --}}
+                    {{#if cust}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/customerHomePage">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/stream/book">Buy Tickets</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/feedback/create">Contact Us</a>
+                        </li>
+                    {{/if}}
+            
+                    {{!-- Performer Navbar --}}
+                    {{#if perf}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/performerHomePage">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/venue/book">Book Venue</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage Stream</a>
+                            <div class="dropdown-menu">
+                                <a href="/stream/retrieve" class="dropdown-item">View Stream</a>
+                                <a href="/stream/create" class="dropdown-item">Create Stream</a>
+                            </div>
+                        </li>
 
-					{{/if}}
-				{{!-- Only for performer nav bar, after logging in as performer, performerHomePage shows --}}
-					{{#if perf }}
-					<li class="nav-item">
-						<a class="nav-link" href="/venue/book">BookVenue</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="/feedback/create">GiveFeedback</a>
-					</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/feedback/create">Contact Us</a>
+                        </li>
+                    {{/if}}
+            
+                    {{!-- Admin Navbar --}}
+                    {{#if admin}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/adminHomePage">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/anything">CreateAdmin</a>
+                        </li>
+                        <li class="nav-item">
+                            {{!-- follow the name of ur thing --}}
+                            <a class="nav-link" href="/feedback/retrieve">ViewAllFeedback</a>
+                        </li>
+                
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage
+                                Venue</a>
+                            <div class="dropdown-menu">
+                                <a href="/venue/retrieve" class="dropdown-item">Retrieve</a>
+                                <a href="/venue/create" class="dropdown-item">Create</a>
+                            </div>
+                        </li>
+                    {{/if}}
+            
+                    {{!-- Profile Icon --}}
+                    <li class="nav-item dropdown">
+                        <img src="/public/img/user.png" alt="user image" class="nav-link dropdown-toggle img" id="navbarDropdown"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            
+                            <a class="dropdown-item" href="/profile">Profile</a>
+            
+                            {{!-- Customer Profile --}}
+                            {{#if cust}}
+                            <a class="dropdown-item" href="">Ticket Purchase</a>
+                            {{/if}}
+            
+                            {{!-- Preformer Profile --}}
+                            {{#if perf}}
+                            <a class="dropdown-item" href="/venue/viewMyPurchases">Venue Purchase</a>
+                            {{/if}}
+            
+                            <a class="dropdown-item" href="/auth/logout">
+                                <i class="fa fa-sign-out mr-1"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+          
 
-					<div>						
-						<li class="nav-item dropdown">
-							<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage stream</a>
-							<div class="dropdown-menu">
-								<a href="/stream/retrieve" class="dropdown-item">Retrieve</a>
-								<a href="/stream/create"  class="dropdown-item">Create</a>
-							</div>
-						</li>
-					</div>
-					{{/if}}
-				{{!-- Only for admin nav bar --}}
-				{{#if admin }}
-					<li class="nav-item">
-						<a class="nav-link" href="/anything">CreateAdmin</a>
-					</li>
-					<li class="nav-item">
-											{{!-- follow the name of ur thing --}}
-						<a class="nav-link" href="feedback/retrieve">ViewAllFeedback</a>
-					</li>
+		    {{else}}
+                <div class="">
+                <a class="navbar-brand" href="/index"><strong>st<span>a</span>rstre<span>a</span>m</strong></a>
+                </div>
 
-
-					<li class="nav-item dropdown">
-						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Manage Venue</a>
-						<div class="dropdown-menu">
-							<a href="/venue/retrieve" class="dropdown-item">Retrieve</a>
-							<a href="/venue/create"  class="dropdown-item">Create</a>
-						</div>
-					</li>
-				{{/if}}
-					
-
-
-
-			<ul class="navbar-nav">
-				<li class="nav-item">
-					<a class="nav-link" href="/profile">Welcome {{user.email}}, view your profile</a>
-
-				</li>
-				
-			</ul>
-					<li class="nav-item">
-						<a href="/auth/logout" class="nav-link">Logout</a>
-					</li>
-				{{else}}
-					<li class="nav-item">
-						{{!-- main.js router(/login)--}}
-						<a href="/auth/login" class="nav-link">Log In</a>
-					</li>
-					<li class="nav-item">
-						<a href="/auth/register" class="nav-link">Register</a>
-					</li>
-				{{/if}}
-			</ul>
-		</div>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="">About</a>
+                        </li>
+                        {{!-- Login Button --}}
+                        <li class="btn-item ml-3">
+                            <a href="/auth/login" class="auth-link">Login</a>
+                        </li>
+                        {{!-- Register Button --}}
+                        <li class="btn-item">
+                            <a href="/auth/register" class="auth-link">Register</a>
+                        </li>
+                    </ul>
+               
+		{{/if}}
 	</div>
 </nav>

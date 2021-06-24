@@ -122,6 +122,10 @@ async function create_page(req, res) {
 async function retrieve_page(req, res) {
     console.log("retrieve page accessed");
     try{
+        var role = roleResult(req.user.role);
+    	var cust = role[0];
+   		var perf = role[1];
+    	var admin = role[2];
         const total = await ModelFeedback.count();
         const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1;
         const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 10) : 10;
@@ -140,7 +144,10 @@ async function retrieve_page(req, res) {
             "feedbacks"   : feedbacks,
             "pageTotal": pageTotal,
             "pageIdx"  : pageIdx,
-            "pageSize" : pageSize
+            "pageSize" : pageSize,
+            cust: cust,
+         	perf: perf,
+          	admin: admin,
         });
 
     }

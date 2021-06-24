@@ -13,6 +13,7 @@
 	{{!--Font Awesome icons --}}
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	{{!--Google fonts Icon--}}
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" >
 
@@ -32,14 +33,18 @@
 	<script src="/public/js/main.js"></script>
 	<title>Star Stream - Where excitement sparks</title>
 </head>
+{{> navbar}}
 <body>
 
-	{{> navbar}}
+
 	<div class="container">
 		{{> flashmsg}}
 		{{> msg}}
 		{{> error}}
 		{{{body}}}
 	</div>
+
 </body>
+{{> footer}}
+
 </html>

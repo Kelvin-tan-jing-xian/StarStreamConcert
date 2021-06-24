@@ -36,7 +36,7 @@
                                             <i style='font-size:15px' class='fas text-muted'>&#xf142;</i>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <button type="button" class="dropdown-item" data-toggle="collapse" data-target="#i"  >Edit</button>
+                                            <button type="button" class="dropdown-item" data-toggle="collapse" data-target="#edit{{uuid}}" aria-expanded="false" aria-controls="edit{{uuid}}">Edit</button>
                                             {{!-- ?_method=DELETE is needed --}}
                                             <form method="post" action="/comments/delete/{{stream_id}}/{{uuid}}?_method=DELETE"> 
                                                 <a class="dropdown-item" href="javascript:;" onclick="if (confirm('Confirm delete?')) parentNode.submit();" data-title="Confirm delete?">Delete</a>
@@ -50,13 +50,13 @@
                                 <span> {{ comments }} </span>
                             </div>
 
-                            <form method="post" action="/comments/update/{{stream_id}}/{{uuid}}" class="collapse" id="i">
-                                <div class="d-flex flex-row add-comment-section mt-4 mb-3">
-                                    <input type="text" name="update_comments" class="form-control mr-3 border-top-0 border-left-0 border-right-0" required>
+                            <form method="post" action="/comments/update/{{stream_id}}/{{uuid}}" class="collapse" id="edit{{uuid}}">
+                                <div class="d-flex flex-row mt-4 mb-3">
+                                    <input type="text" name="update_comments" class="form-control mr-3 border-top-0 border-left-0 border-right-0" placeholder="Write your comments here..." required>
                                 </div>
                                 <div class="d-flex flex-row-reverse">
                                     <button class="btn btn-primary mr-3" type="submit">Save</button>
-                                    <button class="btn mr-2 text-muted" type="button" data-toggle="collapse" data-target="#i">Cancel</button>
+                                    <button class="btn mr-2 text-muted" type="button" data-toggle="collapse" data-target="#edit{{uuid}}">Cancel</button>
                                 </div>
                             </form>
                             <hr>
@@ -66,12 +66,3 @@
         </div>
     </div>
 </div>
-
-{{!-- <script>
-    function myFunction() {
-            document.getElementById("update_comment").style.display = "block";
-            document.getElementById("comment").style.display = "none";
-            document.getElementById("date").style.display = "none";
-            }
-    
-</script> --}}
