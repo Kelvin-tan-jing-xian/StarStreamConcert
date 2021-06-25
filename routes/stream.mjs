@@ -3,6 +3,8 @@ import { flashMessage } from '../utils/flashmsg.mjs';
 import { ModelStream }    from '../data/stream.mjs';
 import { ModelTicket } from '../data/ticket.mjs';
 import { UploadFile } from '../utils/multer.mjs';
+import {remove_file} from '../utils/multer.mjs';
+import {Path} from '../utils/multer.mjs';
 
 const router = Router();
 export default router;
@@ -18,7 +20,9 @@ router.post('/update/:uuid', UploadFile.single('concertPoster'), update_process)
 router.delete('/delete/:uuid', delete_process);
 router.get('/book', book_page);
 router.get("/payment/:uuid", payment_page);
-router.get("/myPurchases/:uuid", myPurchases_page);
+router.post("/myPurchases/:uuid", myPurchases_page);
+router.get("/retrieveall", retrieveall_page);
+router.get("/retrieve-data" , retrieve_data);
 
 
 // This function helps in showing different nav bars
@@ -101,6 +105,19 @@ async function create_process(req, res) {
     //
 	//	Create new stream, now that all the test above passed
 	try {
+		if (!req.body.concertName) {
+		  throw Error("Missing Concert name");
+		}
+		if (!req.body.artistName) {
+			throw Error("Missing artist name");
+		}
+  
+		if (!req.body.concertStory) {
+		  throw Error("Missing Concert Story");
+		}
+		if (!req.body.concertDate) {
+		  throw Error("Missing Concert Date");
+		}
 		const stream = await ModelStream.create({
             "concertName":     req.body.concertName,
 			"artistName": req.body.artistName,
@@ -109,7 +126,6 @@ async function create_process(req, res) {
             "concertTime": req.body.concertTime,
             "concertPrice": req.body.concertPrice,
             "concertPoster": req.file.path,
-			"concertVenue" : req.body.concertVenue,
 		});
 
 		flashMessage(res, 'success', 'Successfully created a stream', 'fas fa-sign-in-alt', true);
@@ -257,19 +273,21 @@ async function create_process(req, res) {
  */
  async function update_process(req, res) {
 
-	try {
-		//	Please verify your contents
-		if (!req.body["concertName"])
-			throw Error("Missing concertName");
-	}
-	catch(error) {
-		console.error(`Malformed request to update streams ${req.params["uuid"]}`);
-		console.error(req.body);
-		console.error(error);
-		return res.status(400).end();
-	}
 
 	try {
+		if (!req.body.concertName){
+			throw Error("Missing concert name");
+		}
+		if (!req.body.artistName){
+			throw Error("Missing artist name");
+		}
+
+		if (!req.body.concertStory) {
+			throw Error("Missing Concert Story");
+		}
+		if (!req.body.concertDate){
+			throw Error("Missing Concert Date");
+		}
 		const contents = await ModelStream.findAll({where: { "uuid": req.params["uuid"] } });
 
 		//	Whether this update request need to swap files?
@@ -281,41 +299,36 @@ async function create_process(req, res) {
 			case 1      : break;
 			     default: return res.status(409, "/stream/retrieve")
 		}
-		/** @type {string} */
-		req.body["concertDate"] = Array.isArray(req.body["concertDate"])? req.body["concertDate"].join(',') : req.body["concertDate"];
-		/** @type {string} */
-		req.body["concertTime"] = Array.isArray(req.body["concertTime"])? req.body["concertTime"].join(',') : req.body["concertTime"];
 		
 		//	Save previous file path...
 		const previous_file = contents[0].concertPoster;
 
 		
-		const data          = {
-			"concertName":     req.body.concertName,
-			"artistName": req.body.artistName,
-			"concertStory":    req.body.concertStory,
-			"concertDate":  req.body.concertDate,
-			"concertTime": req.body.concertTime,
-			"concertPrice": req.body.concertPrice,
-			"concertPoster": req.file.path,
-			"concertVenue" : req.body.concertVenue
+		const data={
+			concertName:     req.body.concertName,
+			artistName: req.body.artistName,
+			concertStory:    req.body.concertStory,
+			concertDate:  req.body.concertDate,
+			concertTime: req.body.concertTime,
+			concertPrice: req.body.concertPrice,
+			concertPoster: req.file.path,
 				
 		};
 
 		//	Assign new file if necessary
-		// if (replaceFile) {
-		// 	data["concertPoster"] = `${concertPoster}/${req.file.filename}`;
-		// }
-		if (req.body.concertPoster) {
+		if (replaceFile) {
+			data["concertPoster"] = `${Path}/file/${req.file.filename}`;
+		}
+		else if (req.body.concertPoster) {
 			data["concertPoster"] = req.body.concertPoster;
 		}
 		
 		await (await contents[0].update(data)).save();
 
 		//	Remove old file when success and replacing file
-		// if (replaceFile) {
-		// 	remove_file(previous_file);
-		// }
+		if (replaceFile) {
+			remove_file(previous_file);
+		}
 		
 		flashMessage(res, 'success', "stream updated", 'fas fa-sign-in-alt', true);
 		return res.redirect(`/stream/update/${req.params.uuid}`);
@@ -325,10 +338,10 @@ async function create_process(req, res) {
 		console.error(error);
 
 		//	Clean up and remove file if error
-		// if (req.file) {
-		// 	console.error("Removing uploaded file");
-		// 	remove_file(`./uploads/${req.file.filename}`);
-		// }
+		if (req.file) {
+			console.error("Removing uploaded file");
+			remove_file(`./uploads/${req.file.filename}`);
+		}
 		
 		flashMessage(res, "error", "The server met an unexpected error", 'fas fa-sign-in-alt', true);
 
@@ -364,9 +377,9 @@ async function create_process(req, res) {
 
 		if (affected == 1) {
 			//	Delete all files associated
-			// targets.forEach((target) => { 
-			// 	remove_file(target.streamPoster);
-			// });
+			targets.forEach((target) => { 
+				remove_file(target.concertPoster);
+			});
 
 			console.log(`Deleted stream: ${req.params.uuid}`);
 			return res.redirect("/stream/retrieve");
@@ -438,8 +451,8 @@ async function myPurchases_page(req, res) {
 	try {
 		// we need req.params.uuid to find the stream that you chose to buy 
 		const ticket = await ModelTicket.create({
-			// how to access stream uuid from ModelStream?
-			"stream_id": req.stream.uuid,
+			// Ryo pls find a way to access the getter uuid stream
+			"stream_id": uuid(),
 			"user_id": req.user.uuid,
 			"concertName": req.body.concertName,
 			"artistName": req.body.artistName,
@@ -473,4 +486,74 @@ async function myPurchases_page(req, res) {
 		return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
 	}
 
+}
+
+
+/**
+ * Draw Bootstrap table
+ * @param {import('express').Request}  req 
+ * @param {import('express').Response} res 
+ */
+ async function retrieveall_page(req, res) {
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	console.log("cust: " + cust);
+	console.log("perf: " + perf);
+	console.log("admin: " + admin);
+
+	return res.render("stream/retrieveall", {
+		cust: cust,
+		perf: perf,
+		admin: admin
+	});
+ }
+ /**
+ * Provides bootstrap table with data
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function retrieve_data(req, res) {
+	try{
+		let pageSize = parseInt(req.query.limit);
+		let offset = parseInt(req.query.offset);
+		let sortBy = (req.query.sort)? req.query.sort : "dateCreated";
+		let sortOrder = (req.query.order)? req.query.order : "desc";
+		let search = req.query.search;
+
+		if (pageSize < 0) {
+			throw new HttpError(400, "Invalid page size");
+		}
+		if (offset < 0) {
+			throw new HttpError(400, "Invalid offset index");
+		}
+		/** @type {import('sequelize/types').WhereOptions} */
+		const conditions = (search)? {
+			[Op.or]: {
+				"concertName": { [Op.substring]: search},
+				"artistName": { [Op.substring]: search}
+			}
+		} : undefined;
+		const total = await ModelStream.count({where : conditions});
+		const pageTotal = Math.ceil(total / pageSize);
+
+		const pageContents = await ModelStream.findAll({
+			offset: offset,
+			limit: pageSize,
+			order: [[sortBy, sortOrder.toUpperCase()]],
+			where: conditions,
+			raw: true 
+		});		
+		return res.json({
+			"total": total,
+			"rows":  pageContents
+		});
+	}
+	catch(error){
+		console.error("Unable to retrieve streams");
+		console.error(error);
+		return res.status(500).end();
+
+	}
 }

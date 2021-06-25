@@ -26,9 +26,8 @@ export class ModelStream extends Model {
 			"concertStory": {type: DataTypes.STRING(64), allowNull: false },
 			"concertDate"      : { type: DataTypes.DATEONLY, allowNull: false },
 			"concertTime"   : { type: DataTypes.STRING(64),  allowNull: false },
-			"concertPrice":   { type: DataTypes.STRING(64), allowNull: false },
+			"concertPrice":   { type: DataTypes.DECIMAL, allowNull: false },
 			"concertPoster": { type: DataTypes.STRING(64), allowNull: false},
-			"concertVenue": { type: DataTypes.STRING(64), allowNull: false},
 			"role"       : { type: DataTypes.ENUM(UserRole.Customer, UserRole.Performer, UserRole.Admin), defaultValue: UserRole.Performer, allowNull: false },
 			"verified"   : { type: DataTypes.BOOLEAN,     allowNull: false, defaultValue: false }
 		}, {
@@ -61,5 +60,4 @@ export class ModelStream extends Model {
 	get concertTime() {return this.getDataValue("concertTime"); }
 	get concertPrice() {return this.getDataValue('concertPrice'); }
 	get concertPoster() {return this.getDataValue("concertPoster")}
-	get concertVenue() {return this.getDataValue("concertVenue"); }
 }

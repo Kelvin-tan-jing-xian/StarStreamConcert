@@ -1,0 +1,78 @@
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+<link href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css" rel="stylesheet">
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/addrbar/bootstrap-table-addrbar.min.js"></script>
+<script
+    src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+
+
+<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
+
+<h1>Retrieve All Streams</h1>
+<table 
+    data-toggle="table" 
+    data-search="true"
+	data-pagination="true"
+	data-side-pagination="server"
+    data-server-sort="false"
+	data-addrbar="true"
+    data-show-export="true"
+	data-filter-control="true"
+    data-url="/stream/retrieve-data"
+
+    data-show-columns="true"
+    data-show-columns-toggle-all="true"
+    data-detail-view="true"
+    data-click-to-select="true"
+    data-detail-formatter="detailFormatter"
+    
+    data-minimum-count-columns="2"
+    data-show-pagination-switch="true"
+    data-page-list="[10, 25, 50, 100, all]"
+    data-show-footer="true"
+    data-response-handler="responseHandler">
+    <thead>
+        <tr>
+            <th data-field="dateCreated" data-sortable="true">Date Created</th>
+            <th data-field="dateUpdated" data-sortable="true">Date Updated</th>
+            <th data-field="concertName" data-sortable="true" >Concert Name</th>
+            <th data-field="artistName" data-sortable="true">Artist Name</th>
+            <th data-field="concertStory" data-sortable="true">Concert Story</th>
+            <th data-field="concertDate" data-sortable="true">Concert Date</th>
+            <th data-field="concertTime" data-sortable="true">Concert Time</th>
+            <th data-field="concertPrice" data-sortable="true">Concert Price($)</th>
+            <th data-field="action" data-formatter="actionFormatter">Stream Action</th>
+
+           
+        </tr>
+    </thead>
+</table>
+
+<script>
+
+    function detailFormatter(index, row) {
+        var html = []
+        $.each(row, function (key, value) {
+            html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+        })
+        return html.join('')
+    };
+    var selections = [];
+    function responseHandler(res) {
+            $.each(res.rows, function (i, row) {
+                row.state = $.inArray(row.id, selections) !== -1
+            })
+            return res
+    };
+
+    function actionFormatter(index, row){
+        var html = [];
+        $.each(row, function(key, value){
+            if (key == 'uuid'){
+                // html.push('<a class="edit" href="/stream/update/' + value + '" ><i class="fa fa-edit"></i></a>')
+                html.push('<form method="POST" action="/stream/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i></a>   </form>')
+            }
+        })
+        return html.join('')
+    }
+</script>
