@@ -26,7 +26,7 @@ router.delete("/delete/:uuid", ensure_admin, delete_process);
 // performer book and pay venue
 router.get("/book", book_page);
 router.get("/payment/:uuid", payment_page);
-router.get("/myPurchases/:uuid", myPurchases_page);
+router.post("/myPurchases/:uuid", myPurchases_page);
 router.get("/viewMyPurchases", viewMyPurchases_page);
 router.get("/search", (req, res) => {
   try {
