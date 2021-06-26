@@ -13,9 +13,11 @@ export default router;
 router.get("/create",     create_page);
 router.post("/create" , create_process);
 router.get("/retrieve", ensure_admin, retrieve_page);
+router.get("/retrieve-data", retrieve_data);
 router.get("/update/:uuid", ensure_admin, update_page);
 router.post('/update/:uuid', ensure_admin, update_process);
 router.delete('/delete/:uuid', ensure_admin, delete_process);
+router.get("/view",     view_page);
 
 // This function helps in showing different nav bars
 function roleResult(role){
@@ -160,6 +162,58 @@ async function retrieve_page(req, res) {
 }
 
 /**
+ * Provides bootstrap table with data
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function retrieve_data(req, res) {
+	try {
+	  let pageSize = parseInt(req.query.limit);
+	  let offset = parseInt(req.query.offset);
+	  let sortBy = req.query.sort ? req.query.sort : "dateCreated";
+	  let sortOrder = req.query.order ? req.query.order : "desc";
+	  let search = req.query.search;
+  
+	  if (pageSize < 0) {
+		throw new HttpError(400, "Invalid page size");
+	  }
+	  if (offset < 0) {
+		throw new HttpError(400, "Invalid offset index");
+	  }
+	  /** @type {import('sequelize/types').WhereOptions} */
+	  const conditions = search
+		? {
+			[Op.or]: {
+			  name: { [Op.substring]: search },
+			  feedbackType: { [Op.substring]: search },
+			},
+		  }
+		: undefined;
+	  const total = await ModelFeedback.count({ where: conditions });
+	  const pageTotal = Math.ceil(total / pageSize);
+  
+	  const pageContents = await ModelFeedback.findAll({
+		offset: offset,
+		limit: pageSize,
+		order: [[sortBy, sortOrder.toUpperCase()]],
+		where: conditions,
+		raw: true, // Data only, model excluded
+	  });
+	  return res.json({
+		total: total,
+		rows: pageContents,
+	  });
+	} catch (error) {
+	  console.error("Failed to retrieve all feedbacks");
+	  console.error(error);
+	  return res.status(500).end();
+	}
+  }
+  
+
+
+
+/**
  * Renders the feedback update page, Basically the same page as create with
  * prefills and cancellation.
  * @param {Request}  req Express request  object
@@ -290,3 +344,20 @@ async function update_process(req, res) {
         console.error(error);
         return res.status(500);
     }}
+
+
+
+/**
+ * Renders the retrieve page
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+	async function view_page(req, res) {
+		console.log("view page accessed");
+		   
+			// venues[0].update()   //  This will crash... if raw is enabled
+			return res.render('feedback/view');
+	
+		
+		
+	}

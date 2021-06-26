@@ -1,57 +1,60 @@
-<!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
-<h1>CHANGE THIS TO BOOTSTRAP TABLE FOR ADMIN</h1>
-<div class="row">
-    {{#if feedbacks}}
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+<link href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css" rel="stylesheet">
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/addrbar/bootstrap-table-addrbar.min.js"></script>
+<script
+    src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
 
-    <div class="card card-body">
-        <h3 class="text-primary">Feedbacks</h3>
-        {{#each feedbacks}}
 
-        <div class="card border-primary mb-2 w-100 mx-auto">
-            <div class="card-header">
-                <p class="font-italic">Rating: </p>
-                <h5 class="card-title">{{Rating}}</h5>
-            </div>
-            
-                <div class="col-sm-12 col-md-12 col-lg-8">
-                    <div class="row">
-                        <div class="col-sm-12 col-md-6 col-lg-3">
-                            <p class="font-italic">Feedback type</p>
-                            <p class="text-info">{{feedbackType}}</p>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <p class="font-italic">Feedback response</p>
-                            <p class="text-info">{{feedbackGiven}}</p>
-                        </div>
-                     {{!-- Display ur reply field here --}}
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <p class="font-italic">Feedback reply</p>
-                            <p class="text-info">{{reply}}</p>
-                        </div> 
+<script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/export/bootstrap-table-export.min.js"></script>
 
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <p class="font-italic"></p>
-                            <a href="/feedback/update/{{uuid}}" class="card-link">
-                                <i class="fas fa-pencil-alt"></i>
-                                Edit
-                            </a>
-                            <form method="POST" action="/feedback/delete/{{uuid}}?_method=DELETE"
-                                id="toggle-delete-{{uuid}}">
-                                <a href="javascript:;" class="card-link btn-delete"
-                                    onclick="if (confirm('Confirm delete?')) parentNode.submit();"
-                                    data-title="Confirm delete?">
-                                    <i class="far fa-trash-alt"></i>
-                                    Delete
-                                </a>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-     
-        </div>
-        {{/each}}
+<h1>Feedbacks</h1>
+<table data-toggle="table" data-search="true" data-pagination="true" data-side-pagination="server"
+    data-server-sort="false" data-addrbar="true" data-show-export="true" data-filter-control="true"
+    data-url="/feedback/retrieve-data" data-show-columns="true" data-show-columns-toggle-all="true" data-detail-view="true"
+    data-click-to-select="true" data-detail-formatter="detailFormatter" data-minimum-count-columns="2"
+    data-show-pagination-switch="true" data-page-list="[10, 25, 50, 100, all]" data-show-footer="true"
+    data-response-handler="responseHandler">
+    <thead>
+        <tr>
+            <th data-field="dateCreated" data-sortable="true">Date Created</th>
+            <th data-field="dateUpdated" data-sortable="true">Date Updated</th>
+            <th data-field="name" data-sortable="true">Name</th>
+            <th data-field="role" data-sortable="true">Role</th>
+            <th data-field="Rating" data-sortable="true">Rating</th>
+            <th data-field="feedbackType" data-sortable="true">Feedback type</th>
+            <th data-field="feedbackGiven" data-sortable="true">Feedback given</th>
+            <th data-field="reply" data-sortable="true">Reply</th>
+            <th data-field="action" data-formatter="actionFormatter">User Action</th>
+        </tr>
+    </thead>
+</table>
 
-{{else}}
-<h3>No feedbacks jotted</h3>
-{{/if}}
+<script>
+
+    function detailFormatter(index, row) {
+        var html = []
+        $.each(row, function (key, value) {
+            html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+        })
+        return html.join('')
+    };
+    var selections = [];
+    function responseHandler(res) {
+        $.each(res.rows, function (i, row) {
+            row.state = $.inArray(row.id, selections) !== -1
+        })
+        return res
+    };
+
+    function actionFormatter(index, row) {
+        var html = [];
+        $.each(row, function (key, value) {
+            if (key == 'uuid') {
+                html.push('<a class="edit" href="/feedback/update/' + value + '" ><i class="fa fa-edit"></i>Reply</a>')
+                html.push('<form method="POST" action="/feedback/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i>Delete</a>   </form>')
+            }
+        })
+        return html.join('')
+    }
+</script>
