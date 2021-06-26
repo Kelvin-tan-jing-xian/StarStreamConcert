@@ -18,7 +18,7 @@ router.get("/update/:uuid", ensure_admin, update_page);
 router.post('/update/:uuid', ensure_admin, update_process);
 router.delete('/delete/:uuid', ensure_admin, delete_process);
 router.get("/view",     view_page);
-
+// router.get("/thankYouPage", thankYouPage);
 // This function helps in showing different nav bars
 function roleResult(role){
     if (role == 'performer') { // if user is performer, it cannot be customer
@@ -221,11 +221,21 @@ async function retrieve_page(req, res) {
  */
  async function update_page(req, res) {
     try {
+        var role = roleResult(req.user.role);
+        var cust = role[0];
+        var perf = role[1];
+        var admin = role[2];
+        console.log(cust);
+        console.log(perf);
+        console.log(admin);
+    
         const content = await ModelFeedback.findOne({where: { "uuid": req.params["uuid"] }});
         if (content) {
             // render to update.handlebars
             return res.render('feedback/update', {
-                "mode"   : "update",
+                cust:cust,
+                perf:perf,
+                admin:admin,
                 "content": content
             });
         }
@@ -352,12 +362,22 @@ async function update_process(req, res) {
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
  */
-	async function view_page(req, res) {
-		console.log("view page accessed");
-		   
-			// venues[0].update()   //  This will crash... if raw is enabled
-			return res.render('feedback/view');
-	
-		
-		
-	}
+async function view_page(req, res) {
+    console.log("view page accessed");
+    var role = roleResult(req.user.role);
+    var cust = role[0];
+    var perf = role[1];
+    var admin = role[2];
+    console.log(cust);
+    console.log(perf);
+    console.log(admin);
+
+        // venues[0].update()   //  This will crash... if raw is enabled
+    return res.render('feedback/view',{
+        cust:cust,
+        perf:perf,
+        admin:admin
+    });
+}
+
+// Function for thankYOuPAge
