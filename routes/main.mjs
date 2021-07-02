@@ -190,21 +190,15 @@ router.get('/adminHomePage', async function(req,res){
 
 // Error Route
 router.use(function (req, res) {
-	if (req.user === undefined) {
-		return res.status(404).render("error_404")
-	}
-	else {
-		var role = roleResult(req.user.role);
-		var cust = role[0];
-		var perf = role[1];
-		var admin = role[2];
-		return res.status(404).render("error_404",{
-			cust: cust,
-			perf: perf,
-			admin: admin
-		});
-	}
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+	return res.status(404).render("error_404",{
+		cust: cust,
+		perf: perf,
+		admin: admin
+	});
 });
-
 
 
