@@ -1,5 +1,6 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
+import { UserRole, ModelUser }    from '../data/User.mjs';
 import { ModelStream }    from '../data/stream.mjs';
 import { ModelTicket } from '../data/ticket.mjs';
 import { UploadFile } from '../utils/multer.mjs';
@@ -10,7 +11,6 @@ const router = Router();
 export default router;
 
 
-router.use("/",                authorizer);	//..Applies to every route in this router
 // all routes starts with /stream
 router.get("/create",     create_page);
 router.post("/create", UploadFile.single("concertPoster"), create_process);
@@ -21,7 +21,7 @@ router.delete('/delete/:uuid', delete_process);
 router.get('/book', book_page);
 router.get("/payment/:uuid", payment_page);
 router.post("/myPurchases/:uuid", myPurchases_page);
-router.get("/retrieveall", retrieveall_page);
+router.get("/retrieveall", ensure_admin, retrieveall_page);
 router.get("/retrieve-data" , retrieve_data);
 
 
@@ -49,22 +49,29 @@ function roleResult(role){
 }
 
 /**
- * Authorize user
- * @param {Request}  req Express request  object
- * @param {Response} res Express response object
- * @param {NextFunction} next Express next handle function
-**/
-function authorizer(req, res, next) {
-
-	if (req.user === undefined || req.isUnauthenticated()) {
-		return res.render("error", {
-			"code"   : 401,
-			"message": "Unauthorized. Please login!"
-		});	//	Unauthorized
-	}
-	else {
-		next();	// Okay No problem, allow to proceed
-	}
+ * Ensure Logged in user is admin
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
+ */
+ async function ensure_admin(req, res, next) {
+    /** @type {ModelUser} */
+    const user = req.user;
+    if (user.role != UserRole.Admin) {
+        console.log("HTTP 403 Forbidden")
+		var role = roleResult(req.user.role);
+		var cust = role[0];
+		var perf = role[1];
+		var admin = role[2];
+        return res.render("error_403", {
+			cust: cust,
+			perf: perf,
+			admin: admin
+		});
+    }
+    else {
+        return next();
+    }
 }
 
 

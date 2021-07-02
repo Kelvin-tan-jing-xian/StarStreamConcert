@@ -1,6 +1,6 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
-import { ModelUser }    from '../data/User.mjs';
+import { UserRole, ModelUser }    from '../data/User.mjs';
 import Hash             from 'hash.js';
 import Passport         from 'passport';
 import ORM   from 'sequelize';
@@ -24,7 +24,7 @@ router.post("/login",    login_process);
 router.get("/register",  register_page);
 router.post("/register", register_process);
 router.get("/logout",    logout_process);
-router.get("/retrieve", retrieve_page);
+router.get("/retrieve", ensure_admin, retrieve_page);
 router.get("/retrieve-data", retrieve_data);
 
 // This function helps in showing different nav bars
@@ -50,7 +50,31 @@ function roleResult(role){
 	return [cust, perf, admin];
 }
 
-
+/**
+ * Ensure Logged in user is admin
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
+ */
+ async function ensure_admin(req, res, next) {
+    /** @type {ModelUser} */
+    const user = req.user;
+    if (user.role != UserRole.Admin) {
+		console.log("HTTP 403 Forbidden")
+		var role = roleResult(req.user.role);
+        var cust = role[0];
+        var perf = role[1];
+        var admin = role[2];
+        return res.render("error_403", {
+			cust: cust,
+			perf: perf,
+			admin: admin
+		});
+    }
+    else {
+        return next();
+    }
+}
 
 
 

@@ -13,7 +13,6 @@ const { Op } = ORM;
 const router = Router();
 export default router;
 
-router.use("/", authorizer); //..Applies to every route in this router
 // all routes starts with /venue
 // these CRUD only for admin
 router.get("/create", ensure_admin, create_page);
@@ -73,22 +72,6 @@ function roleResult(role) {
 }
 
 /**
- * Authorize user
- * @param {Request}  req Express request  object
- * @param {Response} res Express response object
- * @param {NextFunction} next Express next handle function
- **/
-function authorizer(req, res, next) {
-  if (req.user === undefined || req.isUnauthenticated()) {
-    return res.render("error", {
-      code: 401,
-      message: "Unauthorized. Please login!",
-    }); //	Unauthorized
-  } else {
-    next(); // Okay No problem, allow to proceed
-  }
-}
-/**
  * Ensure Logged in user is admin
  * @param {import('express').Request} req
  * @param {import('express').Response} res
@@ -98,7 +81,16 @@ async function ensure_admin(req, res, next) {
   /** @type {ModelUser} */
   const user = req.user;
   if (user.role != UserRole.Admin) {
-    return res.sendStatus(403).end();
+    console.log("HTTP 403 Forbidden")
+    var role = roleResult(req.user.role);
+    var cust = role[0];
+    var perf = role[1];
+    var admin = role[2];
+    return res.render("error_403", {
+      cust: cust,
+      perf: perf,
+      admin: admin
+    });
   } else {
     return next();
   }
