@@ -3,6 +3,23 @@ import { flashMessage } from '../utils/flashmsg.mjs';
 
 const router = Router();
 export default router;
+router.use(ensure_auth);
+/**
+ * Ensure logged in user
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
+ */
+async function ensure_auth(req, res, next) {
+	if (req.isAuthenticated() || req.path === "/index" || req.path === "/" || req.path === "/auth/login" || req.path === "/auth/register") {
+		return next();
+	}
+	else {
+		flashMessage(res, 'danger', 'Warning!!! Please Login to access the page', 'fa fa-exclamation-triangle', true);
+
+		return res.redirect("/auth/login");
+	}
+}
 
 // ---------------- 
 //	Serves dynamic files from the dynamic folder

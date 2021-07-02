@@ -22,25 +22,14 @@
                         <input id="datepicker" width="200" name="venueDate" pattern="\d{1,4}-\d{1,2}-\d{1,2}" placeholder="yyyy-mm-dd"  required >
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                        <label class="font-italic">venueTime</label>
+                        <label class="font-italic">Venue Time</label>
                         <br>
-                        {{!-- radio buttons --}}
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="10am ~ 1pm" name="venueTime" checked>
-                            <label class="form-check-label">10am ~ 1pm</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="3pm ~ 6pm" name="venueTime">
-                            <label class="form-check-label">3pm ~ 6pm</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="7pm ~ 10pm" name="venueTime">
-                            <label class="form-check-label">7pm ~ 10pm</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="12pm ~ 3am" name="venueTime">
-                            <label class="form-check-label">12pm ~ 3am</label>
-                        </div>
+                        <select id="venueTime" name="venueTime">
+                            <option value="10am ~ 1pm">10am ~ 1pm</option>
+                            <option value="3pm ~ 6pm">3pm ~ 6pm</option>
+                            <option value="7pm ~ 10pm">7pm ~ 10pm</option>
+                            <option value="12pm ~ 3am">12pm ~ 3am</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -48,25 +37,15 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                        <label class="font-italic">venuePrice</label>
+                        <label class="font-italic">Venue Price</label>
                         <br>
                         {{!-- radio buttons --}}
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="6000" name="venuePrice" checked>
-                                    <label class="form-check-label" for="venuePrice">$6000</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="7500" name="venuePrice">
-                                    <label class="form-check-label" for="venuePrice">$7500</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="9000" name="venuePrice">
-                                    <label class="form-check-label" for="venuePrice">$9000</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="10500" name="venuePrice">
-                                    <label class="form-check-label" for="venuePrice">$10,500</label>
-                                </div>
+                        <select id="venuePrice" name="venuePrice">
+                            <option value="6000">$6000</option>
+                            <option value="7500">$7500</option>
+                            <option value="9000">$9000</option>
+                            <option value="10500">$10,500</option>
+                        </select>
                         <br>
                         {{!--<div class="form-check form-check-inline">
                             <div class="form-group">
@@ -77,7 +56,7 @@
                     </div>
 
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                        <label class="font-italic">venuePoster</label>
+                        <label class="font-italic">Venue Poster</label>
                         <br>
                         <input type="file" id="file" onchange="return fileValidation()" name="venuePoster" accept="image/png,image/jpeg,image/jpg,image/gif" required>
                         <!-- Image preview -->

@@ -37,7 +37,8 @@ router.get("/search", (req, res) => {
     console.log(perf);
     console.log(admin);
     const { term } = req.query;
-    ModelVenue.findAll({ where: { venueName: { [Op.like]: term } } }).then(
+    ModelVenue.findAll({ where: { venueName: { [Op.substring]: term } } })
+    .then(
       (venues) =>
         res.render("venue/book", {
           venues,

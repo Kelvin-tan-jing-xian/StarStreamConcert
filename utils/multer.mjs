@@ -71,7 +71,13 @@ export async function DeleteFilePath(...files) {
  */
 export function remove_file(path) {
 	if (FileSys.existsSync(`${path}`))
+	{
 		FileSys.unlinkSync(`${path}`);
-	else
+		console.log("Successfully deleted file poster");
+
+	}
+	else{
 		console.warn(`${path} doesn't exists`);
+
+	}
 }
