@@ -4,24 +4,9 @@ import { UserRole, ModelUser } from '../../data/User.mjs';
 const router = Router();
 export default router;
 
-router.use(ensure_auth);
 router.use(ensure_admin);
 router.get("/", dashboard_page);
 
-/**
- * Ensure logged in user
- * @param {import('express').Request} req 
- * @param {import('express').Response} res 
- * @param {import('express').NextFunction} next 
- */
-async function ensure_auth(req, res, next) {
-	if (req.isAuthenticated()) {
-		return next();
-	}
-	else {
-		return res.redirect("/auth/login");
-	}
-}
 
 /**
  * Ensure Logged in user is admin

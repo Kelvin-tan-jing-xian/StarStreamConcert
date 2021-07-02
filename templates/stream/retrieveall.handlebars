@@ -30,7 +30,8 @@
     data-show-pagination-switch="true"
     data-page-list="[10, 25, 50, 100, all]"
     data-show-footer="true"
-    data-response-handler="responseHandler">
+    data-response-handler="responseHandler"
+    data-show-fullscreen="true">
     <thead>
         <tr>
             <th data-field="dateCreated" data-sortable="true">Date Created</th>
@@ -70,7 +71,7 @@
         $.each(row, function(key, value){
             if (key == 'uuid'){
                 // html.push('<a class="edit" href="/stream/update/' + value + '" ><i class="fa fa-edit"></i></a>')
-                html.push('<form method="POST" action="/stream/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i></a>   </form>')
+                html.push('<form method="POST" action="/stream/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i>Delete</a>   </form>')
             }
         })
         return html.join('')

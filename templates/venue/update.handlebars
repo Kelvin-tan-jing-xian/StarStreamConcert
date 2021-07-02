@@ -7,26 +7,7 @@
                         <div class="form-group">
                             <label class="font-italic" for="venueName">Venue Name</label>
                             <br>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" value="Star Theatre" name="venueName"  checked >
-                                <label class="form-check-label">Star Theatre</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio"  value="Star Lodge" name="venueName"  >
-                                <label class="form-check-label">Star Lodge</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" value="Star Terrace" name="venueName" >
-                                <label class="form-check-label">Star Terrace</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" value="Star Gallery" name="venueName">
-                                <label class="form-check-label">Star Gallery</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" value="Star Loft" name="venueName">
-                                <label class="form-check-label">Star Loft</label>
-                            </div>
+                <input type="text" class="form-control" name="venueName" placeholder="Star Theatre, Star Gallery, Star Lodge, Star Loft, Star Terrace..." value="{{ content.venueName }}" required>
 
                         </div>
             
@@ -55,21 +36,12 @@
                         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                             <label class="font-italic">Venue Time</label>
                             <br>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="10am ~ 1pm" name="venueTime" checked>
-                            <label class="form-check-label">10am ~ 1pm</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="3pm ~ 6pm" name="venueTime">
-                            <label class="form-check-label">3pm ~ 6pm</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="7pm ~ 10pm" name="venueTime">
-                            <label class="form-check-label">7pm ~ 10pm</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="12pm ~ 3am" name="venueTime">
-                            <label class="form-check-label">12pm ~ 3am</label>
+                            <select id="venueTime" name="venueTime">
+                                <option value="10am ~ 1pm" selected>10am ~ 1pm</option>
+                                <option value="3pm ~ 6pm" selected>3pm ~ 6pm</option>
+                                <option value="7pm ~ 10pm" selected>7pm ~ 10pm</option>
+                                <option value="12pm ~ 3am" selected>12pm ~ 3am</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -81,23 +53,13 @@
                             <br>
             
                             <div class="form-check form-check-inline">
-                                {{!-- radio buttons --}}
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="6000" name="venuePrice" checked>
-                                    <label class="form-check-label" for="venuePrice">$6000</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="7500" name="venuePrice">
-                                    <label class="form-check-label" for="venuePrice">$7500</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="9000" name="venuePrice">
-                                    <label class="form-check-label" for="venuePrice">$9000</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="venuePrice" value="10500" name="venuePrice">
-                                    <label class="form-check-label" for="venuePrice">$10,500</label>
-                                </div>
+                                {{!-- dropdown list --}}
+                                <select id="venuePrice" name="venuePrice">
+                                    <option value="6000" selected>$6000</option>
+                                    <option value="7500" selected>$7500</option>
+                                    <option value="9000" selected>$9000</option>
+                                    <option value="10500" selected>$10,500</option>
+                                </select>
                                 <br>
                                 {{!--<div class="form-check form-check-inline">
                                     <div class="form-group">

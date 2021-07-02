@@ -4,6 +4,13 @@ import { ModelUser }    from '../data/User.mjs';
 import Hash             from 'hash.js';
 import Passport         from 'passport';
 import ORM   from 'sequelize';
+
+import ExpressHBS       from 'express-handlebars';
+import SendGrid         from '@sendgrid/mail';
+import JWT              from 'jsonwebtoken';
+
+SendGrid.setApiKey("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");
+
 const { Op } = ORM;
 
 const router = Router();
@@ -18,6 +25,7 @@ const regexName  = /^[a-zA-Z][a-zA-Z]{2,}$/;
 //	Min 8 character, 1 upper, 1 lower, 1 number, 1 symbol
 const regexPwd   = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
+const hbsRender  = ExpressHBS.create({});
 
 router.get("/login",     login_page);
 router.post("/login",    login_process);
@@ -26,6 +34,8 @@ router.post("/register", register_process);
 router.get("/logout",    logout_process);
 router.get("/retrieve", retrieve_page);
 router.get("/retrieve-data", retrieve_data);
+router.delete("/delete/:uuid", delete_process);
+router.get("/verify/:token", verify_process);
 
 // This function helps in showing different nav bars
 function roleResult(role){
@@ -167,6 +177,7 @@ async function register_process(req, res) {
 				role: req.body.role
 
 		});
+		await send_verification(user.uuid, user.email);
 
 		flashMessage(res, 'success', 'Successfully created an account. Please login', 'fas fa-sign-in-alt', true);
 		return res.redirect("/auth/login");
@@ -177,6 +188,32 @@ async function register_process(req, res) {
 		console.error(error);
 		return res.status(500).end();
 	}
+}
+
+/**
+ * Sends a email to the specified address
+ * @param uid {string}
+ * @param email {string}
+ */
+async function send_verification(uid, email) {
+	//	DO NOT PUT CREDENTIALS INSIDE PAYLOAD
+	//	WHY? -> JWT can be decoded easily
+	//		Whats the diff-> Signature don't match if mutated
+	const token = JWT.sign({
+		uuid:  uid
+	}, 'the-key', {
+		expiresIn: '30000'
+	});
+	
+	//	Send Grid stuff
+	return SendGrid.send({
+		to:      email,
+		from:    'altmile1@gmail.com',
+		subject: `Verify your email`,
+		html:    await hbsRender.render(`${process.cwd()}/templates/layouts/email-verify.handlebars`, {
+			token:  token
+		})
+	});
 }
 
 /**
@@ -258,3 +295,88 @@ async function retrieve_data(req, res) {
 
 	}
 }
+
+/**
+ * Handles the deletion of user.
+ * @param {Request}  req Express request  object
+ * @param {Response} res Express response object
+ */
+async function delete_process(req, res) {
+  const regex_uuidv4 =
+    /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+  // if uuid doesnt match with uuidv4, give error
+  if (!regex_uuidv4.test(req.params.uuid)) return res.status(400);
+
+
+  try {
+    const targets = await ModelUser.findAll({
+      where: { uuid: req.params.uuid },
+    });
+
+    switch (targets.length) {
+      case 0:
+        return res.status(409);
+      case 1:
+        console.log("Found 1 eligible user to be deleted");
+        break;
+      default:
+        return res.status(409);
+    }
+    const affected = await ModelUser.destroy({
+      where: { uuid: req.params.uuid },
+    });
+
+    if (affected == 1) {
+
+      console.log(`Deleted user: ${req.params.uuid}`);
+      return res.redirect("/auth/retrieve");
+    }
+    //	There should only be one, so this else should never occur anyway
+    else {
+      console.error(
+        `More than one entries affected by: ${req.params.uuid}, Total: ${affected}`
+      );
+      return res.status(409);
+    }
+  } catch (error) {
+    console.error(`Failed to delete user: ${req.params.uuid}`);
+    console.error(error);
+    return res.status(500);
+  }
+}
+
+/**
+ * Process the verification token
+ * @param {import('express').Request}  req Express Request handle
+ * @param {import('express').Response} res Express Response handle
+ */
+async function verify_process(req, res) {
+	const token = req.params.token;
+	let   uuid  = null;
+	try {
+		const payload = JWT.verify(token, 'the-key');
+
+		uuid    = payload.uuid;
+	}
+	catch (error) {
+		console.error(`The token is invalid`);
+		console.error(error);
+		// Bad request
+		return res.sendStatus(400).end();
+	}
+
+	try {
+		const user = await ModelUser.findByPk(uuid);
+		user.verify();
+		user.save();
+		return res.render("auth/verified", {
+			name: user.name
+		});
+	}
+	catch (error) {
+		console.error(`Failed to locate ${uuid}`);
+		console.error(error);
+		return res.sendStatus(500).end();
+	}
+}
+

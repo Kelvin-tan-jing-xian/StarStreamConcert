@@ -14,7 +14,7 @@
     data-url="/venue/retrieve-data" data-show-columns="true" data-show-columns-toggle-all="true" data-detail-view="true"
     data-click-to-select="true" data-detail-formatter="detailFormatter" data-minimum-count-columns="2"
     data-show-pagination-switch="true" data-page-list="[10, 25, 50, 100, all]" data-show-footer="true"
-    data-response-handler="responseHandler">
+    data-response-handler="responseHandler" data-show-fullscreen="true">
     <thead>
         <tr>
             <th data-field="user_id" data-sortable="true">User ID</th>
@@ -51,8 +51,8 @@
         var html = [];
         $.each(row, function (key, value) {
             if (key == 'uuid') {
-                html.push('<a class="edit" href="/venue/update/' + value + '" ><i class="fa fa-edit"></i></a>')
-                html.push('<form method="POST" action="/venue/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i></a>   </form>')
+                html.push('<a class="edit" href="/venue/update/' + value + '" ><i class="fa fa-edit"></i>Edit</a>')
+                html.push('<form method="POST" action="/venue/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i>Delete</a>   </form>')
             }
         })
         return html.join('')

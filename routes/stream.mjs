@@ -382,7 +382,7 @@ async function create_process(req, res) {
 			});
 
 			console.log(`Deleted stream: ${req.params.uuid}`);
-			return res.redirect("/stream/retrieve");
+			return res.redirect("/stream/retrieveall");
 		}
 		//	There should only be one, so this else should never occur anyway
 		else {
