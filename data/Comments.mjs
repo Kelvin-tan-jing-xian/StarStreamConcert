@@ -19,7 +19,7 @@ export class ModelComments extends Model {
 		ModelComments.init({
 			"uuid"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
 			"stream_id"   : { type: DataTypes.CHAR(36), 	  allowNull: false},
-			"user_id"   : { type: DataTypes.CHAR(36), 	  allowNull: false},
+			"customer_id"   : { type: DataTypes.CHAR(36), 	  allowNull: false},
             "name"       : { type: DataTypes.STRING(64),  allowNull: false },
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"comments"   : { type: DataTypes.STRING(500), allowNull: false },

@@ -19,7 +19,7 @@ export class ModelVenue extends Model {
 	static initialize(database) {
 		ModelVenue.init({
 			"uuid"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
-			"user_id"    : { type: DataTypes.CHAR(36),    defaultValue: "", allowNull: false},
+			"performer_id"    : { type: DataTypes.CHAR(36),    defaultValue: "", allowNull: false},
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"dateUpdated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"venueName"  : { type: DataTypes.STRING(64),  allowNull: false },
@@ -28,8 +28,6 @@ export class ModelVenue extends Model {
 			"venueTime"  : {  type: DataTypes.STRING(64), allowNull: false},
 			"venuePrice" : {  type: DataTypes.DECIMAL, allowNull: false},
 			"venuePoster": {  type: DataTypes.STRING(128),allowNull: false},  // change to false once you can file upload
-			"role"       : { type: DataTypes.ENUM(UserRole.Customer, UserRole.Performer, UserRole.Admin), defaultValue: UserRole.Admin, allowNull: false },
-			"verified"   : { type: DataTypes.BOOLEAN,     allowNull: false, defaultValue: false }
 		}, {
 			"sequelize": database,
 			"modelName": "Venues",

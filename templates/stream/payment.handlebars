@@ -87,7 +87,7 @@
                     <h1>Do you wanna pay using NETS instead?</h1>
                     <h1>Please enter the amount to pay IN CENTS and then click submit</h1>
 
-                    <input type="number" name="amount" id="price">
+                    <input type="number" placeholder="concertPrice x 100" name="amount" id="price">
                     <button onclick="generate_qr_code(null)">Submit</button>
                     <img src="null" id="qr_code">
                     <button><a href="/stream/myPurchases/{{content.uuid}}" onclick="show_alert()">I have paid using NETS already</a></button>
