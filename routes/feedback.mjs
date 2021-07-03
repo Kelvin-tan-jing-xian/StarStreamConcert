@@ -16,9 +16,8 @@ router.get("/retrieve-data", retrieve_data);
 router.get("/update/:uuid", ensure_admin, update_page);
 router.post('/update/:uuid', ensure_admin, update_process);
 router.delete('/delete/:uuid', ensure_admin, delete_process);
-router.get("/view",     view_page);
-router.get("/thankyou",thankyou_page)
-// router.get("/thankYouPage", thankYouPage);
+router.get("/my",     view_page);
+router.get("/thankyou",thankyou_page);
 // This function helps in showing different nav bars
 function roleResult(role){
     if (role == 'performer') { // if user is performer, it cannot be customer
@@ -106,7 +105,9 @@ async function create_page(req, res) {
         console.log('Im inside the try block!');
     
         const feedback = await ModelFeedback.create({
+            "user_id": req.user.uuid,
             "name": req.user.name,
+            "email": req.user.email,
             "Rating":     req.body.rating,
             "feedbackType":    req.body.feedbackType,
             "feedbackGiven":  req.body.feedbackGiven,
@@ -380,12 +381,14 @@ async function view_page(req, res) {
     console.log(cust);
     console.log(perf);
     console.log(admin);
-
-        // venues[0].update()   //  This will crash... if raw is enabled
+    const feedbacks = await ModelFeedback.findAll({where: {
+        "user_id" : req.user.uuid
+    }});
     return res.render('feedback/my',{
         cust:cust,
         perf:perf,
-        admin:admin
+        admin:admin,
+        "feedbacks": feedbacks
     });
 }
 

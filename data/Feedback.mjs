@@ -20,9 +20,11 @@ export class ModelFeedback extends Model {
 		ModelFeedback.init({
 			// If u make any changes to these columns, u have to drop table and recreate 
 			"uuid"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
+			"user_id"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"dateUpdated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"name": {type: DataTypes.STRING(64), defaultValue:"IDK", allowNull: false},
+			"email"      : { type: DataTypes.STRING(128), allowNull: false },
 			"Rating"  : { type: DataTypes.STRING(64),  allowNull: false },
 			"feedbackGiven" : { type: DataTypes.STRING(128), allowNull: false },
 			"feedbackType" : {  type: DataTypes.STRING(64), allowNull: false},
