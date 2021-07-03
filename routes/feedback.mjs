@@ -18,6 +18,7 @@ router.get("/update/:uuid", ensure_admin, update_page);
 router.post('/update/:uuid', ensure_admin, update_process);
 router.delete('/delete/:uuid', ensure_admin, delete_process);
 router.get("/view",     view_page);
+router.get("/thankyou",thankyou_page)
 // router.get("/thankYouPage", thankYouPage);
 // This function helps in showing different nav bars
 function roleResult(role){
@@ -106,7 +107,7 @@ async function create_page(req, res) {
         });
 
         flashMessage(res, 'success', 'Successfully created a feedback', 'fas fa-sign-in-alt', true);
-        return res.redirect("/home"); // don't use render
+        return res.redirect("thankyou"); // don't use render
         }
         catch (error) {
         //  Else internal server error
@@ -373,7 +374,7 @@ async function view_page(req, res) {
     console.log(admin);
 
         // venues[0].update()   //  This will crash... if raw is enabled
-    return res.render('feedback/view',{
+    return res.render('feedback/my',{
         cust:cust,
         perf:perf,
         admin:admin
@@ -381,3 +382,25 @@ async function view_page(req, res) {
 }
 
 // Function for thankYOuPAge
+
+/**
+ * Renders the thankyou page
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function thankyou_page(req, res) {
+    console.log("thank you page accessed");
+    var role = roleResult(req.user.role);
+    var cust = role[0];
+    var perf = role[1];
+    var admin = role[2];
+    console.log(cust);
+    console.log(perf);
+    console.log(admin);
+
+    return res.render('feedback/thankyou',{
+        cust:cust,
+        perf:perf,
+        admin:admin
+    });
+}

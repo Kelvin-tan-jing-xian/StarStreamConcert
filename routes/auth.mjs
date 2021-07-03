@@ -8,6 +8,7 @@ import ORM   from 'sequelize';
 import ExpressHBS       from 'express-handlebars';
 import SendGrid         from '@sendgrid/mail';
 import JWT              from 'jsonwebtoken';
+import { UserRole } from '../data/user.mjs';
 
 SendGrid.setApiKey("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");
 
@@ -36,6 +37,7 @@ router.get("/retrieve", retrieve_page);
 router.get("/retrieve-data", retrieve_data);
 router.delete("/delete/:uuid", delete_process);
 router.get("/verify/:token", verify_process);
+
 
 // This function helps in showing different nav bars
 function roleResult(role){
@@ -379,4 +381,6 @@ async function verify_process(req, res) {
 		return res.sendStatus(500).end();
 	}
 }
+
+
 
