@@ -1,69 +1,84 @@
-<!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
-<div class="row">
-    {{#if streams}}
+<link href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css" rel="stylesheet">
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+<script
+    src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/custom-view/bootstrap-table-custom-view.js"></script>
+<script
+    src="https://unpkg.com/bootstrap-table@1.18.3/dist/extensions/auto-refresh/bootstrap-table-auto-refresh.min.js"></script>
+<h3 class="text-primary">Available Concerts</h3>
 
-    <div class="card card-body">
-        <h3 class="text-primary">Available Concerts</h3>
-        {{#each streams}}
-        <div class="card border-primary mb-2 w-100 mx-auto">
-            <div class="card-header">
-                <h5 class="card-title">{{concertName}}</h5>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-2">
-                    {{!-- / must be in front cuz absolute address --}}
-                    <img src="/{{concertPoster}}" alt="Poster unavailable" class="img-thumbnail img-fluid">
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-8">
-                    <div class="row">
-                        <div class="col-sm-12 col-md-6 col-lg-3">
-                            <p class="font-italic">Artist Name </p>
-                            <p class="text-info">{{artistName}}</p>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-3">
-                            <p class="font-italic">Concert Time</p>
-                            <p class="text-info">{{concertTime}}</p>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <p class="font-italic">Concert Price</p>
-                            <p class="text-info">{{concertPrice}}</p>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-2">
-                            <p class="font-italic">Concert Date</p>
-                            <p class="text-info">{{ concertDate }}</p>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-2">
-                            <p class="font-italic"></p>
-                            <a href="/stream/payment/{{uuid}}" class="card-link">
-                                Buy Tickets
-                            </a>
-                            
-                            <a href="/comments/create/{{uuid}}">stream</a>
+<table id="table" 
+    data-toggle="table"
+    data-search="true" 
+    data-pagination="true" 
+    data-side-pagination="server"
+    data-auto-refresh="true"
+    data-show-refresh="true"
+    data-page-size="6"
+    data-page-list="[10, 25, 50, 100, all]"
+    data-show-custom-view="true"
+    data-custom-view="customViewFormatter" 
+    data-show-custom-view-button="true"
+    data-url="/stream/book-data">
+    <thead>
+        <tr>
+            <th data-field="concertName">Concert Name</th>
+            <th data-field="artistName">Artist Name</th>
+            <th data-field="concertStory">Concert Story</th>
+            <th data-field="concerDate">Concert Date</th>
+            <th data-field="concertTime">Concert Time</th>
+            <th data-field="concertPrice">Concert Price</th>
+        </tr>
+    </thead>
+</table>
 
-                        </div>
+<template id="profileTemplate">
+    <div class="col-4 mt-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-8 col-md-6">
+                        <h3 class="mb-0 text-truncated">concertName</h3>
+                        <p>artistName</p>
+
+                        <p>concertStory</p>
+                        <h3 class="mb-0 text-truncated">concertDate</h3>
+
+                    </div>
+                    <div class="col-12 col-lg-4 col-md-6 text-center">
+                        {{!-- / must be in front cuz absolute address --}}
+                        <img src="/concertPoster" alt="" class="img-fluid" style="height: 120px;">
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <h3 class="mb-0">concertTime</h3>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <h3 class="mb-0"><span style="white-space:nowrap">$concertPrice</span></h3>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <a class="btn btn-primary" href="/stream/payment/uuid" role="button">Book Now</a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="accordion" id="storyAccordion">
-            <div class="card-header" id="heading-{{uuid}}">
-                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{uuid}}"
-                    aria-expanded="false" aria-controls="collapse-{{uuid}}">
-                    Story<i class="fas fa-chevron-down"></i>
-                </button>
-            </div>
-
-            <div id="collapse-{{uuid}}" class="collapse" aria-labelledby="heading-{{uuid}}"
-                data-parent="#storyAccordion">
-                <div class="card-body">
-                    {{concertStory}}
-                </div>
-            </div>
-        </div>
     </div>
-    {{/each}}
-    <!-- Page management, can ignore first -->
+</template>
 
-    {{else}}
-    <h3>No Concerts jotted</h3>
-    {{/if}}
+<script>
+    function customViewFormatter(data) {
+        var template = $('#profileTemplate').html()
+        var view = ''
+        $.each(data, function (i, row) {
+            view += template.replace('concertName', row.concertName)
+                .replace('artistName', row.artistName)
+                .replace('concertStory', row.concertStory)
+                .replace('concertDate', row.concertDate)
+                .replace('concertPoster', row.concertPoster)
+                .replace('concertTime', row.concertTime)
+                .replace('concertPrice', row.concertPrice)
+                .replace('uuid', row.uuid)
+;
+        })
+
+        return `<div class="row mx-0">${view}</div>`
+    }
+</script>

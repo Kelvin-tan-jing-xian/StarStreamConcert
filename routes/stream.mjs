@@ -6,6 +6,8 @@ import { ModelTicket } from '../data/ticket.mjs';
 import { UploadFile } from '../utils/multer.mjs';
 import {remove_file} from '../utils/multer.mjs';
 import {Path} from '../utils/multer.mjs';
+import ORM from "sequelize";
+const { Op } = ORM;
 
 const router = Router();
 export default router;
@@ -19,6 +21,7 @@ router.get("/update/:uuid", update_page);
 router.post('/update/:uuid', UploadFile.single('concertPoster'), update_process);
 router.delete('/delete/:uuid', delete_process);
 router.get('/book', book_page);
+router.get("/book-data", book_page_retrieve_data);
 router.get("/payment/:uuid", payment_page);
 router.post("/myPurchases/:uuid", myPurchases_page);
 router.get("/retrieveall", ensure_admin, retrieveall_page);
@@ -210,25 +213,7 @@ async function create_process(req, res) {
 		console.log("perf: " + perf);
 		console.log("admin: " + admin);
 
-		const total = await ModelStream.count();
-		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1; // page number, can have 10 pages maximum
-		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 streams per page
-		const pageTotal = Math.floor(total / pageSize);
-
-		const streams = await ModelStream.findAll({
-			offset: (pageIdx - 1) * pageSize,
-			limit : pageSize,
-			order : [
-				['concertName', 'ASC']
-			],
-			raw: true
-		});		
-		// streams[0].update()	//	This will crash... if raw is enabled
 		return res.render('stream/book', {
-			"streams"   : streams,
-			"pageTotal": pageTotal,
-			"pageIdx"  : pageIdx,
-			"pageSize" : pageSize,
 			cust: cust,
 			perf: perf,
 			admin: admin
@@ -236,13 +221,59 @@ async function create_process(req, res) {
 
 	}
 	catch(error){
-		console.error("Failed to retrieve list of streams");
+		console.error("Failed to draw book page");
 		console.error(error);
 		return res.status(500).end();
 
 	}
 }
 
+/**
+ * Provides bootstrap table with data
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function book_page_retrieve_data(req, res) {
+	try {
+	  let pageSize = parseInt(req.query.limit);
+	  let offset = parseInt(req.query.offset);
+	  let search = req.query.search;
+  
+	  if (pageSize < 0) {
+		throw new HttpError(400, "Invalid page size");
+	  }
+	  if (offset < 0) {
+		throw new HttpError(400, "Invalid offset index");
+	  }
+	  /** @type {import('sequelize/types').WhereOptions} */
+	  const conditions = search
+		? {
+			[Op.or]: {
+			  concertName: { [Op.substring]: search },
+			  artistName: { [Op.substring]: search },
+			},
+		  }
+		: undefined;
+	  const total = await ModelStream.count({ where: conditions });
+	  const pageTotal = Math.ceil(total / pageSize);
+  
+	  const pageContents = await ModelStream.findAll({
+		offset: offset,
+		limit: pageSize,
+		where: conditions,
+		raw: true, // Data only, model excluded
+	  });
+	  return res.json({
+		total: total,
+		rows: pageContents,
+	  });
+	} catch (error) {
+	  console.error("Failed to retrieve data");
+	  console.error(error);
+	  return res.status(500).end();
+	}
+  }
+  
 /**
  * Renders the stream update page, Basically the same page as create with
  * prefills and cancellation.
