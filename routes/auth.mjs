@@ -8,7 +8,6 @@ import ORM   from 'sequelize';
 import ExpressHBS       from 'express-handlebars';
 import SendGrid         from '@sendgrid/mail';
 import JWT              from 'jsonwebtoken';
-import { UserRole } from '../data/user.mjs';
 
 SendGrid.setApiKey("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");
 

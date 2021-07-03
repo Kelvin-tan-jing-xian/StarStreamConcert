@@ -61,7 +61,7 @@ async function create_retrieve_page(req, res) {
 		}
 		else {
 			for (var i = 0; i < comment_Mod.length; i++) {
-				if (comment_Mod[i].user_id == req.user.uuid) {
+				if (comment_Mod[i].customer_id == req.user.uuid) {
 					const change = await ModelComments.update({ validUser: true }, {
 						where: {
 					  	uuid: comment_Mod[i].uuid
@@ -104,7 +104,7 @@ async function create_retrieve_page(req, res) {
 		const comments = await ModelComments.create({
             "name"		:  req.user.name,
             "comments"	:  req.body.comments,
-			"user_id"  	:  req.user.uuid,
+			"customer_id"  	:  req.user.uuid,
 			"stream_id" :  req.params["stream_id"],
 			"validUser" :  true,
 		});

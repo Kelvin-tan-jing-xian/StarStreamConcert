@@ -129,6 +129,7 @@ async function create_process(req, res) {
 		  throw Error("Missing Concert Date");
 		}
 		const stream = await ModelStream.create({
+			"performer_id": req.user.uuid,
             "concertName":     req.body.concertName,
 			"artistName": req.body.artistName,
             "concertStory":    req.body.concertStory,
@@ -164,18 +165,9 @@ async function create_process(req, res) {
 		console.log("cust: " + cust);
 		console.log("perf: " + perf);
 		console.log("admin: " + admin);
-		const total = await ModelStream.count();
-		const pageIdx   = req.query.page    ? parseInt(req.query.page,  10) : 1; // page number, can have 10 pages maximum
-		const pageSize  = req.query.pageSize? parseInt(req.query.pageSize, 1) : 10; // only 10 stream per page
-		const pageTotal = Math.floor(total / pageSize);
 	
 		const streams = await ModelStream.findAll({
-			offset: (pageIdx - 1) * pageSize,
-			limit : pageSize,
-			order : [
-				['concertName', 'ASC']
-			],
-			raw: true
+			where: {"performer_id": req.user.uuid}
 		});		
 
 		return res.render('stream/retrieve', {
@@ -183,9 +175,6 @@ async function create_process(req, res) {
 			perf: perf,
 			admin: admin,
 			"streams"   : streams,
-			"pageTotal": pageTotal,
-			"pageIdx"  : pageIdx,
-			"pageSize" : pageSize
 		});
 	}	
 	catch(error){
