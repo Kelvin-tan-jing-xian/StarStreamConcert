@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
-                        <h5>Price:</h5> 
+                        <h5>Price:$</h5> 
                         <h5>{{content.venuePrice}} </h5> 
                     </div>
                 </div>
@@ -83,12 +83,12 @@
                         </div>
                     </form>
                     <br>
-                    <h1>Do you wanna pay using NETS instead?</h1>
-                    <h1>Please enter the amount to pay IN CENTS and then click submit</h1>
-                    <input type="number" name="amount" id="price">
+                    <h1>Do you want to pay using NETS instead?</h1>
+                    <h1>Please enter the numeric amount to pay IN CENTS and then click submit</h1>
+                    <input type="number" placeholder="Price x 100" name="amount" id="price">
                     <button onclick="generate_qr_code(null)">Submit</button>
                     <img src="null" id="qr_code">
-                    <button ><a href="/venue/myPurchases/{{content.uuid}}" onclick="show_alert()">I have paid already</a></button>
+                    <button ><a href="/venue/myPurchases/{{content.uuid}}" onclick="show_alert()">I have paid already using NETS QR</a></button>
                 </div>
             </div>
         </div>

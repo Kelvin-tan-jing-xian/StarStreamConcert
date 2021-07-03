@@ -13,7 +13,6 @@ const { Op } = ORM;
 const router = Router();
 export default router;
 
-router.use("/", authorizer); //..Applies to every route in this router
 // all routes starts with /venue
 // these CRUD only for admin
 router.get("/create", ensure_admin, create_page);
@@ -25,6 +24,7 @@ router.post("/update/:uuid",ensure_admin,UploadFile.single("venuePoster"),update
 router.delete("/delete/:uuid", ensure_admin, delete_process);
 // performer book and pay venue
 router.get("/book", book_page);
+router.get("/book-data", book_page_retrieve_data);
 router.get("/payment/:uuid", payment_page);
 router.post("/myPurchases/:uuid", myPurchases_page);
 router.get("/viewMyPurchases", viewMyPurchases_page);
@@ -74,22 +74,6 @@ function roleResult(role) {
 }
 
 /**
- * Authorize user
- * @param {Request}  req Express request  object
- * @param {Response} res Express response object
- * @param {NextFunction} next Express next handle function
- **/
-function authorizer(req, res, next) {
-  if (req.user === undefined || req.isUnauthenticated()) {
-    return res.render("error", {
-      code: 401,
-      message: "Unauthorized. Please login!",
-    }); //	Unauthorized
-  } else {
-    next(); // Okay No problem, allow to proceed
-  }
-}
-/**
  * Ensure Logged in user is admin
  * @param {import('express').Request} req
  * @param {import('express').Response} res
@@ -99,7 +83,16 @@ async function ensure_admin(req, res, next) {
   /** @type {ModelUser} */
   const user = req.user;
   if (user.role != UserRole.Admin) {
-    return res.sendStatus(403).end();
+    console.log("HTTP 403 Forbidden")
+    var role = roleResult(req.user.role);
+    var cust = role[0];
+    var perf = role[1];
+    var admin = role[2];
+    return res.render("error_403", {
+      cust: cust,
+      perf: perf,
+      admin: admin
+    });
   } else {
     return next();
   }
@@ -269,33 +262,70 @@ async function book_page(req, res) {
     console.log("perf: " + perf);
     console.log("admin: " + admin);
 
-    const total = await ModelVenue.count();
-    const pageNumber = req.query.page ? parseInt(req.query.page, 10) : 1; // page number, can have 10 pages maximum
-    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize, 1) : 10; // only 10 venue per page
-    const pageTotal = Math.floor(total / pageSize);
 
-    const venues = await ModelVenue.findAll({
-      offset: (pageNumber - 1) * pageSize,
-      limit: pageSize,
-      order: [["venueName", "ASC"]],
-      raw: true,
-    });
-    // venues[0].update()	//	This will crash... if raw is enabled
     return res.render("venue/book", {
-      venues: venues,
-      pageTotal: pageTotal,
-      pageNumber: pageNumber,
-      pageSize: pageSize,
       cust: cust,
       perf: perf,
       admin: admin,
     });
   } catch (error) {
-    console.error("Failed to retrieve list of venues");
+    console.error("Failed to draw book page");
     console.error(error);
     return res.status(500).end();
   }
 }
+
+/**
+ * Provides bootstrap table with data
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+async function book_page_retrieve_data(req, res) {
+  try {
+    let pageSize = parseInt(req.query.limit);
+    let offset = parseInt(req.query.offset);
+    let search = req.query.search;
+
+    if (pageSize < 0) {
+      throw new HttpError(400, "Invalid page size");
+    }
+    if (offset < 0) {
+      throw new HttpError(400, "Invalid offset index");
+    }
+    /** @type {import('sequelize/types').WhereOptions} */
+    const conditions = search
+      ? {
+          [Op.or]: {
+            venueName: { [Op.substring]: search },
+            venueStory: { [Op.substring]: search },
+          },
+        }
+      : undefined;
+    const total = await ModelVenue.count({ where: conditions });
+    const pageTotal = Math.ceil(total / pageSize);
+
+    const pageContents = await ModelVenue.findAll({
+      offset: offset,
+      limit: pageSize,
+      where: conditions,
+      raw: true, // Data only, model excluded
+    });
+    return res.json({
+      total: total,
+      rows: pageContents,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve data");
+    console.error(error);
+    return res.status(500).end();
+  }
+}
+
+
+
+
+
+
 
 /**
  * Renders the venue update page, Basically the same page as create with
@@ -516,6 +546,7 @@ async function myPurchases_page(req, res) {
     const data = {
       user_id: req.user.uuid,
     };
+    // this is wrong
     await (await contents[0].update(data)).save();
 
     const venues = await ModelVenue.findAll({

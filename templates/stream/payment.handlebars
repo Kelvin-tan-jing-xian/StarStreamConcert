@@ -31,7 +31,7 @@
                     </div>
                     <div class="row px-3 text-center justify-content-center mb-2">
                         <h5 class="mr-5 pr-5">Standard</h5> 
-                        <h5>{{content.concertPrice}}</h5>
+                        <h5>${{content.concertPrice}}</h5>
                     </div>
                 </div>
             </div>
@@ -87,7 +87,7 @@
                     <h1>Do you wanna pay using NETS instead?</h1>
                     <h1>Please enter the amount to pay IN CENTS and then click submit</h1>
 
-                    <input type="number" name="amount" id="price">
+                    <input type="number" placeholder="concertPrice x 100" name="amount" id="price">
                     <button onclick="generate_qr_code(null)">Submit</button>
                     <img src="null" id="qr_code">
                     <button><a href="/stream/myPurchases/{{content.uuid}}" onclick="show_alert()">I have paid using NETS already</a></button>

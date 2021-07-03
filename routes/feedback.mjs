@@ -9,7 +9,6 @@ const router = Router();
 export default router;
 
 
-
 router.get("/create",     create_page);
 router.post("/create" , create_process);
 router.get("/retrieve", ensure_admin, retrieve_page);
@@ -52,7 +51,16 @@ function roleResult(role){
     /** @type {ModelUser} */
     const user = req.user;
     if (user.role != UserRole.Admin) {
-        return res.sendStatus(403).end();
+        console.log("HTTP 403 Forbidden")
+        var role = roleResult(req.user.role);
+        var cust = role[0];
+        var perf = role[1];
+        var admin = role[2];
+        return res.render("error_403", {
+			cust: cust,
+			perf: perf,
+			admin: admin
+		});
     }
     else {
         return next();
