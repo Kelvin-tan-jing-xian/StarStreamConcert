@@ -17,7 +17,7 @@
     data-response-handler="responseHandler" data-show-fullscreen="true" data-show-refresh="true">
     <thead>
         <tr>
-            <th data-field="user_id" data-sortable="true">User ID</th>
+            <th data-field="performer_id" data-sortable="true">Performer ID</th>
             <th data-field="dateCreated" data-sortable="true">Date Created</th>
             <th data-field="dateUpdated" data-sortable="true">Date Updated</th>
             <th data-field="venueName" data-sortable="true">Venue Name</th>
@@ -51,8 +51,8 @@
         var html = [];
         $.each(row, function (key, value) {
             if (key == 'uuid') {
-                html.push('<a class="edit" href="/venue/update/' + value + '" ><i class="fa fa-edit"></i>Edit</a>')
-                html.push('<form method="POST" action="/venue/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i>Delete</a>   </form>')
+                html.push('<a class="edit" href="/admin/venue/update/' + value + '" ><i class="fa fa-edit"></i>Edit</a>')
+                html.push('<form method="POST" action="/admin/venue/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i>Delete</a>   </form>')
             }
         })
         return html.join('')

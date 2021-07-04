@@ -32,7 +32,6 @@ router.post("/login",    login_process);
 router.get("/register",  register_page);
 router.post("/register", register_process);
 router.get("/logout",    logout_process);
-router.get("/retrieve", ensure_admin, retrieve_page);
 router.get("/retrieve-data", retrieve_data);
 router.delete("/delete/:uuid", delete_process);
 router.get("/verify/:token", verify_process);
@@ -61,31 +60,6 @@ function roleResult(role){
 	return [cust, perf, admin];
 }
 
-/**
- * Ensure Logged in user is admin
- * @param {import('express').Request} req 
- * @param {import('express').Response} res 
- * @param {import('express').NextFunction} next 
- */
- async function ensure_admin(req, res, next) {
-    /** @type {ModelUser} */
-    const user = req.user;
-    if (user.role != UserRole.Admin) {
-		console.log("HTTP 403 Forbidden")
-		var role = roleResult(req.user.role);
-        var cust = role[0];
-        var perf = role[1];
-        var admin = role[2];
-        return res.render("error_403", {
-			cust: cust,
-			perf: perf,
-			admin: admin
-		});
-    }
-    else {
-        return next();
-    }
-}
 
 
 
@@ -251,26 +225,6 @@ async function logout_process(req, res) {
 	return res.redirect("/index");
 }
 
-/**
- * Draw Bootstrap table
- * @param {import('express').Request}  req 
- * @param {import('express').Response} res 
- */
-async function retrieve_page(req, res) {
-	var role = roleResult(req.user.role);
-	var cust = role[0];
-	var perf = role[1];
-	var admin = role[2];
-	console.log("cust: " + cust);
-	console.log("perf: " + perf);
-	console.log("admin: " + admin);
-
-	return res.render("auth/retrieve", {
-		cust: cust,
-		perf: perf,
-		admin: admin
-	});
-}
 
 /**
  * Provides bootstrap table with data
@@ -354,7 +308,7 @@ async function delete_process(req, res) {
     if (affected == 1) {
 
       console.log(`Deleted user: ${req.params.uuid}`);
-      return res.redirect("/auth/retrieve");
+      return res.redirect("/admin/auth/retrieve");
     }
     //	There should only be one, so this else should never occur anyway
     else {

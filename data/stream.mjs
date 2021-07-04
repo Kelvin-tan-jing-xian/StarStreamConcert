@@ -29,8 +29,6 @@ export class ModelStream extends Model {
 			"concertTime"   : { type: DataTypes.STRING(64),  allowNull: false },
 			"concertPrice":   { type: DataTypes.DECIMAL, allowNull: false },
 			"concertPoster": { type: DataTypes.STRING(64), allowNull: false},
-			// do we need this?
-			"role"       : { type: DataTypes.ENUM(UserRole.Customer, UserRole.Performer, UserRole.Admin), defaultValue: UserRole.Performer, allowNull: false },
 		}, {
 			"sequelize": database,
 			"modelName": "Streams",

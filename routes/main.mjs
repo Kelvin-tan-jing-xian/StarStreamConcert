@@ -92,7 +92,7 @@ router.get("/home",      async function(req, res) {
 		return res.redirect('performerHomePage');
 	}
 	else{
-		return res.redirect('adminHomePage');
+		return res.redirect('/admin/homePage');
 	}
 });
 // This function helps in showing different nav bars
@@ -170,23 +170,6 @@ router.get('/performerHomePage', async function(req,res){
 	});
 });
 
-router.get('/adminHomePage', async function(req,res){
-	console.log ("adminHomePage accessed");
-	var role = roleResult(req.user.role);
-	var cust = role[0];
-	var perf = role[1];
-	var admin = role[2];
-	console.log(cust);
-	console.log(perf);
-	console.log(admin);
-
-	// render adminHomePage.handlebars
-	return res.render('adminHomePage',{
-		cust: cust,
-		perf: perf,
-		admin: admin
-	});
-});
 
 // Error Route
 router.use(function (req, res) {

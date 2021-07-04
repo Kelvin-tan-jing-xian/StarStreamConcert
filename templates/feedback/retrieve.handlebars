@@ -52,8 +52,8 @@
         var html = [];
         $.each(row, function (key, value) {
             if (key == 'uuid') {
-                html.push('<a class="edit" href="/feedback/update/' + value + '" ><i class="fa fa-edit"></i>Reply</a>')
-                html.push('<form method="POST" action="/feedback/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i>Delete</a>   </form>')
+                html.push('<a class="edit" href="/admin/feedback/update/' + value + '" ><i class="fa fa-edit"></i>Reply</a>')
+                html.push('<form method="POST" action="/admin/feedback/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i>Delete</a>   </form>')
             }
         })
         return html.join('')

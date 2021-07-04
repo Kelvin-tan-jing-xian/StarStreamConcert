@@ -1,6 +1,5 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
-import { UserRole, ModelUser }    from '../data/User.mjs';
 import { ModelStream }    from '../data/stream.mjs';
 import { ModelTicket } from '../data/ticket.mjs';
 import { UploadFile } from '../utils/multer.mjs';
@@ -14,18 +13,21 @@ export default router;
 
 
 // all routes starts with /stream
+// CRUD is for performer
 router.get("/create",     create_page);
 router.post("/create", UploadFile.single("concertPoster"), create_process);
 router.get("/retrieve", retrieve_page);
+router.get("/retrieve-data" , retrieve_data);
+
 router.get("/update/:uuid", update_page);
 router.post('/update/:uuid', UploadFile.single('concertPoster'), update_process);
 router.delete('/delete/:uuid', delete_process);
+// for customer
 router.get('/book', book_page);
 router.get("/book-data", book_page_retrieve_data);
+// for customer, but admin can still access
 router.get("/payment/:uuid", payment_page);
 router.post("/myPurchases/:uuid", myPurchases_page);
-router.get("/retrieveall", ensure_admin, retrieveall_page);
-router.get("/retrieve-data" , retrieve_data);
 
 
 // This function helps in showing different nav bars
@@ -51,31 +53,7 @@ function roleResult(role){
 	return [cust, perf, admin];
 }
 
-/**
- * Ensure Logged in user is admin
- * @param {import('express').Request} req 
- * @param {import('express').Response} res 
- * @param {import('express').NextFunction} next 
- */
- async function ensure_admin(req, res, next) {
-    /** @type {ModelUser} */
-    const user = req.user;
-    if (user.role != UserRole.Admin) {
-        console.log("HTTP 403 Forbidden")
-		var role = roleResult(req.user.role);
-		var cust = role[0];
-		var perf = role[1];
-		var admin = role[2];
-        return res.render("error_403", {
-			cust: cust,
-			perf: perf,
-			admin: admin
-		});
-    }
-    else {
-        return next();
-    }
-}
+
 
 
 /**
@@ -321,7 +299,6 @@ async function create_process(req, res) {
 		const replaceFile = (req.file)? true : false;
 
 		switch (contents.length) {
-			// /feedback/RetrieveFeedback
 			case 0      : return res.redirect(410, "/stream/retrieve")
 			case 1      : break;
 			     default: return res.status(409, "/stream/retrieve")
@@ -516,26 +493,6 @@ async function myPurchases_page(req, res) {
 }
 
 
-/**
- * Draw Bootstrap table
- * @param {import('express').Request}  req 
- * @param {import('express').Response} res 
- */
- async function retrieveall_page(req, res) {
-	var role = roleResult(req.user.role);
-	var cust = role[0];
-	var perf = role[1];
-	var admin = role[2];
-	console.log("cust: " + cust);
-	console.log("perf: " + perf);
-	console.log("admin: " + admin);
-
-	return res.render("stream/retrieveall", {
-		cust: cust,
-		perf: perf,
-		admin: admin
-	});
- }
  /**
  * Provides bootstrap table with data
  * @param {import('express')Request}  req Express Request handle

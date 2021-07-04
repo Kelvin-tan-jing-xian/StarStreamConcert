@@ -1,13 +1,7 @@
 import { Router } from "express";
-import { flashMessage } from "../utils/flashmsg.mjs";
 // must be caps
 import { ModelVenue } from "../data/Venue.mjs";
 // must be caps
-import { UserRole, ModelUser } from "../data/User.mjs";
-import { UploadFile } from "../utils/multer.mjs";
-import {remove_file} from '../utils/multer.mjs';
-import {Path} from '../utils/multer.mjs';
-import FileSys from "fs";
 import ORM from "sequelize";
 const { Op } = ORM;
 const router = Router();
@@ -15,13 +9,7 @@ export default router;
 
 // all routes starts with /venue
 // these CRUD only for admin
-router.get("/create", ensure_admin, create_page);
-router.post("/create", UploadFile.single("venuePoster"), create_process);
-router.get("/retrieve", ensure_admin, retrieve_page);
 router.get("/retrieve-data", retrieve_data);
-router.get("/update/:uuid", ensure_admin, update_page);
-router.post("/update/:uuid",ensure_admin,UploadFile.single("venuePoster"),update_process);
-router.delete("/delete/:uuid", ensure_admin, delete_process);
 // performer book and pay venue
 router.get("/book", book_page);
 router.get("/book-data", book_page_retrieve_data);
@@ -73,129 +61,8 @@ function roleResult(role) {
   return [cust, perf, admin];
 }
 
-/**
- * Ensure Logged in user is admin
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @param {import('express').NextFunction} next
- */
-async function ensure_admin(req, res, next) {
-  /** @type {ModelUser} */
-  const user = req.user;
-  if (user.role != UserRole.Admin) {
-    console.log("HTTP 403 Forbidden")
-    var role = roleResult(req.user.role);
-    var cust = role[0];
-    var perf = role[1];
-    var admin = role[2];
-    return res.render("error_403", {
-      cust: cust,
-      perf: perf,
-      admin: admin
-    });
-  } else {
-    return next();
-  }
-}
 
-/**
- * Renders the create page
- * @param {import('express')Request}  req Express Request handle
- * @param {import('express')Response} res Express Response handle
- */
-async function create_page(req, res) {
-  console.log("create page accessed");
-  var role = roleResult(req.user.role);
-  var cust = role[0];
-  var perf = role[1];
-  var admin = role[2];
-  console.log(cust);
-  console.log(perf);
-  console.log(admin);
 
-  return res.render("venue/create", {
-    cust: cust,
-    perf: perf,
-    admin: admin,
-  });
-}
-
-/**
- * Process the create form body
- * @param {import('express').Request}  req Express Request handle
- * @param {import('express').Response} res Express Response handle
- */
-async function create_process(req, res) {
-  console.log("create contents received");
-  console.log(`${req.file.path}`);
-  console.log(req.body);
-
-  // Add in form validations
-  //
-  //	Create new venue, now that all the test above passed
-  try {
-    if (!req.body.venueName) {
-      throw Error("Missing venueName");
-    }
-    if (!req.body.venueStory) {
-      throw Error("Missing venueStory");
-    }
-    if (!req.body.venueDate) {
-      throw Error("Missing venueDate");
-    }
-
-    const venue = await ModelVenue.create({
-      venueName: req.body.venueName,
-      venueStory: req.body.venueStory,
-      venueDate: req.body.venueDate,
-      venueTime: req.body.venueTime,
-      venuePrice: req.body.venuePrice,
-      venuePoster: req.file.path,
-    });
-
-    flashMessage(
-      res,
-      "success",
-      "Successfully created a venue",
-      "fas fa-sign-in-alt",
-      true
-    );
-    return res.redirect("/venue/retrieve"); // don't use render
-  } catch (error) {
-    //	Else internal server error
-    console.error(`Failed to create a new venue: ${req.body.venueName} `);
-    console.error(error);
-    return res.status(500).end();
-  }
-}
-
-/**
- * Renders the retrieve page
- * @param {import('express')Request}  req Express Request handle
- * @param {import('express')Response} res Express Response handle
- */
-async function retrieve_page(req, res) {
-  console.log("retrieve page accessed");
-  try {
-    var role = roleResult(req.user.role);
-    var cust = role[0];
-    var perf = role[1];
-    var admin = role[2];
-    console.log(cust);
-    console.log(perf);
-    console.log(admin);
-
-    return res.render("venue/retrieve", {
-      cust: cust,
-      perf: perf,
-      admin: admin,
-    });
-  } catch (error) {
-    console.error("Failed to retrieve list of venues");
-    console.error(error);
-    return res.status(500).end();
-  }
-}
 
 /**
  * Provides bootstrap table with data
@@ -327,165 +194,7 @@ async function book_page_retrieve_data(req, res) {
 
 
 
-/**
- * Renders the venue update page, Basically the same page as create with
- * prefills and cancellation.
- * @param {Request}  req Express request  object
- * @param {Response} res Express response object
- */
-async function update_page(req, res) {
-  try {
-    var role = roleResult(req.user.role);
-    var cust = role[0];
-    var perf = role[1];
-    var admin = role[2];
-    console.log("cust: " + cust);
-    console.log("perf: " + perf);
-    console.log("admin: " + admin);
 
-    const content = await ModelVenue.findOne({
-      where: { uuid: req.params.uuid },
-    });
-    if (content) {
-      // render to update.handlebars
-      return res.render("venue/update", {
-        cust: cust,
-        perf: perf,
-        admin: admin,
-        content: content,
-      });
-    } else {
-      console.error(`Failed to retrieve venue ${req.params["uuid"]}`);
-      console.error(error);
-      return res.status(410).end();
-    }
-  } catch (error) {
-    console.error(`Failed to retrieve venue ${req.params["uuid"]}`);
-    console.error(error);
-    return res.status(500).end(); //	Internal server error	# Usually should not even happen !!
-  }
-}
-
-/**
- * Handles the update process.
- * @param {Request}  req Express request object
- * @param {Response} res Express response object
- */
-async function update_process(req, res) {
-  try {
-    if (!req.body.venueName) {
-      throw Error("Missing venueName");
-    }
-    if (!req.body.venueStory) {
-      throw Error("Missing venueStory");
-    }
-    if (!req.body.venueDate) {
-      throw Error("Missing venueDate");
-    }
-    const contents = await ModelVenue.findAll({
-      where: { uuid: req.params.uuid },
-    });
-    //	Whether this update request need to swap files?
-		const replaceFile = (req.file)? true : false;
-
-		const previous_file = contents[0].venuePoster;
-
-    const data = {
-      venueName: req.body.venueName,
-      venueStory: req.body.venueStory,
-      venueDate: req.body.venueDate,
-      venueTime: req.body.venueTime,
-      venuePrice: req.body.venuePrice,
-      venuePoster: req.file.path,
-    };
-		//	Assign new file if necessary
-		if (replaceFile) {
-			data["venuePoster"] = `${Path}/file/${req.file.filename}`;
-		}
-    else if (req.body.venuePoster) {
-      data["venuePoster"] = req.body.venuePoster;
-    }
-
-    await (await contents[0].update(data)).save();
-		//	Remove old file when success and replacing file
-		if (replaceFile) {
-			remove_file(previous_file);
-		}
-
-    flashMessage(res, "success", "Venue updated", "fas fa-sign-in-alt", true);
-    return res.redirect(`/venue/update/${req.params.uuid}`);
-  } 
-  catch (error) {
-    console.error(`Failed to update venue ${req.params.uuid}`);
-    console.error(error);
-
-    //	Clean up and remove file if error
-    if (req.file) {
-    	console.error("Removing uploaded file");
-    	remove_file(`./dynamic/file/${req.file.filename}`);
-    }
-
-    flashMessage(res,"error","The server met an unexpected error","fas fa-sign-in-alt",true);
-
-    return res.redirect(500, "/venue/retrieve");
-  }
-}
-
-/**
- * Handles the deletion of venue.
- * @param {Request}  req Express request  object
- * @param {Response} res Express response object
- */
-async function delete_process(req, res) {
-  const regex_uuidv4 =
-    /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-  // if uuid doesnt match with uuidv4, give error
-  if (!regex_uuidv4.test(req.params.uuid)) return res.status(400);
-
-  //	Perform additional checks such as whether it belongs to the current user
-  /** @type {ModelUser} */
-  // const user = req.user;
-
-  try {
-    const targets = await ModelVenue.findAll({
-      where: { uuid: req.params.uuid },
-    });
-
-    switch (targets.length) {
-      case 0:
-        return res.status(409);
-      case 1:
-        console.log("Found 1 eligible venue to be deleted");
-        break;
-      default:
-        return res.status(409);
-    }
-    const affected = await ModelVenue.destroy({
-      where: { uuid: req.params.uuid },
-    });
-
-    if (affected == 1) {
-      //	Delete all files associated
-      targets.forEach((target) => {
-      	remove_file(target.venuePoster);
-      });
-
-      console.log(`Deleted venue: ${req.params.uuid}`);
-      return res.redirect("/venue/retrieve");
-    }
-    //	There should only be one, so this else should never occur anyway
-    else {
-      console.error(
-        `More than one entries affected by: ${req.params.uuid}, Total: ${affected}`
-      );
-      return res.status(409);
-    }
-  } catch (error) {
-    console.error(`Failed to delete venue: ${req.params.uuid}`);
-    console.error(error);
-    return res.status(500);
-  }
-}
 
 /**
  * Renders the venue payment page.
