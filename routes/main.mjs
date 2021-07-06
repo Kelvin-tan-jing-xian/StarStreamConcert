@@ -40,6 +40,7 @@ import RouterStream from './stream.mjs';
 import RouterFeedback from './feedback.mjs';
 import RouterComments from './comments.mjs';
 import RouterPayment from './payment.mjs';
+import { ModelUser } from '../data/User.mjs';
 router.use("/auth",  RouterAuth);
 router.use("/admin", RouterAdmin);
 router.use("/venue", RouterVenue);
@@ -133,6 +134,67 @@ router.get('/profile', async function(req,res){
 		perf: perf,
 		admin: admin,
 	});
+});
+
+router.post("/profile", async function(req,res){
+	try {
+		console.log("Input name and email received");
+		const user = await ModelUser.findOne({
+			where:{"uuid": req.user.uuid }
+		})
+		const data={
+			name: req.body.name,
+			email: req.body.email,	
+		};
+		await (await user.update(data)).save();
+		flashMessage(res, 'success', "Successfully Updated User!", 'fas fa-sign-in-alt', true);
+		return res.redirect(`/profile`);
+	} catch (error) {
+		console.error(`Failed to update user ${req.user.name}`);
+		console.error(error);		
+		flashMessage(res, "danger", "The server met an unexpected error", 'fas fa-sign-in-alt', true);
+
+		return res.redirect(500, "/profile")
+
+	}
+
+});
+
+router.delete("/profile/:uuid", async function(req,res){
+	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+	// if uuid doesnt match with uuidv4, give error
+	if (!regex_uuidv4.test(req.params.uuid)) return res.status(400);
+	try {
+		const targets = await ModelUser.findAll({
+			// can be "uuid" too
+		where: { uuid: req.params.uuid },
+		});
+
+		switch (targets.length) {
+		case 0:
+			return res.status(409);
+		case 1:
+			console.log("Found 1 eligible user to be deleted");
+			break;
+		default:
+			return res.status(409);
+		}
+		const affected = await ModelUser.destroy({
+		where: { uuid: req.params.uuid },
+		});
+
+		if (affected == 1) {
+
+		console.log(`Deleted user: ${req.user.name}`);
+		return res.redirect("/index");
+		}
+	} catch (error) {
+		console.error(`Failed to delete user: ${req.user.name}`);
+		console.error(error);
+		return res.status(500);
+	}
+
+
 });
 
 router.get('/customerHomePage', async function(req,res){

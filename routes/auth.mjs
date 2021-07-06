@@ -9,7 +9,7 @@ import ExpressHBS       from 'express-handlebars';
 import SendGrid         from '@sendgrid/mail';
 import JWT              from 'jsonwebtoken';
 
-SendGrid.setApiKey("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");
+SendGrid.setApiKey("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");
 
 const { Op } = ORM;
 
@@ -201,13 +201,13 @@ async function send_verification(uid, email) {
 	const token = JWT.sign({
 		uuid:  uid
 	}, 'the-key', {
-		expiresIn: '30000'
+		expiresIn: '300000'
 	});
 	
 	//	Send Grid stuff
 	return SendGrid.send({
 		to:      email,
-		from:    'altmile1@gmail.com',
+		from:    'kelvintanjingxian@gmail.com',
 		subject: `Verify your email`,
 		html:    await hbsRender.render(`${process.cwd()}/templates/layouts/email-verify.handlebars`, {
 			token:  token
@@ -348,7 +348,18 @@ async function verify_process(req, res) {
 		const user = await ModelUser.findByPk(uuid);
 		user.verify();
 		user.save();
+		var role = roleResult(req.user.role);
+		var cust = role[0];
+		var perf = role[1];
+		var admin = role[2];
+		console.log(cust);
+		console.log(perf);
+		console.log(admin);
+
 		return res.render("auth/verified", {
+			cust:cust,
+			perf:perf,
+			admin:admin,
 			name: user.name
 		});
 	}
