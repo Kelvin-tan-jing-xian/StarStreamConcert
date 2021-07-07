@@ -4,53 +4,50 @@
 
     <div class="card card-body">
         {{#each feedbacks}}
-        <div class="card border-primary mb-2 w-100 mx-auto">
+        <div class="card border-primary mb-3 w-100 mx-auto">
             <div class="card-header">
                 <h5 class="card-title">{{name}}</h5>
             </div>
             <div class="row">
                 
-                <div class="col-sm-12 col-md-12 col-lg-8">
+                <div class="col-sm-12 col-md-12 col-lg-18">
                     <div class="row">
-                        <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic">Feedback type </p>
                             <p class="text-info">{{feedbackType}}</p>
                         </div>
-                        <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic">Stars Rating </p>
                             <p class="text-info">{{Rating}} </p>
                         </div>
-                        <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="col-sm-12 col-md-6 col-lg-5">
                             <p class="font-italic">Feedback Given</p>
                             <p class="text-info">{{feedbackGiven}}</p>
                         </div>
-                        <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic">Feedback Reply</p>
                             <p class="text-info">{{reply}}</p>
                         </div>
-                        <div class="col-sm-12 col-md-6 col-lg-2">
-                            
-                            <form method="POST" action="/stream/delete/{{uuid}}?_method=DELETE"
-                                >
-                                <a href="javascript:;" class="card-link btn-delete"
-                                    onclick="if (confirm('Confirm delete?')) parentNode.submit();"
-                                    data-title="Confirm delete?">
-                                    <i class="far fa-trash-alt"></i>
-                                    Delete
-                                </a>
-                            </form>
-                        </div>
+                   
 
                    
 
                     </div>
+                
                 </div>
-            </div>
          
+            </div>
         </div>
+    </div>
+</div>
         {{/each}}
         <!-- Page management, can ignore first -->
 
 {{else}}
 <h3>No feedbacks submitted</h3>
+<br><br><br><br><br><br><br><br>
+</div>
+<style>
+h3{text-align: center;}
+</style>
 {{/if}}
