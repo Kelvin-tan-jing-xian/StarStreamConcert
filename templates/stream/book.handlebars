@@ -32,7 +32,7 @@
 </table>
 
 <template id="profileTemplate">
-    <div class="col-4 mt-3">
+    <div class="col-12 mt-3">
         <div class="card">
             <div class="card-body">
                 <div class="row">
@@ -46,16 +46,16 @@
                     </div>
                     <div class="col-12 col-lg-4 col-md-6 text-center">
                         {{!-- / must be in front cuz absolute address --}}
-                        <img src="/concertPoster" alt="" class="img-fluid" style="height: 120px;">
+                        <img src="/concertPoster" alt="" class="img-fluid" style="height: 200px;">
                     </div>
                     <div class="col-12 col-lg-4">
                         <h3 class="mb-0">concertTime</h3>
                     </div>
                     <div class="col-12 col-lg-4">
-                        <h3 class="mb-0"><span style="white-space:nowrap">$concertPrice</span></h3>
+                        <h3 class="mb-0"><span style="white-space:nowrap">Concert Price: $concertPrice</span></h3>
                     </div>
                     <div class="col-12 col-lg-4">
-                        <a class="btn btn-primary" href="/stream/payment/uuid" role="button">Book Now</a>
+                        <a style="margin-left: 225px; margin-top: 35px;"class="btn btn-primary" href="/stream/payment/uuid" role="button">Buy Ticket</a>
                     </div>
                 </div>
             </div>

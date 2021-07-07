@@ -58,6 +58,7 @@ export class ModelUser extends Model {
 		instance.dateUpdated = Sequelize.literal('CURRENT_TIMESTAMP');
 	}
 	verify(){ this.setDataValue("verified", true); }
+	// setAdmin() { this.setDataValue("role", "admin");}
 	get role()  { return this.getDataValue("role"); }
 	get uuid()  { return this.getDataValue("uuid"); }
 	get email() { return this.getDataValue("email"); }

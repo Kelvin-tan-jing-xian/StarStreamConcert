@@ -1,0 +1,35 @@
+<div class="row">
+	<div class="col-md-6 mx-auto">
+		<div class="card card-body">
+			<img class="logo" src="/public/img/Starstreamlogo.jpeg">
+			<h3 class="text-center">Admin Account Create</h3>
+			<form action="/auth/register" method="post">
+				<div class="form-group">
+					<label for="name"><strong>Name</strong></label>
+					<input type="text" class="form-control" name="name" value="{{name}}" placeholder="E.g John" required>
+				</div>
+				<div class="form-group">
+					<label for="email"><strong>Email</strong></label>
+					<input type="email" name="email" class="form-control" value="{{email}}" placeholder="E.g Example@gmail.com" required>
+				</div>
+				<div class="form-group">
+					<label for="password"><strong>Password</strong></label>
+					<input type="password" name="password" class="form-control" value="{{password}}" required>
+				</div>
+				<div class="form-group">
+					<label for="password2"><strong>Confirm password</strong></label>
+					<input type="password" name="password2" class="form-control" value="{{password2}}" placeholder="Re-enter password" required>
+				</div>
+				<div class="form-group">
+					<label><strong>User type</strong> </label><br>
+					<input type="radio" id="admin" name="role" value="admin" checked required>
+					<label for="admin">Admin</label>
+
+				</div>
+				<button type="submit" class="btn btn-primary"><strong>Submit</strong></button>
+			</form>
+			<a class="nav-link" href="/auth/login">Already have an account? Click here to log in!</a>
+		</div>
+	</div>
+</div>
+

@@ -42,6 +42,8 @@ router.get("/feedback/retrieve", feedback_retrieve_page);
 router.get("/feedback/update/:uuid", feedback_update_page);
 router.post('/feedback/update/:uuid',  feedback_update_process);
 router.delete('/feedback/delete/:uuid', feedback_delete_process);
+router.get("/create", admin_create_page);
+router.post("/create", admin_create_process);
 
 
 
@@ -565,3 +567,90 @@ async function feedback_update_process(req, res) {
     }
 }
 
+/**
+ * Renders the adminn create page
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function admin_create_page(req, res) {
+  console.log("create page accessed");
+  var role = roleResult(req.user.role);
+  var cust = role[0];
+  var perf = role[1];
+  var admin = role[2];
+  console.log(cust);
+  console.log(perf);
+  console.log(admin);
+  // dont put / in the render 
+  return res.render("admin/create", {
+    cust: cust,
+    perf: perf,
+    admin: admin,
+  });
+}
+
+/**
+ * Process the registration form body
+ * @param {import('express').Request}  req Express Request handle
+ * @param {import('express').Response} res Express Response handle
+ */
+ async function admin_create_process(req, res) {
+	console.log("Register contents received");
+	console.log(req.body);
+	let errors = [];
+	//	Check your Form contents
+	//	Basic IF ELSE STUFF no excuse not to be able to do this alone
+	//	Common Sense
+	try {
+		if (! regexName.test(req.body.name)) {
+			errors = errors.concat({ text: "Invalid name provided! It must have minimum 3 characters and starts with a letter." });
+		}
+
+		if (! regexEmail.test(req.body.email)) {
+			errors = errors.concat({ text: "Invalid email address!" });
+		}
+		else {
+			const user = await ModelUser.findOne({where: {email: req.body.email}});
+			if (user != null) {
+				errors = errors.concat({ text: "This email cannot be used!" }); // if the user register the second time
+			}
+		}
+
+		if (! regexPwd.test(req.body.password)) {
+			errors = errors.concat({ text: "Password Requires Minimum 8 characters, at least 1 Uppercase letter, 1 Lower Case Letter , 1 Number and 1 Special Character" });
+		}
+		else if (req.body.password !== req.body.password2) {
+			errors = errors.concat({ text: "Password do not match!" });
+		}
+
+		if (errors.length > 0) {
+			throw new Error("There are validation errors");
+		}
+	}
+	catch (error) {
+		console.error("There is errors with the registration form body.");
+		console.error(error);
+		return res.render('auth/register', { errors: errors });
+	}
+
+	//	Create new user, now that all the test above passed
+	try {
+		const user = await ModelUser.create({
+				email:    req.body.email,
+				password: Hash.sha256().update(req.body.password).digest("hex"),
+				name:     req.body.name,
+				role: req.body.role
+
+		});
+		await send_verification(user.uuid, user.email);
+
+		flashMessage(res, 'success', 'Successfully created an admin account. Please login', 'fas fa-sign-in-alt', true);
+		return res.redirect("/auth/login");
+	}
+	catch (error) {
+		//	Else internal server error
+		console.error(`Failed to create a new user: ${req.body.email} `);
+		console.error(error);
+		return res.status(500).end();
+	}
+}
