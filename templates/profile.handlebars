@@ -1,47 +1,85 @@
+<div class="card mb-3">
+	<div class="d-flex flex-column align-items-center text-center mt-5 mb-5">
+		<form enctype="multipart/form-data" action="/profile" method="post">
+			<img src="/{{user.profile_pic}}" alt="Profile Picture" id="imagePreview" class="border border-dark rounded-circle" width="150" height="150">
+			<button type="button" class="btn btn-link mt-n4 ml-n4" style="font-size:24px; position: absolute;" onclick="document.getElementById('file').click();"><i class="fa fa-edit"></i></button>
+			<input type="file" id="file" hidden onchange="return fileValidation()" name="profile_pic" rows="7" accept="image/png,image/jpeg,image/jpg,image/gif" required/>
+			<div class="mt-3">
+				<h4 class="mb-3">{{user.name}}</h4>
+				<button type="submit" class="btn btn-outline-primary">Update Picture</button>
+			</div>
+		</form>
+	</div>
 
-
-<div class="row">
-	<div class="col-md-6 mx-auto">
-		<div class="card card-body">
-			<h3 class="text-center"><strong>PROFILE DETAILS</strong></h3>
-			<form action="/profile" method="post">
-				<div class="form-group">
-                    <br>
-                    <label> <strong>NAME:</strong> {{user.name}}</label> <br>
-					<label for="email"> <strong>EMAIL:</strong> {{user.email}}</label>
-					<label><strong>Do you want to update your name to a cooler one?</strong></label>
-					<input type="text" name="name" class="form-control" placeholder="Enter new name..." required>
-					<br>
-					<label><strong>Do you want to update your email to a cooler one?</strong></label>
-					<input type="email" name="email" class="form-control" placeholder="Enter new email..." required>
-				</div>
-				
-				<button type="submit" class="btn btn-primary"><strong>Update details</strong></button>
-			</form>
-			<br>
-			<label><strong>Are you sure you want to delete your account PERMANENTLY?</strong> </label>
-			<form method="post" action="/{{user.uuid}}?_method=DELETE">
-				<a class="btn btn-danger"  href="javascript:;" onclick="if (confirm('Confirm delete?')) parentNode.submit();"
-					data-title="Confirm delete?">Delete Account</a>
-			</form>
-
+	<div class="card-body mt-4">
+		<div class="row ml-5">
+			<div class="col-sm-3">
+				<h6 class="mb-0">Full Name</h6>
+			</div>
+			<div class="col-sm-9 text-secondary">
+				{{user.name}}
+			</div>
 		</div>
+		<hr class="ml-5 mr-5">
+		<div class="row ml-5">
+			<div class="col-sm-3">
+				<h6 class="mb-0">Email</h6>
+			</div>
+			<div class="col-sm-9 text-secondary">
+				{{user.email}}
+			</div>
+		</div>
+		<hr class="ml-5 mr-5">
+		<div class="row ml-5">
+			<div class="col-sm-3">
+				<h6 class="mb-0">Password</h6>
+			</div>
+			<div class="col-sm-7 text-secondary">
+				<p>************</p>
+			</div>
+			<div class="col-sm-2">
+				<a class="btn btn-info " href="/profile/change-password">Change</a>
+			</div>	
+		</div>
+		<hr class="ml-5 mr-5">
+		{{#if cust}}
+		<form method="post" action="/profile/{{user.uuid}}?_method=DELETE" class="text-center">
+			<button type="submit" class="btn btn-danger col-2">Delete Account</button>
+		</form>
+		{{/if}}
+		{{#if perf}}
+		<form method="post" action="/profile/{{user.uuid}}?_method=DELETE" class="text-center">
+			<button type="submit" class="btn btn-danger col-2">Delete Account</button>
+		</form>
+		{{/if}}
 	</div>
 </div>
 
-<style>
-.center {
-  margin: auto;
-  width: 16%;
-  border: 3px solid black;
-  padding: 10px;
-  background-color:#E6E2DA ;
-}
-label{
-    font-size: 20px;
-}
-h3{
-    font-size: 35px;
-}
+<script>
+	function fileValidation() {
+        var fileInput = document.getElementById('file');
 
-</style>
+        var filePath = fileInput.value;
+
+        // Allowing file type
+        var allowedExtensions =
+            /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+
+        if (!allowedExtensions.exec(filePath)) {
+            alert('Invalid file type');
+            fileInput.value = '';
+            return false;
+        }
+        else {
+            // Image preview if the uploaded file extension follows the file type.
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                };
+
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    }
+</script>

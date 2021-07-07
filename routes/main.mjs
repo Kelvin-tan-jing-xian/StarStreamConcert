@@ -1,5 +1,8 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
+import Hash             from 'hash.js';
+import { UploadFile } from '../utils/multer.mjs';
+import {Path} from '../utils/multer.mjs';
 
 const router = Router();
 export default router;
@@ -136,65 +139,119 @@ router.get('/profile', async function(req,res){
 	});
 });
 
-router.post("/profile", async function(req,res){
-	try {
-		console.log("Input name and email received");
-		const user = await ModelUser.findOne({
-			where:{"uuid": req.user.uuid }
-		})
-		const data={
-			name: req.body.name,
-			email: req.body.email,	
-		};
-		await (await user.update(data)).save();
-		flashMessage(res, 'success', "Successfully Updated User!", 'fas fa-sign-in-alt', true);
-		return res.redirect(`/profile`);
-	} catch (error) {
-		console.error(`Failed to update user ${req.user.name}`);
-		console.error(error);		
-		flashMessage(res, "danger", "The server met an unexpected error", 'fas fa-sign-in-alt', true);
 
-		return res.redirect(500, "/profile")
 
+
+
+router.post('/profile', UploadFile.single('profile_pic'), async function(req,res){
+
+	const contents = await ModelUser.findOne({
+		where: { uuid: req.user.uuid },
+	});
+	//	Whether this update request need to swap files?
+	const replaceFile = (req.file)? true : false;
+
+	const previous_file = contents.profile_pic;
+
+	const data = {
+		profile_pic: req.file.path,
+	};
+	//	Assign new file if necessary
+	if (replaceFile) {
+			data["profile_pic"] = `${Path}/file/${req.file.filename}`;
+		}
+	else if (req.body.profile_pic) {
+		data["profile_pic"] = req.body.profile_pic;
 	}
 
+	await (await contents.update(data)).save();
+
+	return res.redirect("/profile");
 });
 
-router.delete("/profile/:uuid", async function(req,res){
+router.delete('/profile/:uuid', async function (req, res) {
 	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-	// if uuid doesnt match with uuidv4, give error
-	if (!regex_uuidv4.test(req.params.uuid)) return res.status(400);
-	try {
-		const targets = await ModelUser.findAll({
-			// can be "uuid" too
-		where: { uuid: req.params.uuid },
+	if (!regex_uuidv4.test(req.params.uuid))
+		return res.status(400);
+	try{
+		const del = await ModelUser.destroy({
+			where: { uuid: req.params["uuid"] },
 		});
-
-		switch (targets.length) {
-		case 0:
-			return res.status(409);
-		case 1:
-			console.log("Found 1 eligible user to be deleted");
-			break;
-		default:
-			return res.status(409);
+		if (del == 1) {    
+			console.log(`Account deleted`);
+			req.logout();
+			return res.redirect("/index");
 		}
-		const affected = await ModelUser.destroy({
-		where: { uuid: req.params.uuid },
-		});
-
-		if (affected == 1) {
-
-		console.log(`Deleted user: ${req.user.name}`);
-		return res.redirect("/index");
-		}
-	} catch (error) {
-		console.error(`Failed to delete user: ${req.user.name}`);
+	}
+	catch (error) {
+		console.error(`Failed to delete account: ${req.params.uuid}`);
 		console.error(error);
 		return res.status(500);
 	}
+});
 
+router.get('/profile/change-password', async function (req, res) {
+	console.log("Change password page accessed");
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
 
+	return res.render('change_password', {
+		cust: cust,
+		perf: perf,
+		admin: admin,
+	});
+});
+
+router.post('/profile/change-password', async function(req,res){
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+
+	const regexPwd   = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+	let errors = [];
+	const currentPassword = Hash.sha256().update(req.body.current_password).digest("hex");
+	try {
+		if (req.user.password != currentPassword) {
+			errors = errors.concat({ text: "Current Password do not match!" });
+			return res.render('change_password', { 
+				errors: errors,
+				cust: cust,
+				perf: perf,
+				admin: admin,
+			});
+		}
+		else if (!regexPwd.test(req.body.new_password)) {
+			errors = errors.concat({ text: "Password Requires Minimum 8 characters, at least 1 Uppercase letter, 1 Lower Case Letter , 1 Number and 1 Special Character" });
+			return res.render('change_password', {
+				errors: errors,
+				cust: cust,
+				perf: perf,
+				admin: admin,
+			});
+		}
+		else if (req.body.new_password !== req.body.confirm_password) {
+			errors = errors.concat({ text: "Password do not match!" });
+			return res.render('change_password', {
+				errors: errors,
+				cust: cust,
+				perf: perf,
+				admin: admin,
+			});
+		}
+		const update_password = await ModelUser.update({
+			password: Hash.sha256().update(req.body.new_password).digest("hex")},{
+			where: {
+				uuid: req.user.uuid
+			  }
+		});
+		return res.redirect("/profile");
+	}
+	catch (error) {
+		console.log("Error in changing password page")
+	}
 });
 
 router.get('/customerHomePage', async function(req,res){
