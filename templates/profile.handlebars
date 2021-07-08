@@ -42,12 +42,7 @@
 			</div>	
 		</div>
 		<hr class="ml-5 mr-5">
-		{{#if cust}}
-		<form method="post" action="/profile/{{user.uuid}}?_method=DELETE" class="text-center">
-			<button type="submit" class="btn btn-danger col-2">Delete Account</button>
-		</form>
-		{{/if}}
-		{{#if perf}}
+		{{#if valid}}
 		<form method="post" action="/profile/{{user.uuid}}?_method=DELETE" class="text-center">
 			<button type="submit" class="btn btn-danger col-2">Delete Account</button>
 		</form>

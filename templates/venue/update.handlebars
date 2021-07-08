@@ -29,20 +29,6 @@
             
                 <div class="form-group">
                     <div class="row mb-2">
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
-                            <label class="font-italic">Venue Date</label>
-                            <input id="datepicker" width="200" name="venueDate" value="{{ content.venueDate }}" pattern="\d{1,4}-\d{1,2}-\d{1,2}" placeholder="yyyy-mm-dd" required/>
-                        </div>
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                            <label class="font-italic">Venue Time</label>
-                            <br>
-                            <select id="venueTime" name="venueTime">
-                                <option value="10am ~ 1pm" selected>10am ~ 1pm</option>
-                                <option value="3pm ~ 6pm" selected>3pm ~ 6pm</option>
-                                <option value="7pm ~ 10pm" selected>7pm ~ 10pm</option>
-                                <option value="12pm ~ 3am" selected>12pm ~ 3am</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
             
@@ -51,24 +37,9 @@
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                             <label class="font-italic">Venue Price</label>
                             <br>
-            
-                            <div class="form-check form-check-inline">
-                                {{!-- dropdown list --}}
-                                <select id="venuePrice" name="venuePrice">
-                                    <option value="6000" selected>$6000</option>
-                                    <option value="7500" selected>$7500</option>
-                                    <option value="9000" selected>$9000</option>
-                                    <option value="10500" selected>$10,500</option>
-                                </select>
-                                <br>
-                                {{!--<div class="form-check form-check-inline">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control form-control-sm" name="otherSub" id="otherSub" placeholder="Other">
-                                    </div>
-                                </div>--}}
+                            <input type="text" class="form-control" name="venuePrice" placeholder="6000, 7500, 9000, 10500 etc..... Do not enter $"
+                                required>
 
-
-                            </div>
                         </div>
             
                     </div>

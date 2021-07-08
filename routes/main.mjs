@@ -132,10 +132,18 @@ router.get('/profile', async function(req,res){
 	console.log(cust);
 	console.log(perf);
 	console.log(admin);
+	if (req.user.email == "root@mail.com") {
+		var valid = false;
+	}
+	else{
+		valid = true;
+	}
 	return res.render('profile',{
 		cust: cust,
 		perf: perf,
 		admin: admin,
+		valid: valid,
+
 	});
 });
 
