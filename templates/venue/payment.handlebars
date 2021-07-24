@@ -19,76 +19,44 @@
                     <div class="row px-3 text-center justify-content-center mb-2">
                         <p class="text-wrap mr-5 ml-5">{{content.venueStory}}</p> 
                     </div>
-                    <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
-                        <h5>Date:</h5>
-                        <h5>{{content.venueDate}}</h5>
-                    </div>
-                    <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
-                        <h5>Time: </h5>
-                        <h5>{{content.venueTime}}</h5>
-                    </div>
 
                     <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
                         <h5>Price:$</h5> 
                         <h5>{{content.venuePrice}} </h5> 
                     </div>
                 </div>
+                <br>
+
             </div>
-            {{!-- Payment Detail --}}
             <div class="col-lg-6">
                 <div class="card2 card border-0 px-4 py-5">
-                    <h4 class="mb-3 text-center">Payment Details</h4>
-                    {{!-- CARD NUMBER  --}}
-                    <form action="/venue/myPurchases/{{content.uuid}}" method="post">
-                        <div class="row px-3 mt-3">
-                            <label class="mb-0">
-                                <h6 class="mb-2 text-sm">Card Number</h6>
-                            </label>
-                            <input type="tel" name="card_number" pattern="[0-9]{4}[0-9]{4}[0-9]{4}[0-9]{4}" placeholder="xxxx xxxx xxxx xxxx" required>
+                    <form action="/venue/payment/{{content.uuid}}" method="post">
+                        <div>
+                            <label>&nbsp;Please choose your preferred venue date</label>
+                            <br>
+                            <input id="datepicker" width="200" name="venueDate" pattern="\d{1,4}-\d{1,2}-\d{1,2}" placeholder="yyyy-mm-dd"
+                                onchange="return checkDate(venueDate)" required />
+                            <label>&nbsp;Please choose your preferred venue time slot</label>
+                            <br>
+                            <select id="venueTime" name="venueTime">
+                                <option value="10am ~ 1pm">10am ~ 1pm</option>
+                                <option value="3pm ~ 6pm">3pm ~ 6pm</option>
+                                <option value="7pm ~ 10pm">7pm ~ 10pm</option>
+                                <option value="12pm ~ 3am">12pm ~ 3am</option>
+                            </select>
                         </div>
-                        {{!-- EXPIRY DATE & CVV --}}
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <label class="mb-0">
-                                    <h6 class="mb-2 text-sm">Expiry Date</h6>
-                                </label>
-                                <input type="text" name="expiry_date" placeholder="MM / YY" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="mb-0">
-                                    <h6 class="mb-2 text-sm">CVV</h6>
-                                </label>
-                                <input type="tel" name="cvv" pattern="[0-9]{3}"  placeholder="***" required>
-                            </div>
-                        </div>
-                        {{!-- CARD NAME --}}
-                        <div class="row px-3 mt-3">
-                            <label class="mb-0">
-                                <h6 class="mb-2 text-sm">Card Name</h6>
-                            </label>
-                            <input type="text" name="card_name" placeholder="Edison Lim" required>
-                        </div>
-                        {{!-- EMAIL ADDRESS --}}
-                        <div class="row px-3 mt-3">
-                            <label class="mb-0">
-                                <h6 class="mb-2 text-sm">Email Address</h6>
-                            </label>
-                            <input type="email" name="email" placeholder="example@gmail.com" required>
-                        </div>
-                        {{!-- BUTTON --}}
-                        <div class="row mb-2 mt-4 justify-content-center">
-                            <div class="col-md-5">
-                                <button  class="btn-1" onclick="show_alert()">Continue</button>
-                            </div>
-                        </div>
+                        <br>
+                        <h1>NETS QR</h1>
+                        <h1>Please enter the numeric amount to pay IN CENTS and then click submit</h1>
+                        <input type="number" placeholder="Price x 100" name="amount" id="price" required>
+                    
+                        <button onclick="generate_qr_code(null)">Submit</button>
+                        <img src="null" id="qr_code">
+                        <br>
+                        <button type="submit" onclick="show_alert()" class="btn btn-primary mt-3 mr-2">I have paid already using NETS QR</button>
+
                     </form>
                     <br>
-                    <h1>Do you want to pay using NETS instead?</h1>
-                    <h1>Please enter the numeric amount to pay IN CENTS and then click submit</h1>
-                    <input type="number" placeholder="Price x 100" name="amount" id="price">
-                    <button onclick="generate_qr_code(null)">Submit</button>
-                    <img src="null" id="qr_code">
-                    <button ><a href="/venue/myPurchases/{{content.uuid}}" onclick="show_alert()">I have paid already using NETS QR</a></button>
                 </div>
             </div>
         </div>
@@ -218,4 +186,27 @@
             console.error(`Failed to void transaction :${transaction.txn_identifier}`);
         }
     }
+    var dateToday = new Date();
+    $('#datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        uiLibrary: 'bootstrap4',
+        minDate: dateToday
+    });
+
+
+    function checkDate(form)
+    {
+        // regular expression to match required date format
+        re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+
+        if(form.startdate.value != '' && !form.startdate.value.match(re)) {
+            alert("Invalid date format: " + form.startdate.value);
+        form.startdate.focus();
+        return false;
+        }
+        alert("All input fields have been validated!");
+        return true;
+    }
+
+
 </script>
