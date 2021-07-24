@@ -19,15 +19,32 @@ router.get('/homePage', async function(req,res){
 	var cust = role[0];
 	var perf = role[1];
 	var admin = role[2];
-	console.log(cust);
-	console.log(perf);
-	console.log(admin);
+
+  const all_user = await ModelUser.findAll();
+  var count_cust = 0;
+  var count_perf = 0;
+  var count_admin = 0;
+
+  for (var i = 0; i < all_user.length; i++) {
+    if (all_user[i].role == "customer") {
+      count_cust += 1;
+    }
+    else if(all_user[i].role == "performer") {
+      count_perf += 1;
+    }
+    else{
+      count_admin += 1;
+    }
+  }
 
 	// render homePage.handlebars
 	return res.render('admin/homePage',{
 		cust: cust,
 		perf: perf,
-		admin: admin
+		admin: admin,
+    count_cust: count_cust,
+    count_perf: count_perf,
+    count_admin: count_admin,
 	});
 });
 router.get("/auth/retrieve", auth_retrieve_page);
@@ -639,7 +656,7 @@ async function feedback_update_process(req, res) {
 				email:    req.body.email,
 				password: Hash.sha256().update(req.body.password).digest("hex"),
 				name:     req.body.name,
-				role: req.body.role
+				role:     "admin",
 
 		});
 		await send_verification(user.uuid, user.email);

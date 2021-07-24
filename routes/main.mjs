@@ -1,8 +1,12 @@
 import { Router }       from 'express';
 import { flashMessage } from '../utils/flashmsg.mjs';
 import Hash             from 'hash.js';
-import { UploadFile } from '../utils/multer.mjs';
-import {Path} from '../utils/multer.mjs';
+import { UploadFile } 	from '../utils/multer.mjs';
+import {Path} 			from '../utils/multer.mjs';
+import { ModelStream }  from '../data/stream.mjs';
+import ORM   from 'sequelize';
+
+const { Op } = ORM;
 
 const router = Router();
 export default router;
@@ -61,18 +65,14 @@ router.get("/index", async function(req, res) {
 	console.log(role);
 	if (role != undefined){
 		var role = roleResult(req.user.role);
-
 		var cust = role[0];
 		var perf = role[1];
 		var admin = role[2];
-		console.log("cust: " + cust);
-		console.log("perf: " + perf);
-		console.log("admin: " + admin);
 
 		return res.render('index', {
 			perf: perf,
 			cust: cust,
-			admin: admin
+			admin: admin,
 		});
 	}
 	else{
@@ -129,27 +129,17 @@ router.get('/profile', async function(req,res){
 	var cust = role[0];
 	var perf = role[1];
 	var admin = role[2];
-	console.log(cust);
-	console.log(perf);
-	console.log(admin);
+	var vaild_role = true
 	if (req.user.email == "root@mail.com") {
-		var valid = false;
-	}
-	else{
-		valid = true;
+		vaild_role = false;
 	}
 	return res.render('profile',{
 		cust: cust,
 		perf: perf,
 		admin: admin,
-		valid: valid,
-
+		vaild_role: vaild_role,
 	});
 });
-
-
-
-
 
 router.post('/profile', UploadFile.single('profile_pic'), async function(req,res){
 
@@ -162,7 +152,7 @@ router.post('/profile', UploadFile.single('profile_pic'), async function(req,res
 	const previous_file = contents.profile_pic;
 
 	const data = {
-		profile_pic: req.file.path,
+		profile_pic	: req.file.path,
 	};
 	//	Assign new file if necessary
 	if (replaceFile) {
@@ -173,6 +163,36 @@ router.post('/profile', UploadFile.single('profile_pic'), async function(req,res
 	}
 
 	await (await contents.update(data)).save();
+
+	// if (replaceFile) {
+	// 	remove_file(previous_file);
+	// }
+
+	return res.redirect("/profile");
+});
+
+router.post('/profile/name', async function(req,res){
+
+	const contents = await ModelUser.findOne({
+		where: { uuid: req.user.uuid },
+	});
+	const data = {
+		"name": req.body.name,
+	};
+	await (await contents.update(data)).save();	
+
+	return res.redirect("/profile");
+});
+
+router.post('/profile/email', async function(req,res){
+
+	const contents = await ModelUser.findOne({
+		where: { uuid: req.user.uuid },
+	});
+	const data = {
+		"email": req.body.email,
+	};
+	await (await contents.update(data)).save();	
 
 	return res.redirect("/profile");
 });
@@ -268,15 +288,19 @@ router.get('/customerHomePage', async function(req,res){
 	var cust = role[0];
 	var perf = role[1];
 	var admin = role[2];
-	console.log(cust);
-	console.log(perf);
-	console.log(admin);
+	// Display max 8 stream
+	var streams = [];
+	const all_streams = await ModelStream.findAll();
+	for (var i = 0; i < 8; i++) {
+		streams.push(all_streams[i])
+	}
 
 	return res.render('customerHomePage',{
 		// pass these values to navbar.handlebars
 		cust: cust,
 		perf: perf,
-		admin: admin
+		admin: admin,
+		streams: streams
 	});
 });
 
@@ -286,14 +310,16 @@ router.get('/performerHomePage', async function(req,res){
 	var cust = role[0];
 	var perf = role[1];
 	var admin = role[2];
-	console.log(cust);
-	console.log(perf);
-	console.log(admin);
+
+	const streams = await ModelStream.findAll({
+		where: {"performer_id": req.user.uuid}
+	});		
 
 	return res.render('performerHomePage',{
 		cust: cust,
 		perf: perf,
-		admin: admin
+		admin: admin,
+		streams: streams
 	});
 });
 
