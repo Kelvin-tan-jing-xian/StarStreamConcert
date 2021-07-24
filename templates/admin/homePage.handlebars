@@ -1,11 +1,205 @@
-<h1>This is admin home page</h1>
-<h1>So, what are you planning to do today?</h1>
-<p>View stream report? Sure no problem!</p>
-<a href="/haventDoYet">View Stream Report</a>
-<p>View venue report? Sure no problem!</p>
-<a href="/haventDoYet">View Venue Report</a>
-<p>Manage all users? Here you go!</p>
-<a href="/admin/auth/retrieve">Manage Users</a>
-<p>Manage all streams? Here you go!</p>
-<a href="/admin/stream/retrieveall">Manage all streams</a>
+<section id="account" class="account mb-5">
+    <div class="container">
 
+        <div class="row">
+
+            <div class="col-lg-4 col-md-6">
+                <div class="box">
+                    <h3>{{count_cust}}</h3>
+                    <h4 class="text-muted"><span class="user-type">customer</span> account created</h4>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mt-4 mt-md-0">
+                <div class="box">
+                    <h3>{{count_perf}}</h3>
+                    <h4 class="text-muted"><span class="user-type">performer</span> account created</h4>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mt-4 mt-lg-0">
+                <div class="box">
+                    <h3>{{count_admin}}</h3>
+                    <h4 class="text-muted"><span class="user-type">admin</span> account created</h4>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+<section id="features" class="features">
+    <div class="container">
+
+        <div class="section-title">
+            <h1>Management</h1>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6 mt-4 mt-lg-4">
+                <div class="icon-box pt-4 pb-4">
+                    <h2><a href="/admin/auth/retrieve">Users</a></h2>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-4 mt-lg-4">
+                <div class="icon-box pt-4 pb-4">
+                    <h2><a href="/admin/stream/retrieveall">Streams</a></h2>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-4 mt-lg-4">
+                <div class="icon-box pt-4 pb-4 d-flex justify-content-between">
+                    <h2><a href="/admin/venue/retrieve">Venues</a></h2>
+                    <a href="/admin/venue/create"><i class="fa fa-plus"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-4 mt-lg-4">
+                <div class="icon-box pt-4 pb-4  ">
+                    <h2><a href="/admin/feedback/retrieve">Feedback</a></h2>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="section-title mt-5">
+            <h1>Report</h1>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6 mt-4 mt-lg-4">
+                <div class="icon-box pt-4 pb-4">
+                    <h2><a href="">Venue</a></h2>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-4 mt-lg-4">
+                <div class="icon-box pt-4 pb-4">
+                    <h2><a href="">Stream</a></h2>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<a href="/admin/create" class="btn btn-info float-btn">
+    <i class="fa fa-plus"></i>
+</a>
+
+<style>
+    .section-title {
+        text-align: center;
+        padding-bottom: 30px;
+    }
+
+    .section-title h1 {
+        font-size: 35px;
+        font-weight: bold;
+        text-transform: uppercase;
+        position: relative;
+        color: #222222;
+    }
+
+    .section-title h1::before,
+    .section-title h1::after {
+        content: '';
+        width: 50px;
+        height: 2px;
+        background: #3498db;
+        display: inline-block;
+    }
+
+    .section-title h1::before {
+        margin: 0 15px 10px 0;
+    }
+
+    .section-title h1::after {
+        margin: 0 0 10px 15px;
+    }
+
+    .section-title p {
+        margin: 15px 0 0 0;
+    }
+
+    .account .box {
+        padding: 20px;
+        background: #f9f9f9;
+        text-align: center;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+        border: 2px solid #f9f9f9;
+    }
+
+    .account .box h3 {
+        font-size: 82px;
+        color: #3498db;
+        font-weight: 500;
+        font-family: "Open Sans", sans-serif;
+        margin-bottom: 20px;
+    }
+
+    .account .box h4 {
+        font-weight: 400;
+        padding: 15px;
+        margin-top: 15px;
+        font-size: 18px;
+        color: #222222;
+    }
+
+    .user-type {
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .features .icon-box {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        background: #f6f6f6;
+        transition: ease-in-out 0.3s;
+    }
+
+
+    .features .icon-box h2 {
+        font-weight: 700;
+        margin: 0;
+        padding: 0;
+        line-height: 1;
+        font-size: 20px;
+    }
+
+    .features .icon-box i {
+        position: absolute;
+        font-size: 27px;
+        right: 7%;
+        bottom: 25%;
+    }
+
+    .features .icon-box h2 a {
+        color: #222222;
+        transition: ease-in-out 0.3s;
+    }
+
+    .features .icon-box h2 a:hover {
+        text-decoration: none;
+        color: #3498db;
+    }
+
+    .features .icon-box:hover {
+        background: #eef7fc;
+    }
+
+    .float-btn {
+        position: fixed;
+        width: 60px;
+        height: 60px;
+        bottom: 40px;
+        right: 40px;
+        color: #FFF;
+        font-size: 33px;
+        border-radius: 50%;
+    }
+</style>
