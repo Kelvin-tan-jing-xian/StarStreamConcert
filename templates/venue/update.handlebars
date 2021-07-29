@@ -20,10 +20,12 @@
                     <div class="form-group col">
                         <label class="font-italic" for="venuePoster">Venue Poster</label>
                         <br>
-                        <input onchange="return fileValidation()" type="file" id="file" name="venuePoster" accept="image/png,image/jpeg,image/jpg,image/gif" required>
+                        <input onchange="return fileValidation()" type="file" id="file" name="venuePoster" accept="image/png,image/jpeg,image/jpg,image/gif">
                         <!-- Image preview -->
                         <div id="imagePreview"></div>
-
+                        <br>
+                        <p>Original poster:</p>
+                        <img src="/{{content.venuePoster}}" alt="Poster unavailable">
                     </div>
                 </div>
             
@@ -35,9 +37,9 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                            <label class="font-italic">Venue Price</label>
+                            <label class="font-italic">Venue Price($)</label>
                             <br>
-                            <input type="text" class="form-control" name="venuePrice" placeholder="6000, 7500, 9000, 10500 etc..... Do not enter $"
+                            <input type="number" class="form-control" value="{{content.venuePrice}}" name="venuePrice" placeholder="6000, 7500, 9000, 10500 etc..... Do not enter $"
                                 required>
 
                         </div>

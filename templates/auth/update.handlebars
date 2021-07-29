@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card card-body">
+            <img class="logo" src="/public/img/Starstreamlogo.jpeg">
+            <h3 class="text-center">Update User</h3>
+            <form action="/auth/update/{{content.uuid}}" method="post">
+            {{!-- Can admin update user name? --}}
+                {{!-- <div class="form-group">
+                    <label for="name"><strong>Name</strong></label>
+                    <input type="text" class="form-control" name="name" value="{{user.name}}" placeholder="E.g John"
+                        required>
+                </div> --}}
+                <div class="form-group">
+                    <label for="email"><strong>Email</strong></label>
+                    <input type="email" name="email" class="form-control" value="{{content.email}}"
+                        placeholder="E.g Example@gmail.com" required>
+                </div>
+                {{!-- Admin help user change password? --}}
+                <div class="form-group">
+                    <label for="password"><strong>Password</strong></label>
+                    <input type="password" name="password" class="form-control" placeholder="P@ssw0rdu"  required>
+                </div>
+                <div class="form-group">
+                    <label for="password2"><strong>Confirm password</strong></label>
+                    <input type="password" name="password2" class="form-control" 
+                        placeholder="Re-enter password" required>
+                </div>
+                <div class="form-group">
+                    <label><strong>Click on the radio button to upgrade this user to admin</strong> </label><br>
+                    <input type="radio" id="admin" name="role" value="admin">
+                    <label for="admin">Upgrade to admin</label>
+
+                </div>
+                <button id="btnSubmit" type="submit" class="btn btn-primary">Save</button>
+                <a id="btnCancel" class="btn btn-primary" href="/admin/auth/retrieve">Cancel</a>
+
+            </form>
+        </div>
+    </div>
+</div>

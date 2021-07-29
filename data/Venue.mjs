@@ -18,16 +18,14 @@ export class ModelVenue extends Model {
 	**/
 	static initialize(database) {
 		ModelVenue.init({
-			"uuid"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
-			"performer_id"    : { type: DataTypes.CHAR(36),    defaultValue: "", allowNull: false},
+			"uuid"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4, allowNull: false },
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"dateUpdated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"venueName"  : { type: DataTypes.STRING(64),  allowNull: false },
 			"venueStory" : { type: DataTypes.STRING(12800), allowNull: false },
-			"venueDate"  : { type: DataTypes.DATEONLY,  allowNull: false },
-			"venueTime"  : {  type: DataTypes.STRING(64), allowNull: false},
 			"venuePrice" : {  type: DataTypes.DECIMAL, allowNull: false},
 			"venuePoster": {  type: DataTypes.STRING(128),allowNull: false},  // change to false once you can file upload
+		
 		}, {
 			"sequelize": database,
 			"modelName": "Venues",

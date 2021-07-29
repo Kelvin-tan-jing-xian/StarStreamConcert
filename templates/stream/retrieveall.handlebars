@@ -72,7 +72,7 @@
         $.each(row, function(key, value){
             if (key == 'uuid'){
                 // html.push('<a class="edit" href="/stream/update/' + value + '" ><i class="fa fa-edit"></i></a>')
-                html.push('<form method="POST" action="/stream/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i>Delete</a>   </form>')
+                html.push('<form method="POST" action="/stream/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i></a>   </form>')
             }
         })
         return html.join('')

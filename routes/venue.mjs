@@ -1,6 +1,10 @@
 import { Router } from "express";
 // must be caps
+import { ModelUser } from "../data/user.mjs";
 import { ModelVenue } from "../data/Venue.mjs";
+import { ModelVenueBookings } from "../data/VenueBookings.mjs";
+import { flashMessage } from "../utils/flashmsg.mjs";
+
 // must be caps
 import ORM from "sequelize";
 const { Op } = ORM;
@@ -14,7 +18,9 @@ router.get("/retrieve-data", retrieve_data);
 router.get("/book", book_page);
 router.get("/book-data", book_page_retrieve_data);
 router.get("/payment/:uuid", payment_page);
-router.post("/myPurchases/:uuid", myPurchases_page);
+router.post("/payment/:uuid", booking_payment_process);
+router.get("/myPurchases", myPurchases_page);
+
 router.get("/viewMyPurchases", viewMyPurchases_page);
 router.get("/search", (req, res) => {
   try {
@@ -27,15 +33,15 @@ router.get("/search", (req, res) => {
     console.log(admin);
     const { term } = req.query;
     ModelVenue.findAll({ where: { venueName: { [Op.substring]: term } } })
-    .then(
-      (venues) =>
-        res.render("venue/book", {
-          venues,
-          cust: cust,
-          perf: perf,
-          admin: admin,
-        })
-    );
+      .then(
+        (venues) =>
+          res.render("venue/book", {
+            venues,
+            cust: cust,
+            perf: perf,
+            admin: admin,
+          })
+      );
   } catch (error) {
     console.error(error);
   }
@@ -76,6 +82,8 @@ async function retrieve_data(req, res) {
     let sortBy = req.query.sort ? req.query.sort : "dateCreated";
     let sortOrder = req.query.order ? req.query.order : "desc";
     let search = req.query.search;
+    // const filter    = JSON.parse(req.query.filter);
+    // console.log(filter);
 
     if (pageSize < 0) {
       throw new HttpError(400, "Invalid page size");
@@ -86,12 +94,17 @@ async function retrieve_data(req, res) {
     /** @type {import('sequelize/types').WhereOptions} */
     const conditions = search
       ? {
-          [Op.or]: {
-            venueName: { [Op.substring]: search },
-            venueStory: { [Op.substring]: search },
-          },
-        }
+        [Op.or]: {
+          venueName: { [Op.substring]: search },
+          venueStory: { [Op.substring]: search },
+        },
+      }
       : undefined;
+    // const condition = {
+    //   "venueName":  { [Op.substring]: filter.venueName },
+    //   "venueStory": { [Op.substring]: filter.venueStory}
+    // }
+
     const total = await ModelVenue.count({ where: conditions });
     const pageTotal = Math.ceil(total / pageSize);
 
@@ -107,7 +120,7 @@ async function retrieve_data(req, res) {
       rows: pageContents,
     });
   } catch (error) {
-    console.error("Failed to retrieve all venues");
+    console.error("Failed to retrieve json data");
     console.error(error);
     return res.status(500).end();
   }
@@ -128,12 +141,21 @@ async function book_page(req, res) {
     console.log("cust: " + cust);
     console.log("perf: " + perf);
     console.log("admin: " + admin);
-
+    var bought = false;
+    // const booking = await ModelVenueBookings.findAll({
+    //   where:{
+    //     performer_id: req.user.uuid
+    //   }
+    // });
+    if (req.user.uuid == ModelVenueBookings.performer_id) {
+      bought = true;
+    }
 
     return res.render("venue/book", {
       cust: cust,
       perf: perf,
       admin: admin,
+      bought: bought,
     });
   } catch (error) {
     console.error("Failed to draw book page");
@@ -162,11 +184,11 @@ async function book_page_retrieve_data(req, res) {
     /** @type {import('sequelize/types').WhereOptions} */
     const conditions = search
       ? {
-          [Op.or]: {
-            venueName: { [Op.substring]: search },
-            venueStory: { [Op.substring]: search },
-          },
-        }
+        [Op.or]: {
+          venueName: { [Op.substring]: search },
+          venueStory: { [Op.substring]: search },
+        },
+      }
       : undefined;
     const total = await ModelVenue.count({ where: conditions });
     const pageTotal = Math.ceil(total / pageSize);
@@ -210,29 +232,88 @@ async function payment_page(req, res) {
   console.log("cust: " + cust);
   console.log("perf: " + perf);
   console.log("admin: " + admin);
+  
   try {
     const content = await ModelVenue.findOne({
       where: { uuid: req.params.uuid },
     });
-    console.log("Is content a list? " + content);
+      var computed = content.concertPrice * 100;
+
+    const totalSlots = ["10am ~ 1pm", "3pm ~ 6pm", "7pm ~ 10pm", "12pm ~ 3am"];
+    var bookedSlots = await ModelVenueBookings.findAll({
+      where: {
+        //venue_id:
+        //venueDate:
+        //venueTime:
+        //show time slots only after date is selected
+        [Op.in]: totalSlots,
+      }
+    });
+    bookedSlots = bookedSlots.map(booking => booking.venueTime);
+    var availableSlots = totalSlots.filter(x=>!bookedSlots.includes(x));
+edSlots
     if (content) {
       return res.render("venue/payment", {
         cust: cust,
         perf: perf,
         admin: admin,
         content: content,
+        computed:computed,
+        // availableSlots:availableSlots,
       });
-    } else {
-      console.error(
-        `Failed to access venue payment page ${req.params["uuid"]}`
-      );
-      console.error(error);
-      return res.status(410).end();
     }
   } catch (error) {
     console.error(`Failed to access venue payment page ${req.params["uuid"]}`);
     console.error(error);
     return res.status(500).end(); //	Internal server error	# Usually should not even happen !!
+  }
+}
+
+/**
+ * Process the payment form
+ * @param {import('express').Request}  req Express Request handle
+ * @param {import('express').Response} res Express Response handle
+ */
+async function booking_payment_process(req, res) {
+  console.log("booking details received");
+  console.log(req.body);
+
+  // Add in form validations
+  //
+  //	Create new venue, now that all the test above passed
+  try {
+    if (!req.body.venueDate) {
+      throw Error("Missing venueDate");
+    }
+    if (!req.body.venueTime) {
+      throw Error("Missing venueTime");
+    }
+    if (!req.body.amount) {
+      throw Error("Missing amount");
+    }
+
+
+    const venuebooking = await ModelVenueBookings.create({
+      venue_id: req.params.uuid,
+      performer_id: req.user.uuid,
+      venueDate: req.body.venueDate,
+      venueTime: req.body.venueTime,
+    });
+
+
+    flashMessage(
+      res,
+      "success",
+      "Successfully created a booking",
+      "fas fa-sign-in-alt",
+      true
+    );
+    return res.redirect(`/venue/myPurchases`); // don't use render
+  } catch (error) {
+    //	Else internal server error
+    console.error(`Failed to create a new booking: performer_id ${req.user.uuid} `);
+    console.error(error);
+    return res.status(500).end();
   }
 }
 
@@ -243,40 +324,70 @@ async function payment_page(req, res) {
  */
 async function myPurchases_page(req, res) {
   console.log("myPurchases page accessed");
+  console.log(req.user);
   var role = roleResult(req.user.role);
   var cust = role[0];
   var perf = role[1];
   var admin = role[2];
-  try {
-    // we need req.params.uuid to find the venue that you chose to buy
-    const contents = await ModelVenue.findAll({
-      where: { uuid: req.params.uuid },
-    });
-    const data = {
-      user_id: req.user.uuid,
-    };
-    // this is wrong
-    await (await contents[0].update(data)).save();
+  // try {
+    // const venue = await ModelVenue.findOne({
+    //   where:{
+    //     "uuid": req.params.uuid }
+    // },{
+    //   include: ModelUser
+    // });
+    // ModelUser.hasMany(ModelVenue, { as: 'Venue' });
+    // ModelVenue.hasMany(ModelUser, { as: 'Performers'})
+    // Format is Model.get<TableName>()
+    // /** @type {[ModelVenue]} */
+    // const booked = await venue.getPerformers();
+    // console.log(booked);
+    // for (var index = 0; index < booked.length; index++) {
+    //   // booked[index].<tableName>;
+    //   booked[index].Venuebookings.venueDate = req.body.venueDate;
+    //   booked[index].Venuebookings.venueTime = req.body.venueTime;
+    //   booked[index].Venuebookings.save();
+    // }
 
-    const venues = await ModelVenue.findAll({
-      where: {
-        user_id: req.user.uuid,
-      },
-      order: [["venueName", "ASC"]],
-      raw: true,
+
+
+    // const user   = await ModelUser.findOne({
+    //   where: { uuid: req.user.uuid }
+    // });
+    // find the venue that you chose to buy
+    const booked = await ModelVenueBookings.findAll({
+      where:   { performer_id: req.user.uuid },
+      raw:  true
     });
 
-    return res.render("venue/myPurchases", {
-      cust: cust,
-      perf: perf,
-      admin: admin,
-      venues: venues,
-    });
-  } catch (error) {
-    console.error(`Failed to access myPurchases page ${req.params["uuid"]}`);
-    console.error(error);
-    return res.status(500).end(); //	Internal server error	# Usually should not even happen !!
-  }
+    const bookings = [];
+
+    for (const book of booked) {
+      bookings.push({
+          "booking": book,
+          "venue": await ModelVenue.findByPk(book.venue_id, { raw: true})
+      })
+    }
+
+    if (booked) {
+      return res.render("venue/myPurchases", {
+        cust: cust,
+        perf: perf,
+        admin: admin,
+        bookings: bookings
+      });
+    }
+    else {
+      console.error(`Failed to render myPurchases page cuz booked is null with venue_id : ${req.params["uuid"]}`);
+      console.error(error);
+      return res.status(410).end();
+    }
+
+  // } catch (error) {
+  //   console.error(`Failed to access myPurchases page with venue_id:  ${req.params["uuid"]}`);
+  //   console.error(error);
+  //   return res.status(500).end(); //	Internal server error	# Usually should not even happen !!
+  // }
 }
 
 async function viewMyPurchases_page(req, res) {
@@ -286,18 +397,28 @@ async function viewMyPurchases_page(req, res) {
   var perf = role[1];
   var admin = role[2];
   try {
-    const venues = await ModelVenue.findAll({
-      where: {
-        user_id: req.user.uuid,
-      },
-      raw: true,
+    const booked = await ModelVenueBookings.findAll({
+      where:   { performer_id: req.user.uuid },
+      raw:  true
     });
-    return res.render("venue/myPurchases", {
+
+    const bookings = [];
+
+    for (const book of booked) {
+      bookings.push({
+          "booking": book,
+          "venue": await ModelVenue.findByPk(book.venue_id, { raw: true})
+      })
+    }
+    if (booked) {
+      return res.render("venue/myPurchases", {
       cust: cust,
       perf: perf,
       admin: admin,
-      venues: venues,
-    });
+      bookings: bookings,
+      });
+
+    }
   } catch (error) {
     console.error(`Failed to access myPurchases page ${req.user["uuid"]}`);
     console.error(error);

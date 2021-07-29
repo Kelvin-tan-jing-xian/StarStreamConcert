@@ -7,6 +7,7 @@ import { ModelFeedback } from "../../data/Feedback.mjs";
 import { flashMessage } from "../../utils/flashmsg.mjs";
 import {remove_file} from '../../utils/multer.mjs';
 import {Path} from '../../utils/multer.mjs';
+import { ModelVenueBookings } from '../../data/VenueBookings.mjs';
 
 const router = Router();
 export default router;
@@ -48,6 +49,7 @@ router.get('/homePage', async function(req,res){
 	});
 });
 router.get("/auth/retrieve", auth_retrieve_page);
+router.get("/auth/update/:uuid", update_page);
 router.get("/venue/create", create_page);
 router.post("/venue/create", UploadFile.single("venuePoster"), venue_create_process);
 router.get("/venue/retrieve", venue_retrieve_page);
@@ -61,7 +63,8 @@ router.post('/feedback/update/:uuid',  feedback_update_process);
 router.delete('/feedback/delete/:uuid', feedback_delete_process);
 router.get("/create", admin_create_page);
 router.post("/create", admin_create_process);
-
+router.get("/venue/report", venue_report_page);
+router.get("/venue/report-data", report_data);
 
 
 
@@ -136,6 +139,45 @@ async function auth_retrieve_page(req, res) {
 	});
 }
 /**
+ * Renders the update page
+ * @param {Request}  req Express request  object
+ * @param {Response} res Express response object
+ */
+async function update_page(req, res) {
+  try {
+    var role = roleResult(req.user.role);
+    var cust = role[0];
+    var perf = role[1];
+    var admin = role[2];
+    console.log("cust: " + cust);
+    console.log("perf: " + perf);
+    console.log("admin: " + admin);
+
+    const content = await ModelUser.findOne({
+      where: { uuid: req.params.uuid },
+    });
+    if (content) {
+      // render to update.handlebars
+      return res.render("auth/update", {
+        cust: cust,
+        perf: perf,
+        admin: admin,
+        content: content,
+      });
+    } else {
+      console.error(`Failed to render user update page cuz content is null`);
+      console.error(error);
+      return res.status(410).end();
+    }
+  } catch (error) {
+    console.error(`Failed to render user update page with user_id: ${req.params["uuid"]}`);
+    console.error(error);
+    return res.status(500).end(); //	Internal server error	# Usually should not even happen !!
+  }
+}
+
+
+/**
  * Renders the create page
  * @param {import('express')Request}  req Express Request handle
  * @param {import('express')Response} res Express Response handle
@@ -176,19 +218,14 @@ async function venue_create_process(req, res) {
     if (!req.body.venueStory) {
       throw Error("Missing venueStory");
     }
-    if (!req.body.venueDate) {
-      throw Error("Missing venueDate");
-    }
 
     const venue = await ModelVenue.create({
       venueName: req.body.venueName,
       venueStory: req.body.venueStory,
-      venueDate: req.body.venueDate,
-      venueTime: req.body.venueTime,
       venuePrice: req.body.venuePrice,
       venuePoster: req.file.path,
     });
-
+    console.log("Successfully uploaded file");
     flashMessage(
       res,
       "success",
@@ -284,9 +321,6 @@ async function venue_update_process(req, res) {
     if (!req.body.venueStory) {
       throw Error("Missing venueStory");
     }
-    if (!req.body.venueDate) {
-      throw Error("Missing venueDate");
-    }
     const contents = await ModelVenue.findAll({
       where: { uuid: req.params.uuid },
     });
@@ -298,8 +332,6 @@ async function venue_update_process(req, res) {
     const data = {
       venueName: req.body.venueName,
       venueStory: req.body.venueStory,
-      venueDate: req.body.venueDate,
-      venueTime: req.body.venueTime,
       venuePrice: req.body.venuePrice,
       venuePoster: req.file.path,
     };
@@ -563,10 +595,6 @@ async function feedback_update_process(req, res) {
         const affected = await ModelFeedback.destroy({where: { "uuid": req.params.uuid}});
 
         if (affected == 1) {
-            //  Delete all files associated
-            // targets.forEach((target) => { 
-            //  remove_file(target.venuePoster);
-            // });
 
             console.log(`Deleted feedback: ${req.params.uuid}`);
             return res.redirect("/admin/feedback/retrieve");
@@ -670,4 +698,86 @@ async function feedback_update_process(req, res) {
 		console.error(error);
 		return res.status(500).end();
 	}
+}
+
+/**
+ * Renders the bootstrap table report page
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+async function venue_report_page(req, res) {
+  console.log("venue report page accessed");
+  try {
+    var role = roleResult(req.user.role);
+    var cust = role[0];
+    var perf = role[1];
+    var admin = role[2];
+    var countPerformer = 0;
+    const venueArray = await ModelVenue.findAll()
+    venueArray.forEach(venueObject => {
+      var popularVenue = venueObject.venueName;
+    });
+    console.log(cust);
+    console.log(perf);
+    console.log(admin);
+
+    return res.render("venue/report", {
+      cust: cust,
+      perf: perf,
+      admin: admin,
+    });
+  } catch (error) {
+    console.error("Failed to draw venue report page");
+    console.error(error);
+    return res.status(500).end();
+  }
+}
+/**
+ * Provides bootstrap table with data
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+async function report_data(req, res) {
+  try {
+    let pageSize = parseInt(req.query.limit);
+    let offset = parseInt(req.query.offset);
+    let sortBy = req.query.sort ? req.query.sort : "dateCreated";
+    let sortOrder = req.query.order ? req.query.order : "desc";
+    let search = req.query.search;
+
+    if (pageSize < 0) {
+      throw new HttpError(400, "Invalid page size");
+    }
+    if (offset < 0) {
+      throw new HttpError(400, "Invalid offset index");
+    }
+    /** @type {import('sequelize/types').WhereOptions} */
+    const conditions = search
+      ? {
+        [Op.or]: {
+          venueDate: { [Op.substring]: search },
+          venueTime: { [Op.substring]: search },
+        },
+      }
+      : undefined;
+
+    const total = await ModelVenueBookings.count({ where: conditions });
+    const pageTotal = Math.ceil(total / pageSize);
+
+    const pageContents = await ModelVenueBookings.findAll({
+      offset: offset,
+      limit: pageSize,
+      order: [[sortBy, sortOrder.toUpperCase()]],
+      where: conditions,
+      raw: true, // Data only, model excluded
+    });
+    return res.json({
+      total: total,
+      rows: pageContents,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve json data");
+    console.error(error);
+    return res.status(500).end();
+  }
 }

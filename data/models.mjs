@@ -8,6 +8,7 @@ import { ModelComments } from './Comments.mjs';
 import { ModelFeedback } from './Feedback.mjs';
 import { ModelStream } from './stream.mjs';
 import { ModelTicket } from './ticket.mjs';
+import { ModelVenueBookings} from './VenueBookings.mjs';
 /**
  * @param database {ORM.Sequelize}
  */
@@ -21,10 +22,14 @@ export function initialize_models(database) {
 		ModelComments.initialize(database);
 		ModelFeedback.initialize(database);
 		ModelTicket.initialize(database);
+		ModelVenueBookings.initialize(database);
 		console.log("Building ORM model relations and indices");
 		//	Create relations between models or tables
 		//	Setup foreign keys, indexes etc
-	
+		ModelUser.belongsToMany(ModelVenue, { through: ModelVenueBookings, foreignKey: "performer_id" });
+		ModelVenue.belongsToMany(ModelUser,    { through: ModelVenueBookings, foreignKey: "venue_id" });
+		// ModelUser.hasMany(ModelVenue, { foreignKey: { name: "performer_id" } });
+
 		console.log("Adding initialization hooks");
 		//	Run once hooks during initialization
 		database.addHook("afterBulkSync", generate_root_account.name,  generate_root_account.bind(this, database));

@@ -23,8 +23,6 @@
         <tr>
             <th data-field="venueName">Venue Name</th>
             <th data-field="venueStory">Venue Story</th>
-            <th data-field="venueDate">Venue Date</th>
-            <th data-field="venueTime">Venue Time</th>
             <th data-field="venuePrice">Venue Price</th>
         </tr>
     </thead>
@@ -38,8 +36,6 @@
                     <div class="col-12 col-lg-8 col-md-6">
                         <h3 class="mb-0 text-truncated">venueName</h3>
                         <p>venueStory</p>
-                        {{!-- <h3 class="mb-0 text-truncated">$venuePrice</h3> --}}
-                        <h3 class="mb-0 text-truncated">venueDate</h3>
 
                     </div>
                     <div class="col-12 col-lg-4 col-md-6 text-center">
@@ -47,14 +43,19 @@
                         <img src="/venuePoster" alt="" class="img-fluid" style="height: 120px;">
                     </div>
                     <div class="col-12 col-lg-4">
-                        <h3 class="mb-0">venueTime</h3>
-                    </div>
-                    <div class="col-12 col-lg-4">
                         <h3 class="mb-0"><span style="white-space:nowrap">$venuePrice</span></h3>
                     </div>
-                    <div class="col-12 col-lg-4">
-                        <a class="btn btn-primary" href="/venue/payment/uuid" role="button">Book Now</a>
-                    </div>
+                    {{#if bought}}
+                        <div class="col-12 col-lg-4">
+                            <p>You have bought this already</p>
+                        </div>
+
+                    {{else}}
+                        <div class="col-12 col-lg-4">
+                            <a class="btn btn-primary" href="/venue/payment/uuid" role="button">Book Now</a>
+                        </div>
+
+                    {{/if}}
                 </div>
             </div>
         </div>
@@ -68,9 +69,7 @@
         $.each(data, function (i, row) {
             view += template.replace('venueName', row.venueName)
                 .replace('venueStory', row.venueStory)
-                .replace('venueDate', row.venueDate)
                 .replace('venuePoster', row.venuePoster)
-                .replace('venueTime', row.venueTime)
                 .replace('venuePrice', row.venuePrice)
                 .replace('uuid', row.uuid)
 ;

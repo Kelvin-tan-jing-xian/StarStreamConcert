@@ -1,50 +1,51 @@
 <!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
 <div class="row">
-    {{#if venues}}
+    {{#if bookings}}
 
     <div class="card card-body">
         <h3 class="text-primary">My Venue Purchases</h3>
-        {{#each venues}}
+        {{#each bookings}}
         <div class="card border-primary mb-2 w-100 mx-auto">
             <div class="card-header">
-                <h5 class="card-title">{{venueName}}</h5>
+                <h5 class="card-title">{{venue.venueName}}</h5>
             </div>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-2">
                     {{!-- / must be in front cuz absolute address --}}
-                    <img src="/{{venuePoster}}" alt="Poster unavailable" class="img-thumbnail img-fluid">
+                    <img src="/{{venue.venuePoster}}" alt="Poster unavailable" class="img-thumbnail img-fluid">
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-8">
                     <div class="row">
                         <div class="col-sm-12 col-md-6 col-lg-3">
                             <p class="font-italic">Venue Time</p>
-                            <p class="text-info">{{venueTime}}</p>
+                            <p class="text-info">{{booking.venueTime}}</p>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-4">
                             <p class="font-italic">Venue Price</p>
-                            <p class="text-info">{{venuePrice}}</p>
+                            <p class="text-info">{{venue.venuePrice}}</p>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2">
-                            <p class="font-italic">venueDate</p>
-                            <p class="text-info">{{venueDate }}</p>
+                            <p class="font-italic">Venue Date</p>
+                            <p class="text-info">{{booking.venueDate}}</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="accordion" id="storyAccordion">
-                <div class="card-header" id="heading-{{uuid}}">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{uuid}}"
-                        aria-expanded="false" aria-controls="collapse-{{uuid}}">
+                <div class="card-header" >
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{venue.uuid}}"
+                        aria-expanded="false">
                         Story<i class="fas fa-chevron-down"></i>
                     </button>
                 </div>
 
-                <div id="collapse-{{uuid}}" class="collapse" aria-labelledby="heading-{{uuid}}"
+                <div id="collapse-{{venue.uuid}}" class="collapse" aria-labelledby="heading-{{venue.uuid}}"
                     data-parent="#storyAccordion">
                     <div class="card-body">
-                        {{venueStory}}
+                        {{venue.venueStory}}
                     </div>
                 </div>
+                
             </div>
         </div>
         {{/each}}
