@@ -27,7 +27,8 @@ router.get('/book', book_page);
 router.get("/book-data", book_page_retrieve_data);
 // for customer, but admin can still access
 router.get("/payment/:uuid", payment_page);
-router.post("/myPurchases/:uuid", myPurchases_page);
+router.post("/payment/:uuid", ticket_payment_process_page);
+router.get("/myPurchases", myPurchases_page);
 
 
 // This function helps in showing different nav bars
@@ -442,10 +443,59 @@ async function create_process(req, res) {
 }
 
 /**
+ * Process the payment form
+ * @param {import('express').Request}  req Express Request handle
+ * @param {import('express').Response} res Express Response handle
+ */
+ async function ticket_payment_process_page(req, res) {
+	console.log("booking details received");
+	console.log(req.body);
+  
+	// Add in form validations
+	//
+	//	Create new venue, now that all the test above passed
+	try {
+	  if (!req.body.amount) {
+		throw Error("Missing amount");
+	  }
+  
+  
+	  const ticket = await ModelTicket.create({
+		stream_id: req.params.uuid,
+		user_id: req.user.uuid,
+		concertName: req.body.concertName,
+		artistName: req.body.artistName,
+		concertDate: req.body.concertDate,
+		concertTime: req.body.concertTime,
+		concertPrice: req.body.concertPrice,
+
+	  });
+  
+  
+	  flashMessage(
+		res,
+		"success",
+		"Successfully created a ticket",
+		"fas fa-sign-in-alt",
+		true
+	  );
+	  return res.redirect(`/stream/myPurchases`); // don't use render
+	} catch (error) {
+	  //	Else internal server error
+	  console.error(`Failed to create a new ticket: user_id ${req.user.uuid} `);
+	  console.error(error);
+	  return res.status(500).end();
+	}
+  }
+  
+
+
+/**
  * Renders myPurchases page.
  * @param {Request}  req Express request object
  * @param {Response} res Express response object
  */
+// stopped here
 async function myPurchases_page(req, res) {
 	console.log("myPurchases page accessed");
 	var role = roleResult(req.user.role);
@@ -453,18 +503,6 @@ async function myPurchases_page(req, res) {
 	var perf = role[1];
 	var admin = role[2];
 	try {
-		// we need req.params.uuid to find the stream that you chose to buy 
-		const ticket = await ModelTicket.create({
-			// Ryo pls find a way to access the getter uuid stream
-			"stream_id": uuid(),
-			"user_id": req.user.uuid,
-			"concertName": req.body.concertName,
-			"artistName": req.body.artistName,
-			"concertDate": req.body.concertDate,
-			"concertTime": req.body.concertTime,
-			"concertPrice": req.body.concertPrice
-		});
-		flashMessage(res, 'success', 'Successfully created a ticket', 'fas fa-sign-in-alt', true);
 
 		const tickets = await ModelTicket.findAll({
 			where: {

@@ -33,12 +33,30 @@
                         <h5 class="mr-5 pr-5">Standard</h5> 
                         <h5>${{content.concertPrice}}</h5>
                     </div>
+                    <br>
+                    <form action="/stream/payment/{{content.uuid}}" id="form1" method="post">
+                        <h1>NETS QR</h1>
+                        <h1>Please enter the numeric amount to pay IN CENTS and then click "Generate Qr Code if you are ready"</h1>
+                        <input type="number" placeholder="Price x 100" value="{{computed}}" name="amount" id="price" disabled>
+                        <img src="null" id="qr_code">
+                        <br>
+                        <p>Web page redirects after 5 seconds upon successful payment.</p>
+                        <br>
+
+                    </form>
+                    <button onclick="generate_qr_code(null)">Generate Qr Code if you are ready</button>
+
+
+
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script>
+    function changeImage(){
+        document.getElementById("qr_code").src = "/public/img/redCross.png";
+    }
     function show_alert() {
             alert("Thank you for your payment!");
     }
@@ -113,10 +131,18 @@
 
                 case 1:
                     console.log(`Payment succeeded`);
-                    break;
+                    document.getElementById("qr_code").src = `/public/img/greenTick.jpg`;
+                    // redirecting to myPurchases page in 5 seconds
+                    setTimeout(function () {
 
+                        $("#form1").submit();
+                    }, 5000);
+                    break;
                 case -1:
                     console.log(`Payment cancelled`);
+                    // Hide qr code, set image to X
+                    changeImage();
+
                     break;
             }
         }
@@ -150,6 +176,9 @@
             switch (status) {
                 case 1:
                     console.log(`Transaction cancelled successfully`);
+                    // TODO: Do any UX changes here
+                    changeImage();
+
                     break;
 
                 default:

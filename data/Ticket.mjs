@@ -17,7 +17,7 @@ export class ModelTicket extends Model {
 	**/
 	static initialize(database) {
 		ModelTicket.init({
-			"uuid"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
+			"ticket_id"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
             "stream_id"  : { type: DataTypes.CHAR(36)},
             "user_id"    : { type: DataTypes.CHAR(36)},
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
@@ -47,5 +47,24 @@ export class ModelTicket extends Model {
 		// @ts-ignore
 		instance.dateUpdated = Sequelize.literal('CURRENT_TIMESTAMP');
 	}
+get ticket_id() { return String(this.getDataValue("ticket_id"));}
+get stream_id() { return String(this.getDataValue("stream_id"));}
+get user_id() { return String(this.getDataValue("user_id"));}
+get concertName() { return String(this.getDataValue("concertName"));}
+get artistName() { return String(this.getDataValue("artistName"));}
+get concertDate() { return String(this.getDataValue("concertDate"));}
+get concertTime() { return String(this.getDataValue("concertTime"));}
+get concertPrice() { return String(this.getDataValue("concertPrice"));}
+
+set ticket_id(ticket_id) {this.setDataValue("ticket_id", ticket_id); }
+set stream_id(stream_id) {this.setDataValue("stream_id", stream_id);}
+set user_id(user_id) {this.setDataValue("user_id", user_id);}
+set concertName(concertName) {this.setDataValue("concertName", concertName);}
+set artistName(artistName) {this.setDataValue("artistName", artistName);}
+set concertDate(concertDate) {this.setDataValue("concertDate", concertDate);}
+set concertTime(concertTime) {this.setDataValue("concertTime", concertTime);}
+set concertPrice(concertPrice) {this.setDataValue("concertPrice", concertPrice);}
+
 
 }
+
