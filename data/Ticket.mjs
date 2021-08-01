@@ -17,16 +17,12 @@ export class ModelTicket extends Model {
 	**/
 	static initialize(database) {
 		ModelTicket.init({
+			// need to drop table if make any changes here
 			"ticket_id"       : { type: DataTypes.CHAR(36),    primaryKey: true, defaultValue: DataTypes.UUIDV4 },
             "stream_id"  : { type: DataTypes.CHAR(36)},
             "user_id"    : { type: DataTypes.CHAR(36)},
 			"dateCreated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
 			"dateUpdated": { type: DataTypes.DATE(),      allowNull: false, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
-			"concertName"       : { type: DataTypes.STRING(64),  allowNull: false },
-			"artistName" : { type: DataTypes.STRING(64), allowNull: false },
-			"concertDate"      : { type: DataTypes.DATE(), allowNull: false },
-			"concertTime"   : { type: DataTypes.STRING(64),  allowNull: false },
-			"concertPrice":   { type: DataTypes.STRING(64), allowNull: false },
 		}, {
 			"sequelize": database,
 			"modelName": "Tickets",

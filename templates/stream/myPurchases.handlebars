@@ -7,29 +7,52 @@
         {{#each tickets}}
         <div class="card border-primary mb-2 w-100 mx-auto">
             <div class="card-header">
-                <h5 class="card-title">{{concertName}}</h5>
+                <h5 class="card-title">{{stream.concertName}}</h5>
             </div>
             <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-2">
+                    {{!-- / must be in front cuz absolute address --}}
+                    <img src="/{{stream.concertPoster}}" alt="Poster unavailable" class="img-thumbnail img-fluid">
+                </div>
                 <div class="col-sm-12 col-md-12 col-lg-8">
                     <div class="row">
                         <div class="col-sm-12 col-md-6 col-lg-3">
-                            <p class="font-italic">Concert Time</p>
-                            <p class="text-info">{{concertTime}}</p>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <p class="font-italic">Concert Price</p>
-                            <p class="text-info">{{concertPrice}}</p>
+                            <p class="font-italic">Artist Name</p>
+                            <p class="text-info">{{stream.artistName}}</p>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2">
                             <p class="font-italic">Concert Date</p>
-                            <p class="text-info">{{concertDate }}</p>
+                            <p class="text-info">{{stream.concertDate}}</p>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-3">
+                            <p class="font-italic">Concert Time</p>
+                            <p class="text-info">{{stream.concertTime}}</p>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <p class="font-italic">Concert Price</p>
+                            <p class="text-info">{{stream.concertPrice}}</p>
                         </div>
                     </div>
-                    {{!-- Put enter stream button somewhere here --}}
                 </div>
+            </div>
+            <div class="accordion" id="storyAccordion">
+                <div class="card-header">
+                    <button class="btn btn-link" type="button" data-toggle="collapse"
+                        data-target="#collapse-{{stream.uuid}}" aria-expanded="false">
+                        Concert Story<i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+
+                <div id="collapse-{{stream.uuid}}" class="collapse" aria-labelledby="heading-{{stream.uuid}}"
+                    data-parent="#storyAccordion">
+                    <div class="card-body">
+                        {{stream.concertStory}}
+                    </div>
+                </div>
+
             </div>
         </div>
         {{/each}}
         {{else}}
-        <h3>You have not purchased any tickets</h3>
+        <h3>You have not purchased any ticket</h3>
         {{/if}}

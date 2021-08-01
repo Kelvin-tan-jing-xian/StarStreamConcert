@@ -25,11 +25,11 @@ export function initialize_models(database) {
 		ModelVenueBookings.initialize(database);
 		console.log("Building ORM model relations and indices");
 		//	Create relations between models or tables
-		//	Setup foreign keys, indexes etc
+		//	Setup foreign keys, indexes etc, drop and recreate ModelVenueBookings to alter table and see FK
 		
 		ModelUser.belongsToMany(ModelVenue, { through: ModelVenueBookings, foreignKey: "performer_id" });
 		ModelVenue.belongsToMany(ModelUser,    { through: ModelVenueBookings, foreignKey: "venue_id" });
-		// ModelUser.hasMany(ModelVenue, { foreignKey: { name: "performer_id" } });
+		//	Setup foreign keys, indexes etc, drop and recreate ModelTicket to alter table and see FK
 
 		ModelUser.belongsToMany(ModelStream, {through: ModelTicket, foreignKey: "user_id"});
 		ModelStream.belongsToMany(ModelUser, {through: ModelTicket, foreignKey: "stream_id"});

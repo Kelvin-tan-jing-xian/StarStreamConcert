@@ -57,7 +57,7 @@ async function nets_generate(req, res) {
 		const payload  = JSON.parse(FileSys.readFileSync(`${process.cwd()}/res/nets/nets-qr-request.json`));
 		const stan     = ++nets_stan;
 		
-		//	Ensures that nets_stat is between 0 ~ 999999
+		//	Ensures that nets_stan is between 0 ~ 999999
 		if (nets_stan >= 1000000)
 			nets_stan = 0;
 

@@ -37,7 +37,7 @@
                     <form action="/stream/payment/{{content.uuid}}" id="form1" method="post">
                         <h1>NETS QR</h1>
                         <h1>Please enter the numeric amount to pay IN CENTS and then click "Generate Qr Code if you are ready"</h1>
-                        <input type="number" placeholder="Price x 100" value="{{computed}}" name="amount" id="price" disabled>
+                        <input type="number" placeholder="Price x 100" value="{{content.concertPrice}}" name="amount" id="price">
                         <img src="null" id="qr_code">
                         <br>
                         <p>Web page redirects after 5 seconds upon successful payment.</p>

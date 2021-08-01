@@ -237,28 +237,27 @@ async function payment_page(req, res) {
     const content = await ModelVenue.findOne({
       where: { uuid: req.params.uuid },
     });
-      var computed = content.concertPrice * 100;
+    //   var computed = content.concertPrice * 100;
 
-    const totalSlots = ["10am ~ 1pm", "3pm ~ 6pm", "7pm ~ 10pm", "12pm ~ 3am"];
-    var bookedSlots = await ModelVenueBookings.findAll({
-      where: {
-        //venue_id:
-        //venueDate:
-        //venueTime:
-        //show time slots only after date is selected
-        [Op.in]: totalSlots,
-      }
-    });
-    bookedSlots = bookedSlots.map(booking => booking.venueTime);
-    var availableSlots = totalSlots.filter(x=>!bookedSlots.includes(x));
-edSlots
+    // const totalSlots = ["10am ~ 1pm", "3pm ~ 6pm", "7pm ~ 10pm", "12pm ~ 3am"];
+    // var bookedSlots = await ModelVenueBookings.findAll({
+    //   where: {
+    //     //venue_id:
+    //     //venueDate:
+    //     //venueTime:
+    //     //show time slots only after date is selected
+    //     [Op.in]: totalSlots,
+    //   }
+    // });
+    // bookedSlots = bookedSlots.map(booking => booking.venueTime);
+    // var availableSlots = totalSlots.filter(x=>!bookedSlots.includes(x));
     if (content) {
       return res.render("venue/payment", {
         cust: cust,
         perf: perf,
         admin: admin,
         content: content,
-        computed:computed,
+        // computed:computed,
         // availableSlots:availableSlots,
       });
     }

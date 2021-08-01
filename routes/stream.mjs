@@ -27,8 +27,9 @@ router.get('/book', book_page);
 router.get("/book-data", book_page_retrieve_data);
 // for customer, but admin can still access
 router.get("/payment/:uuid", payment_page);
-router.post("/payment/:uuid", ticket_payment_process_page);
+router.post("/payment/:uuid", ticket_payment_process);
 router.get("/myPurchases", myPurchases_page);
+router.get("/viewMyPurchases", viewMyPurchases_page);
 
 
 // This function helps in showing different nav bars
@@ -423,19 +424,11 @@ async function create_process(req, res) {
 				perf: perf,
 				admin: admin,
 				"content": content
-	});
-
+			});
 		} 
-		else 
-		{
-			console.error(`Failed to access stream payment page ${req.params.uuid}`);
-			console.error(error);
-			return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
-
-		}
 	} 
 	catch (error) {
-		console.error(`Failed to access stream payment page ${req.params["uuid"]}`);
+		console.error(`Failed to access stream payment page with stream_id: ${req.params["uuid"]}`);
 		console.error(error);
 		return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
 
@@ -447,7 +440,7 @@ async function create_process(req, res) {
  * @param {import('express').Request}  req Express Request handle
  * @param {import('express').Response} res Express Response handle
  */
- async function ticket_payment_process_page(req, res) {
+ async function ticket_payment_process(req, res) {
 	console.log("booking details received");
 	console.log(req.body);
   
@@ -504,26 +497,40 @@ async function myPurchases_page(req, res) {
 	var admin = role[2];
 	try {
 
-		const tickets = await ModelTicket.findAll({
-			where: {
-				"user_id": req.user.uuid
-			},
-			order : [
-				['concertName', 'ASC']
-			],
-			raw: true
-		});		
+		const bookedTicket = await ModelTicket.findAll({
+			where:   { user_id: req.user.uuid },
+			raw:  true
+		});
 
-		return res.render('stream/myPurchases', {
+		const tickets = [];
+
+		for (const book of bookedTicket) {
+			tickets.push({
+				// this ticket is not used
+				"ticket": book,
+				"stream": await ModelStream.findByPk(book.stream_id, { raw: true})
+			})
+		}
+
+		if (bookedTicket) {
+			return res.render('stream/myPurchases', {
 			cust: cust,
 			perf: perf,
 			admin: admin,
-			"tickets": tickets
-		});
+			tickets: tickets
+			});
+
+		}
+		else {
+			console.error(`Failed to render myPurchases page cuz booked is null with stream_id : ${req.params["uuid"]}`);
+			console.error(error);
+			return res.status(410).end();
+		}
+
 		
 	}
 	catch (error) {
-		console.error(`Failed to access myPurchases page ${req.params["uuid"]}`);
+		console.error(`Failed to access myPurchases page with stream_id:  ${req.params["uuid"]}`);
 		console.error(error);
 		return res.status(500).end();	//	Internal server error	# Usually should not even happen !!
 	}
@@ -578,4 +585,40 @@ async function myPurchases_page(req, res) {
 		return res.status(500).end();
 
 	}
+}
+async function viewMyPurchases_page(req, res) {
+  console.log("myPurchases page accessed");
+  var role = roleResult(req.user.role);
+  var cust = role[0];
+  var perf = role[1];
+  var admin = role[2];
+  try {
+    const bookedTicket = await ModelTicket.findAll({
+      where:   { user_id: req.user.uuid },
+      raw:  true
+    });
+
+    const tickets = [];
+
+    for (const book of bookedTicket) {
+      tickets.push({
+		  //this ticket is not used
+          "ticket": book,
+          "stream": await ModelStream.findByPk(book.stream_id, { raw: true})
+      })
+    }
+    if (bookedTicket) {
+      return res.render("stream/myPurchases", {
+      cust: cust,
+      perf: perf,
+      admin: admin,
+      tickets: tickets,
+      });
+
+    }
+  } catch (error) {
+    console.error(`Failed to access myPurchases page with user_id: ${req.user["uuid"]}`);
+    console.error(error);
+    return res.status(500).end(); //	Internal server error	# Usually should not even happen !!
+  }
 }

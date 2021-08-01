@@ -26,7 +26,6 @@
                     </div>
                 </div>
                 <br>
-
             </div>
             <div class="col-lg-6">
                 <div class="card2 card border-0 px-4 py-5">
@@ -39,26 +38,21 @@
                             <label>&nbsp;Please choose your preferred venue time slot</label>
                             <br>
                             <select id="venueTime" name="venueTime">
+                                <option value="10am ~ 1pm">10am ~ 1pm</option>
+                                <option value="3pm ~ 6pm">3pm ~ 6pm</option>
+                                <option value="7pm ~ 10pm">7pm ~ 10pm</option>
+                                <option value="12pm ~ 3am">12pm ~ 3am</option>
 
-                                {{!-- modelbookings.findall()
-                                Op.In
-                                totalslots(4 options) - booked slots(modelbookings) = slots --}}
-                                {{!-- {{#each availableSlots}} --}}
-                                {{!-- <option value="10am ~ 1pm">10am ~ 1pm</option> --}}
-
-                                {{!-- <option value="{{venueTime}}">{{venueTime}}</option>
-                                {{/each}} --}}
                             </select>
                         </div>
                         <br>
                         <h1>NETS QR</h1>
                         <h1>Please enter the numeric amount to pay IN CENTS and then click submit</h1>
-                        <input type="number" placeholder="Price x 100" value="{{computed}}" name="amount" id="price" disabled >
+                        <input type="number" placeholder="Price x 100" value="{{content.venuePrice}}" name="amount" id="price"  >
                         <img src="null" id="qr_code">
                         <br>
                         <p>Web page redirects after 5 seconds upon successful payment.</p>
                         <br>
-                        {{!-- <button type="submit" onclick="show_alert()" class="btn btn-primary mt-3 mr-2">I have paid already using NETS QR</button> --}}
 
                     </form>
                     <button onclick="generate_qr_code(null)">Generate Qr Code if you are ready</button>
@@ -70,31 +64,7 @@
     </div>
 </div>
 <script>
-    document.getElementById("venueDate").onchange = async (event) => {
-        const results = await postData("/where", {
-            date: event.value
-        });
-
-        const timeslots = results.venueTime;
-        document.getElementById("venueTime").innerHTML = "";
-
-        for (const slot of timeslots) {
-            const option = new HTMLOptionElement();
-            option.innerHTML = slot;
-            option.value    = slot;
-            document.getElementById("venueTime").appendChild(option);
-        }
-    }
-    async function postData(url='', data = {}) {
-        const response = await fetch(url, {
-            // get also can
-            method: "POST",
-            body: JSON.stringify(data)
-        })
-
-    }
-    return response.json();
-    postData()
+    
     function changeImage(){
         document.getElementById("qr_code").src = "/public/img/redCross.png";
     }
