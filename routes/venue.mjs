@@ -349,7 +349,7 @@ async function myPurchases_page(req, res) {
     //   booked[index].Venuebookings.save();
     // }
 
-
+//Stopped here djwiqdjidjwqidqid
 
     // const user   = await ModelUser.findOne({
     //   where: { uuid: req.user.uuid }
