@@ -1,14 +1,16 @@
 import { Router }       from 'express';
 import { ModelComments }    from '../data/Comments.mjs';
+import { UserRole }     from '../data/user.mjs';
+import JWT              from 'jsonwebtoken';
 import ORM   from 'sequelize';
 
 const { Op } = ORM;
 const router = Router();
 export default router;
 
+router.get("/create/:streamId", page_stream);
 // customer can create, update, delete own comments
-router.get("/create/:stream_id", create_retrieve_page);
-router.post("/create/:stream_id", create_process);
+router.post("/create/:streamId", create_process);
 router.post("/update/:stream_id/:uuid", update_process);
 router.delete("/delete/:stream_id/:uuid", delete_process);
 
@@ -33,63 +35,72 @@ function roleResult(role) {
   }
 
 
+  
 /**
- * Renders the create page and Retrieve comments
- * @param {import('express')Request}  req Express Request handle
- * @param {import('express')Response} res Express Response handle
+ * Renders the page for live streaming
+ * @param {import('express').Request}  req 
+ * @param {import('express').Response} res 
  */
-async function create_retrieve_page(req, res) {
-	console.log("create comment page accessed");
-	try{
-		var role = roleResult(req.user.role);
-    	var cust = role[0];
-   		var perf = role[1];
-    	var admin = role[2];
-		const comment_Mod = await ModelComments.findAll({
+async function page_stream(req, res) {
+	var role = roleResult(req.user.role);
+	var cust = role[0];
+	var perf = role[1];
+	var admin = role[2];
+
+	//	Create a validation token to be used for socket connection
+	const  token = JWT.sign({
+		role: (req.user.role == UserRole.Performer) ? "HOST" : "GUEST",
+		userId:   req.user.uuid,
+		username: req.user.name,
+		streamId: req.params.streamId
+	}, "the-key", {});
+	
+	// Comments Section
+	const comment_Mod = await ModelComments.findAll({
+		where: {
+			stream_id: {
+				[Op.eq]: req.params.streamId,
+			}
+		}
+	});
+	if (req.user.role == "admin" || req.user.role == "performer" ) {
+		const change = await ModelComments.update({ validUser: true }, {
 			where: {
-				stream_id: {
-					[Op.eq]: req.params["stream_id"],
-				}
+			  uuid: {[Op.not]: null,}
 			}
 		});
-		if (req.user.role == "admin" || req.user.role == "performer" ) {
-			const change = await ModelComments.update({ validUser: true }, {
-				where: {
-				  uuid: {[Op.not]: null,}
-				}
-			});
-		}
-		else {
-			for (var i = 0; i < comment_Mod.length; i++) {
-				if (comment_Mod[i].customer_id == req.user.uuid) {
-					const change = await ModelComments.update({ validUser: true }, {
-						where: {
-					  	uuid: comment_Mod[i].uuid
-						}
-				  	});
-				}
-				else{
-					const change = await ModelComments.update({ validUser: false }, {
-						where: {
-						  uuid: comment_Mod[i].uuid
-						}
-					  });
-				}
-			};
-		} 
-		return res.render('comments/create', {
-			showComments: comment_Mod,
-			stream_id 	: req.params["stream_id"],
-			cust: cust,
-         	perf: perf,
-          	admin: admin,
-		});
 	}
-	catch(error){
-		console.error('Failed to retrieve comment')
-	}
-}
+	else {
+		for (var i = 0; i < comment_Mod.length; i++) {
+			if (comment_Mod[i].customer_id == req.user.uuid) {
+				const change = await ModelComments.update({ validUser: true }, {
+					where: {
+					  uuid: comment_Mod[i].uuid
+					}
+				  });
+			}
+			else{
+				const change = await ModelComments.update({ validUser: false }, {
+					where: {
+					  uuid: comment_Mod[i].uuid
+					}
+				  });
+			}
+		};
+	} 
 
+	return res.render("comments/create", {
+		streamId: req.params.streamId,
+		userId:   req.user.uuid,
+		username: req.user.name,
+		role:     (req.user.role == UserRole.Performer) ? "HOST" : "GUEST",
+		token:    token,
+		showComments: comment_Mod,
+		cust: cust,
+		perf: perf,
+		admin: admin,
+	});
+}
 
 /**
  * Process the comment input
@@ -105,10 +116,10 @@ async function create_retrieve_page(req, res) {
             "name"		:  req.user.name,
             "comments"	:  req.body.comments,
 			"customer_id"  	:  req.user.uuid,
-			"stream_id" :  req.params["stream_id"],
+			"stream_id" :  req.params.streamId,
 			"validUser" :  true,
 		});
-		return res.redirect("/comments/create/" + req.params["stream_id"]);
+		return res.redirect("/comments/create/" + req.params.streamId);
 	}
 	catch (error) {
 		//	Else internal server error

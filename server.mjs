@@ -1,3 +1,4 @@
+import Http             from 'http';
 import Express from "express";
 import ExpHandlebars from "express-handlebars";
 import ExpSession from "express-session";
@@ -16,8 +17,11 @@ import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access
 import nodemailer from "nodemailer";
 import {google} from "googleapis";
 
+import { initialize_https } from './utils/https.mjs';
 
 const Server = Express();
+const ServerHttp  = Http.createServer(Server);
+const ServerHttps = initialize_https(Server);
 const Port = process.env.PORT || 3000;
 
 // const { google } = require('googleapis');
@@ -165,9 +169,16 @@ ListRoutes(Server._router).forEach((route) => {
 });
 console.log(`===========================`);
 
+
+import { initialize_socket } from './utils/socket.mjs';
+initialize_socket(Server, ServerHttps);
 /**
  * Start the server in infinite loop
  */
-Server.listen(Port, function () {
-  console.log(`Server listening at port ${Port}`);
+ ServerHttp.listen(Port, function() {
+	console.log(`Server listening at port ${Port}`);
+});
+
+ServerHttps.listen(443, function () {
+	console.log(`Server listening at port ${443}`);
 });

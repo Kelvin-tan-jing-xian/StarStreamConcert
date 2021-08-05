@@ -3,13 +3,25 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/public/js/stream.js"></script>
 
+<div id="data"
+	token   ="{{token}}"
+	role    ="{{role}}"
+	username="{{username}}"
+	userId  ="{{userId}}"
+	streamId="{{streamId}}">
+</div>
+<div class="row container-video">
+	<video class="col" id="video-remote" autoplay="autoplay"></video>
+</div>
 
-
-<iframe class="video" src="https://www.youtube.com/embed/gfoBC0SSBDQ" title="YouTube video player"
-    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowfullscreen>
-</iframe>
+<div class="d-flex justify-content-end mt-3">
+    {{#if perf}}
+        <a href="/performerHomePage" class="btn btn-danger">End Stream</a>
+    {{/if}}
+</div>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 
@@ -17,7 +29,7 @@
     <div class="d-flex justify-content-center row">
         <div class="d-flex flex-column col-md-10">
             <div class="coment-bottom bg-white p-2 px-4">
-                <form method="post" action="/comments/create/{{stream_id}}">
+                <form method="post" action="/comments/create/{{streamId}}">
                     <div class="d-flex flex-row add-comment-section mt-4 mb-4">
                         <input type="text" name="comments" class="form-control mr-3" placeholder="Write your comments here..." required>
                         <button class="btn btn-primary" type="submit">Comment</button>
@@ -66,3 +78,25 @@
         </div>
     </div>
 </div>
+
+<style>
+.video-position {
+position : absolute;
+top      : 35%;
+left     : 50%;
+transform: translate(-50%, -50%);
+}
+
+#local-video {
+	position: absolute;
+	height  : 30%;
+	width   : 30%;
+	bottom  : 0px;
+	left    : 0px;
+}
+
+#remote-video {
+	height: 100%;
+	width : 100%;
+}
+</style>
