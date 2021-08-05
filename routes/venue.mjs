@@ -4,11 +4,14 @@ import { ModelUser } from "../data/user.mjs";
 import { ModelVenue } from "../data/Venue.mjs";
 import { ModelVenueBookings } from "../data/VenueBookings.mjs";
 import { flashMessage } from "../utils/flashmsg.mjs";
-
-// must be caps
+import pkg from '../pdfmake/build/pdfmake.js';
+const { pdfMake } = pkg;
 import ORM from "sequelize";
 const { Op } = ORM;
 const router = Router();
+import pkg2 from '../pdfmake/build/vfs_fonts.js';
+// const { vfsFonts } = pkg2;
+// pdfMake.vfs = vfsFonts.pdfMake.vfs;
 export default router;
 
 // all routes starts with /venue
@@ -46,6 +49,31 @@ router.get("/search", (req, res) => {
     console.error(error);
   }
 });
+router.post("/pdf", (req,res,next)=>{
+  // res.send("PDFPLS");
+  var doc = {
+    content: [
+      {
+        image: '/public/img/Starstreamlogo.jpeg',
+        width: 150,
+        height: 150,
+      },
+      {
+        style: 'tableExample',
+        table: {
+          body: [
+            ['Column 1', 'Column 2', 'Venue Price'],
+            ['One value goes here', 'Another one here',  bookings["venue"].venuePrice()
+]
+          ]
+        }
+      },
+    ]
+  }
+});
+
+
+
 // This function helps in showing different nav bars
 function roleResult(role) {
   if (role == "performer") {
@@ -141,21 +169,11 @@ async function book_page(req, res) {
     console.log("cust: " + cust);
     console.log("perf: " + perf);
     console.log("admin: " + admin);
-    var bought = false;
-    // const booking = await ModelVenueBookings.findAll({
-    //   where:{
-    //     performer_id: req.user.uuid
-    //   }
-    // });
-    if (req.user.uuid == ModelVenueBookings.performer_id) {
-      bought = true;
-    }
 
     return res.render("venue/book", {
       cust: cust,
       perf: perf,
       admin: admin,
-      bought: bought,
     });
   } catch (error) {
     console.error("Failed to draw book page");
@@ -335,8 +353,6 @@ async function myPurchases_page(req, res) {
     // },{
     //   include: ModelUser
     // });
-    // ModelUser.hasMany(ModelVenue, { as: 'Venue' });
-    // ModelVenue.hasMany(ModelUser, { as: 'Performers'})
     // Format is Model.get<TableName>()
     // /** @type {[ModelVenue]} */
     // const booked = await venue.getPerformers();
@@ -348,7 +364,6 @@ async function myPurchases_page(req, res) {
     //   booked[index].Venuebookings.save();
     // }
 
-//Stopped here djwiqdjidjwqidqid
 
     // const user   = await ModelUser.findOne({
     //   where: { uuid: req.user.uuid }

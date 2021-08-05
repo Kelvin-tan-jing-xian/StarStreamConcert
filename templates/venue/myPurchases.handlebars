@@ -28,6 +28,12 @@
                             <p class="font-italic">Venue Date</p>
                             <p class="text-info">{{booking.venueDate}}</p>
                         </div>
+                        {{!-- must put / in front --}}
+                        <form action="/venue/pdf" method="post">
+                            <div class="col-sm-12 col-md-6 col-lg-2">
+                                <button class="btn btn-primary" type="submit">Download PDF </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
