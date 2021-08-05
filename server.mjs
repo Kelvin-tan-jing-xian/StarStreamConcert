@@ -13,8 +13,69 @@ import FlashMessenger from "flash-messenger";
 import Handlebars from "handlebars";
 import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access";
 
+import nodemailer from "nodemailer";
+import {google} from "googleapis";
+
+
 const Server = Express();
 const Port = process.env.PORT || 3000;
+
+// const { google } = require('googleapis');
+
+
+// These id's and secrets should come from .env file.
+const CLIENT_ID = '676747649537-dldinldb4oehsaf21ppj9erusdr8vt13.apps.googleusercontent.com';
+const CLIENT_SECRET = 'a-Ep6y2x3NRS_Ml_quORac9W';
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
+const REFRESH_TOKEN = '1//04sqASaIu3n5kCgYIARAAGAQSNwF-L9IrYKRrfhAzLk4aIVBoA-w15BOJhcOxDCQger1zNlqfcuwo_osTpMyV-yGPVpa4cHO6nCg';
+
+
+const oAuth2Client = new google.auth.OAuth2(
+  CLIENT_ID,
+  CLIENT_SECRET,
+  REDIRECT_URI
+);
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+
+async function sendMail() {
+  try {
+    const accessToken = await oAuth2Client.getAccessToken();
+
+    const transport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        type: 'OAuth2',
+        user: 'trumenlim@gmail.com',
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        refreshToken: REFRESH_TOKEN,
+        accessToken: accessToken,
+      },
+    });
+
+    const mailOptions = {
+      from: 'TRUMENLIM<trumenlim@gmail.com>',
+      to: 'trumenlim123@gmail.com',
+      subject: 'Hello from my test, testing gmail using API',
+      text: 'Hello from gmail email using API',
+      html: '<h1>Hello from gmail email using API</h1>',
+    };
+
+    const result = await transport.sendMail(mailOptions);
+    return result;
+  } catch (error) {
+    return error;
+  }
+}
+
+sendMail()
+  .then((result) => console.log('Email sent...', result))
+  .catch((error) => console.log(error.message));
+
+
+
+
+
 
 /**
  * Template Engine

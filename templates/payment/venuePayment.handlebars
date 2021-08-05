@@ -1,0 +1,91 @@
+<link rel="stylesheet" href="/public/css/payment.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+
+<div class="container-fluid px-1 px-md-5 px-lg-1 px-xl-5 py-5 mx-auto">
+    <div class="card card0 border-0">
+        <div class="row d-flex">
+            <div class="col-lg-6">
+                {{#each venues}}
+                <div class="card1 bg-light pb-5">
+                    <div class="row px-3 justify-content-center mt-5 mb-2"> 
+                        <img src="/{{venuePoster}}" class="image"> 
+                    </div>
+                    <div class="row px-3 text-center justify-content-center mb-2">
+                        <h4>{{venueName}}</h4> 
+                    </div>
+                    <div class="row px-3 text-center justify-content-center mb-2">
+                        <p class="text-wrap mr-5 ml-5">{{venueStory}}</p> 
+                    </div>
+                    <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
+                        <h5>Date:</h5>
+                        <h5>{{venueDate}}</h5>
+                    </div>
+                    <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
+                        <h5>Time: </h5>
+                        <h5>{{venueTime}}</h5>
+                    </div>
+
+                    <div class="row px-3 text-center d-flex justify-content-between mb-2 mr-5 ml-5">
+                        <h5>Price:</h5> 
+                        <h5>{{venuePrice}} </h5> 
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+            {{!-- Payment Detail --}}
+            <div class="col-lg-6">
+                <div class="card2 card border-0 px-4 py-5">
+                    <h4 class="mb-3 text-center">Payment Details</h4>
+                    {{!-- CARD NUMBER  --}}
+                    <form action="" method="POST">
+                        <div class="row px-3 mt-3">
+                            <label class="mb-0">
+                                <h6 class="mb-2 text-sm">Card Number</h6>
+                            </label>
+                            <input type="tel" name="card_number" pattern="[0-9]{4}[0-9]{4}[0-9]{4}[0-9]{4}" placeholder="xxxx xxxx xxxx xxxx" required>
+                        </div>
+                        {{!-- EXPIRY DATE & CVV --}}
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="mb-0">
+                                    <h6 class="mb-2 text-sm">Expiry Date</h6>
+                                </label>
+                                <input type="text" name="expiry_date" placeholder="MM / YY" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="mb-0">
+                                    <h6 class="mb-2 text-sm">CVV</h6>
+                                </label>
+                                <input type="tel" name="cvv" pattern="[0-9]{3}"  placeholder="***" required>
+                            </div>
+                        </div>
+                        {{!-- CARD NAME --}}
+                        <div class="row px-3 mt-3">
+                            <label class="mb-0">
+                                <h6 class="mb-2 text-sm">Card Name</h6>
+                            </label>
+                            <input type="text" name="card_name" placeholder="Edison Lim" required>
+                        </div>
+                        {{!-- EMAIL ADDRESS --}}
+                        <div class="row px-3 mt-3">
+                            <label class="mb-0">
+                                <h6 class="mb-2 text-sm">Email Address</h6>
+                            </label>
+                            <input type="email" name="email" placeholder="example@gmail.com" required>
+                        </div>
+                        {{!-- BUTTON --}}
+                        <div class="row mb-2 mt-4 justify-content-center">
+                            <div class="col-md-5">
+                                <button class="btn-1">Continue</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
