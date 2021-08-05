@@ -50,4 +50,5 @@ export class ModelVenue extends Model {
 	get role()  { return this.getDataValue("role"); }
 	get uuid()  { return this.getDataValue("uuid"); }
 	get venueStory() { return this.getDataValue("venueStory"); }
+	get venuePrice() { return this.getDataValue("venuePrice"); }
 }

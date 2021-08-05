@@ -328,13 +328,26 @@ async function venue_update_process(req, res) {
 		const replaceFile = (req.file)? true : false;
 
 		const previous_file = contents[0].venuePoster;
+    var data = {};
 
-    const data = {
-      venueName: req.body.venueName,
-      venueStory: req.body.venueStory,
-      venuePrice: req.body.venuePrice,
-      venuePoster: req.file.path,
-    };
+    if (req.body.venuePoster == undefined) {
+      data = {
+        venueName: req.body.venueName,
+        venueStory: req.body.venueStory,
+        venuePrice: req.body.venuePrice,
+      };
+
+    }
+    else{
+      data = {
+        venueName: req.body.venueName,
+        venueStory: req.body.venueStory,
+        venuePrice: req.body.venuePrice,
+        venuePoster: req.file.path,
+      };
+
+    }
+
 		//	Assign new file if necessary
 		if (replaceFile) {
 			data["venuePoster"] = `${Path}/file/${req.file.filename}`;
