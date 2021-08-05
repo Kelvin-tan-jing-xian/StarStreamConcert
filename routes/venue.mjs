@@ -4,14 +4,11 @@ import { ModelUser } from "../data/user.mjs";
 import { ModelVenue } from "../data/Venue.mjs";
 import { ModelVenueBookings } from "../data/VenueBookings.mjs";
 import { flashMessage } from "../utils/flashmsg.mjs";
-import pkg from '../pdfmake/build/pdfmake.js';
-const { pdfMake } = pkg;
 import ORM from "sequelize";
+
+
 const { Op } = ORM;
 const router = Router();
-import pkg2 from '../pdfmake/build/vfs_fonts.js';
-// const { vfsFonts } = pkg2;
-// pdfMake.vfs = vfsFonts.pdfMake.vfs;
 export default router;
 
 // all routes starts with /venue
@@ -51,25 +48,38 @@ router.get("/search", (req, res) => {
 });
 router.post("/pdf", (req,res,next)=>{
   // res.send("PDFPLS");
-  var doc = {
+  var documentDefinition = {
     content: [
+      {text: 'Book Invoice', style: 'header'},
       {
-        image: '/public/img/Starstreamlogo.jpeg',
+        image: 'sampleImage.jpg',
         width: 150,
         height: 150,
       },
-      {
-        style: 'tableExample',
-        table: {
-          body: [
-            ['Column 1', 'Column 2', 'Venue Price'],
-            ['One value goes here', 'Another one here',  bookings["venue"].venuePrice()
-]
-          ]
-        }
-      },
+      {text: 'Star Theatre', style: 'subheader'},
+      { 
+          style: 'tableExample',
+          table: {
+            body: [
+              ['Venue Date', 'Venue Time', 'Venue Price'],
+              ['2021-05-07', '10am ~ 1pm',  '$6000']
+            ]
+          },
+        
+
+      }
     ]
   }
+  const pdfDoc = pdfMake.createPdf(documentDefinition);
+  pdfDoc.getBase64((data)=>{
+    res.writeHead(200, 
+    {
+      'Content-Type': 'application/pdf',
+      'Content-Disposition':'attachment;filename="filename.pdf"'
+    });
+    const download = Buffer.from(data.toString('utf-8'), 'base64');
+    res.end(download);
+  });
 });
 
 
