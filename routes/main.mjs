@@ -292,7 +292,9 @@ router.get('/customerHomePage', async function(req,res){
 	var streams = [];
 	const all_streams = await ModelStream.findAll();
 	for (var i = 0; i < 8; i++) {
-		streams.push(all_streams[i])
+		if (all_streams[i] != undefined) {
+			streams.push(all_streams[i])
+		}
 	}
 
 	return res.render('customerHomePage',{
@@ -311,9 +313,15 @@ router.get('/performerHomePage', async function(req,res){
 	var perf = role[1];
 	var admin = role[2];
 
-	const streams = await ModelStream.findAll({
+	var streams = [];
+	const all_streams = await ModelStream.findAll({
 		where: {"performer_id": req.user.uuid}
-	});		
+	});	
+	for (var i = 0; i < 8; i++) {
+		if (all_streams[i] != undefined) {
+			streams.push(all_streams[i])
+		}
+	}	
 
 	return res.render('performerHomePage',{
 		cust: cust,

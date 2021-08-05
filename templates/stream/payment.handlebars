@@ -82,7 +82,7 @@
             preview_qr_code(content.qr_code);
 
             //	Start auto ping
-            setTimeout(ping_transaction_status, 1000, 0, content);
+            setTimeout(ping_transaction_status, 4000, 0, content);
         }
     }
 
@@ -126,7 +126,7 @@
             switch (status) {
                 case 0:
                     console.log(`Awaiting for payment: ${attempt}`);
-                    return setTimeout(ping_transaction_status, 1000, attempt + 1, transaction);
+                    return setTimeout(ping_transaction_status, 4000, attempt + 1, transaction);
                     break;
 
                 case 1:

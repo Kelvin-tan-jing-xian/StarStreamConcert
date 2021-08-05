@@ -1,9 +1,6 @@
 <!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
-<div class="row">
     {{#if streams}}
-
-    <div class="card card-body">
-        <h3 class="text-primary">Streams Created By Me</h3>
+        <h3 class="text-primary mb-4">Streams Created By Me</h3>
         {{#each streams}}
         <div class="card border-primary mb-2 w-100 mx-auto">
             <div class="card-header">
@@ -50,7 +47,7 @@
                         </div>
 
                         <div class="col-sm-12 col-md-6 col-lg-2">
-                            <a href="/comments/create/{{uuid}}">stream</a>
+                            <a href="/comments/create/{{uuid}}" class="btn btn-danger">Go Live</a>
                         </div>
 
                     </div>

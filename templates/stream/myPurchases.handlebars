@@ -1,9 +1,6 @@
 <!--.col-	.col-sm-	.col-md-	.col-lg-	.col-xl- -->
-<div class="row">
     {{#if tickets}}
-
-    <div class="card card-body">
-        <h3 class="text-primary">My Ticket Purchases</h3>
+        <h3 class="text-primary mb-4">My Ticket Purchases</h3>
         {{#each tickets}}
         <div class="card border-primary mb-2 w-100 mx-auto">
             <div class="card-header">
@@ -16,23 +13,26 @@
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-8">
                     <div class="row">
-                        <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="col-sm-12 col-md-6 col-lg-2 mt-2 mb-2">
                             <p class="font-italic">Artist Name</p>
                             <p class="text-info">{{stream.artistName}}</p>
                         </div>
-                        <div class="col-sm-12 col-md-6 col-lg-2">
+                        <div class="col-sm-12 col-md-6 col-lg-2 mt-2 mb-2">
                             <p class="font-italic">Concert Date</p>
                             <p class="text-info">{{stream.concertDate}}</p>
                         </div>
-                        <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="col-sm-12 col-md-6 col-lg-2 mt-2 mb-2">
                             <p class="font-italic">Concert Time</p>
                             <p class="text-info">{{stream.concertTime}}</p>
                         </div>
-                        <div class="col-sm-12 col-md-6 col-lg-4">
+                        <div class="col-sm-12 col-md-6 col-lg-2 mt-2 mb-2">
                             <p class="font-italic">Concert Price</p>
                             <p class="text-info">{{stream.concertPrice}}</p>
                         </div>
                     </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-2 mt-4 mb-4">
+                    <a href="/comments/create/{{stream.uuid}}" class="btn btn-primary">Watch live</a>
                 </div>
             </div>
             <div class="accordion" id="storyAccordion">
