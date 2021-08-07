@@ -265,6 +265,7 @@ async function payment_page(req, res) {
     const content = await ModelVenue.findOne({
       where: { uuid: req.params.uuid },
     });
+    const nets_price = content.venuePrice * 100;
     //   var computed = content.concertPrice * 100;
 
     // const totalSlots = ["10am ~ 1pm", "3pm ~ 6pm", "7pm ~ 10pm", "12pm ~ 3am"];
@@ -285,6 +286,7 @@ async function payment_page(req, res) {
         perf: perf,
         admin: admin,
         content: content,
+        nets_price: nets_price,
         // computed:computed,
         // availableSlots:availableSlots,
       });
