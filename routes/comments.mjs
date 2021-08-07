@@ -61,7 +61,11 @@ async function page_stream(req, res) {
 			stream_id: {
 				[Op.eq]: req.params.streamId,
 			}
-		}
+		},
+		order: [
+			// Sort comment in datetime order
+			['dateCreated', 'DESC'],
+		]
 	});
 	if (req.user.role == "admin" || req.user.role == "performer" ) {
 		const change = await ModelComments.update({ validUser: true }, {

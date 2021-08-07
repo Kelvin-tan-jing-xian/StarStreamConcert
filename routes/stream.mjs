@@ -418,12 +418,14 @@ async function create_process(req, res) {
 	console.log("admin: " + admin);
 	try {
 		const content = await ModelStream.findOne({where : {"uuid": req.params.uuid}});
+		const nets_price = content.concertPrice * 100;
 		if (content) {
 			return res.render('stream/payment', {
 				cust: cust,
 				perf: perf,
 				admin: admin,
-				"content": content
+				"content": content,
+				nets_price: nets_price,
 			});
 		} 
 	} 
