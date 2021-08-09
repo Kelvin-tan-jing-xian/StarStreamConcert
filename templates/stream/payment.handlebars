@@ -33,8 +33,12 @@
                         <h5 class="mr-5 pr-5">Standard</h5> 
                         <h5>${{content.concertPrice}}</h5>
                     </div>
-                    <br>
-                    <form action="/stream/payment/{{content.uuid}}" id="form1" method="post">
+                </div>
+                <br>
+            </div>
+            <div class="col-lg-6">
+                <div class="card2 card border-0 px-4 py-5">
+                 <form action="/stream/payment/{{content.uuid}}" id="form1" method="post">
                         <h1>NETS QR</h1>
                         <h1>Please enter the numeric amount to pay IN CENTS and then click "Generate Qr Code if you are ready"</h1>
                         <input type="number" placeholder="Price x 100" value="{{nets_price}}" name="amount" id="price" hidden>
@@ -45,9 +49,7 @@
 
                     </form>
                     <button class="btn btn-primary" onclick="generate_qr_code(null)">Generate Qr Code if you are ready</button>
-
-
-
+                    <br>
                 </div>
             </div>
         </div>
