@@ -21,19 +21,13 @@
                             <p class="text-info">{{booking.venueTime}}</p>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-4">
-                            <p class="font-italic">Venue Price</p>
+                            <p class="font-italic">Venue Price($)</p>
                             <p class="text-info">{{venue.venuePrice}}</p>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2">
-                            <p class="font-italic">Venue Date</p>
+                            <p class="font-italic">Date(yyyy-mm-dd)</p>
                             <p class="text-info">{{booking.venueDate}}</p>
                         </div>
-                        {{!-- must put / in front --}}
-                        <form action="/venue/pdf" method="post">
-                            <div class="col-sm-12 col-md-6 col-lg-2">
-                                <button class="btn btn-primary" type="submit">Download PDF </button>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>
