@@ -46,16 +46,15 @@
                             </select>
                         </div>
                         <br>
-                        <h1>NETS QR</h1>
-                        <h1>Please enter the numeric amount to pay IN CENTS and then click submit</h1>
+                        <h1 class="text-center">Scan QR Code</h1>
                         <input type="number" placeholder="Price x 100" value="{{nets_price}}" name="amount" id="price" hidden>
-                        <img src="null" id="qr_code">
+                        <div class="d-flex justify-content-center"><img src="null" id="qr_code" style="display: none; width: 350px; height: 350px;"></div>
                         <br>
-                        <p>Web page redirects after 5 seconds upon successful payment.</p>
-                        <br>
+                        <div class="d-flex justify-content-center"><p id="tick_msg" style="display: none;">Redirecting in 5 seconds...</p></div>
+                        <div class="d-flex justify-content-center"><p id="cross_msg" style="display: none;">Try Again!</p></div>
 
                     </form>
-                    <button class="btn btn-primary" onclick="generate_qr_code(null)">Generate Qr Code if you are ready</button>
+                    <button class="btn btn-primary" onclick="generate_qr_code(null)">Generate</button>
 
                     <br>
                 </div>
@@ -67,6 +66,7 @@
     
     function changeImage(){
         document.getElementById("qr_code").src = "/public/img/redCross.png";
+        document.getElementById("cross_msg").style.display = "block";
     }
     function show_alert() {
         alert("Thank you for your payment!");
@@ -76,6 +76,7 @@
      * @param {InputEvent} event
      **/
     async function generate_qr_code(event) {
+        document.getElementById("qr_code").style.display = "block";
         // payment.mjs/generate route
         const response = await fetch("/payment/generate", {
             headers: {
@@ -142,6 +143,7 @@
                     console.log(`Payment succeeded`);
                     // change image to green tick
                     document.getElementById("qr_code").src = `/public/img/greenTick.jpg`;
+                    document.getElementById("tick_msg").style.display = "block";
 
                     // redirecting to myPurchases page in 5 seconds
                     setTimeout(function () {
