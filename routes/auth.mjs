@@ -137,7 +137,7 @@ async function register_process(req, res) {
 	//	Common Sense
 	try {
 		if (! regexName.test(req.body.name)) {
-			errors = errors.concat({ text: "Invalid name provided! It must have minimum 3 characters and starts with a letter." });
+			errors = errors.concat({ text: "Invalid name provided! It must have minimum 3 characters and only letters." });
 		}
 
 		if (! regexEmail.test(req.body.email)) {
@@ -146,7 +146,7 @@ async function register_process(req, res) {
 		else {
 			const user = await ModelUser.findOne({where: {email: req.body.email}});
 			if (user != null) {
-				errors = errors.concat({ text: "This email cannot be used!" }); // if the user register the second time
+				errors = errors.concat({ text: "Email has already been registered!" }); // if the user register the second time
 			}
 		}
 
