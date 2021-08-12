@@ -8,9 +8,19 @@ import { flashMessage } from "../../utils/flashmsg.mjs";
 import {remove_file} from '../../utils/multer.mjs';
 import {Path} from '../../utils/multer.mjs';
 import { ModelVenueBookings } from '../../data/VenueBookings.mjs';
+import Hash             from 'hash.js';
+import JWT              from 'jsonwebtoken';
 
 const router = Router();
 export default router;
+/**
+ * Regular expressions for form testing
+ **/ 
+const regexEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+//	Min 3 character, must start with alphabet
+const regexName  = /^[a-zA-Z][a-zA-Z]{2,}$/;
+//	Min 8 character, 1 upper, 1 lower, 1 number, 1 symbol
+const regexPwd   = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 router.use(ensure_admin);
 // all routes starts with /admin
@@ -661,7 +671,7 @@ async function feedback_update_process(req, res) {
 	//	Common Sense
 	try {
 		if (! regexName.test(req.body.name)) {
-			errors = errors.concat({ text: "Invalid name provided! It must have minimum 3 characters and starts with a letter." });
+			errors = errors.concat({ text: "Invalid name provided! It must have minimum 3 characters and only letters. " });
 		}
 
 		if (! regexEmail.test(req.body.email)) {
@@ -688,7 +698,7 @@ async function feedback_update_process(req, res) {
 	catch (error) {
 		console.error("There is errors with the registration form body.");
 		console.error(error);
-		return res.render('auth/register', { errors: errors });
+		return res.render('admin/create', { errors: errors });
 	}
 
 	//	Create new user, now that all the test above passed
@@ -700,7 +710,6 @@ async function feedback_update_process(req, res) {
 				role:     "admin",
 
 		});
-		await send_verification(user.uuid, user.email);
 
 		flashMessage(res, 'success', 'Successfully created an admin account. Please login', 'fas fa-sign-in-alt', true);
 		return res.redirect("/auth/login");
@@ -712,6 +721,7 @@ async function feedback_update_process(req, res) {
 		return res.status(500).end();
 	}
 }
+
 
 /**
  * Renders the bootstrap table report page

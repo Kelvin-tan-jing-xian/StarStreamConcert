@@ -9,7 +9,7 @@
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-2">
                     {{!-- / must be in front cuz absolute address --}}
-                    <img src="/{{stream.concertPoster}}" alt="Poster unavailable" class="img-thumbnail img-fluid">
+                    <img src="/{{stream.concertPoster}}" alt="Poster unavailable" class="img-thumbnail img-fluid" >
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-8">
                     <div class="row">
@@ -18,16 +18,16 @@
                             <p class="text-info">{{stream.artistName}}</p>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2 mt-2 mb-2">
-                            <p class="font-italic">Concert Date</p>
+                            <p class="font-italic">Date</p>
                             <p class="text-info">{{stream.concertDate}}</p>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2 mt-2 mb-2">
-                            <p class="font-italic">Concert Time</p>
+                            <p class="font-italic">Time</p>
                             <p class="text-info">{{stream.concertTime}}</p>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-2 mt-2 mb-2">
-                            <p class="font-italic">Concert Price</p>
-                            <p class="text-info">{{stream.concertPrice}}</p>
+                            <p class="font-italic">Price</p>
+                            <p class="text-info">${{stream.concertPrice}}</p>
                         </div>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                 <div class="card-header">
                     <button class="btn btn-link" type="button" data-toggle="collapse"
                         data-target="#collapse-{{stream.uuid}}" aria-expanded="false">
-                        Concert Story<i class="fas fa-chevron-down"></i>
+                        Description<i class="fas fa-chevron-down"></i>
                     </button>
                 </div>
 
