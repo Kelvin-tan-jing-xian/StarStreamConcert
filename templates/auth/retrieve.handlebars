@@ -36,12 +36,12 @@
     data-show-refresh="true">
     <thead>
         <tr>
+            <th data-field="dateCreated" data-sortable="true">Date Created</th>
+            <th data-field="dateUpdated" data-sortable="true">Date Updated</th>
             <th data-field="name" data-sortable="true" >Name</th>
             <th data-field="email" data-sortable="true">Email</th>
             <th data-field="role" data-sortable="true">Role</th>
             <th data-field="verified" data-sortable="true">Verified</th>
-            <th data-field="dateCreated" data-sortable="true">Date Created</th>
-            <th data-field="dateUpdated" data-sortable="true">Date Updated</th>
             <th data-field="action" data-formatter="actionFormatter">User Action</th>
         </tr>
     </thead>
@@ -69,7 +69,6 @@
         $.each(row, function(key, value){
             if (key == 'uuid'){
                 if(value != "00000000-0000-0000-0000-000000000000"){
-                    html.push('<a class="edit" href="/admin/auth/update/' + value + '" ><i class="fa fa-edit"></i></a>')
                     html.push('<form method="POST" action="/auth/delete/' + value + '?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i></a>   </form>')
 
                 }

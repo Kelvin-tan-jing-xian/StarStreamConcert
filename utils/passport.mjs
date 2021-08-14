@@ -16,7 +16,7 @@ export function initialize_passport(server) {
 		try {
 			const user = await ModelUser.findByPk(uid);
 			if (user == null) {
-				throw new Error ("Invalid user id");
+				throw new Error ("Invalid user id. It could be because you deleted this current account. Use incognito to solve this problem");
 			}
 			else {
 				// no errors
