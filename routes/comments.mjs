@@ -8,9 +8,9 @@ const { Op } = ORM;
 const router = Router();
 export default router;
 
-router.get("/create/:streamId", page_stream);
+router.get("/:streamId", page_stream);
 // customer can create, update, delete own comments
-router.post("/create/:streamId", create_process);
+router.post("/:streamId", create_process);
 router.post("/update/:stream_id/:uuid", update_process);
 router.delete("/delete/:stream_id/:uuid", delete_process);
 
@@ -123,7 +123,7 @@ async function page_stream(req, res) {
 			"stream_id" :  req.params.streamId,
 			"validUser" :  true,
 		});
-		return res.redirect("/comments/create/" + req.params.streamId);
+		return res.redirect("/live/" + req.params.streamId);
 	}
 	catch (error) {
 		//	Else internal server error
@@ -155,12 +155,12 @@ async function page_stream(req, res) {
 			'dateCreated': new Date(),
 		};
 		await (await contents.update(data)).save();	
-		return res.redirect(`/comments/create/` + req.params["stream_id"]);
+		return res.redirect(`/live/` + req.params["stream_id"]);
 	}
 	catch(error) {
 		console.error(`Failed to update comment: ${req.params.uuid}`);
 		console.error(error);
-		return res.redirect(500, "/comments/create")
+		return res.redirect(500, "/live/" + req.params["stream_id"])
 	}	
 }
 
@@ -188,7 +188,7 @@ async function delete_process(req, res) {
             if (del == 1) {    
                 console.log(`Deleting comment for uuid: ${req.params.uuid}`);
                 console.log(`Comment deleted`);
-                return res.redirect("/comments/create/" + req.params["stream_id"]);
+                return res.redirect("/live/" + req.params["stream_id"]);
             }
             else {
                 console.error(`More than one entries of: ${req.params.uuid}, Total: ${del}`);

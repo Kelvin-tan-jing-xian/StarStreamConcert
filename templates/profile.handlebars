@@ -39,18 +39,8 @@
 			<div class="col-sm-3">
 				<h6 class="mb-0">Email</h6>
 			</div>
-			<form action="/profile/email" method="post" id="formEmail" class="col-sm-7">
-				<div class="col-sm-7 text-secondary">
-					<span id="email">{{user.email}}</span>
-					<input type="text" id="edit-email" class="form-control mt-n2" name="email" value="{{user.email}}"
-						style="display: none; width: 350px;" required />
-				</div>
-				<button type="submit" id="save-email-btn" class="btn btn-primary mt-n2"
-					style="display: none;">Save</button>
-			</form>
-			<div class="col-sm-2">
-				<button type="button" id="edit-email-btn" class="btn btn-info mt-n2"
-					onclick="changeEmail()">Edit</button>
+			<div class="col-sm-9 text-secondary">
+				<span class="ml-3">{{user.email}}</span>
 			</div>
 		</div>
 		<hr class="ml-5 mr-5">
@@ -132,13 +122,5 @@
 		document.getElementById("edit-name").style.display = "block";
 		document.getElementById("name").style.display = "none";
 		document.getElementById("formName").className = "col-sm-8 d-flex justify-content-between";
-	}
-
-	function changeEmail() {
-		document.getElementById("save-email-btn").style.display = "block";
-		document.getElementById("edit-email-btn").style.display = "none";
-		document.getElementById("edit-email").style.display = "block";
-		document.getElementById("email").style.display = "none";
-		document.getElementById("formEmail").className = "col-sm-8 d-flex justify-content-between";
 	}
 </script>

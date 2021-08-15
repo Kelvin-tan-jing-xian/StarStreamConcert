@@ -53,7 +53,7 @@ router.use("/admin", RouterAdmin);
 router.use("/venue", RouterVenue);
 router.use("/stream", RouterStream);
 router.use("/feedback", RouterFeedback);
-router.use("/comments", RouterComments);
+router.use("/live", RouterComments);
 router.use("/payment", RouterPayment);
 router.get("/", async function (req, res) {
 	return res.redirect("/index");
@@ -178,19 +178,6 @@ router.post('/profile/name', async function(req,res){
 	});
 	const data = {
 		"name": req.body.name,
-	};
-	await (await contents.update(data)).save();	
-
-	return res.redirect("/profile");
-});
-
-router.post('/profile/email', async function(req,res){
-
-	const contents = await ModelUser.findOne({
-		where: { uuid: req.user.uuid },
-	});
-	const data = {
-		"email": req.body.email,
 	};
 	await (await contents.update(data)).save();	
 
