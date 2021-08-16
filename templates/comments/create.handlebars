@@ -19,7 +19,9 @@
 
 <div class="d-flex justify-content-end mt-3">
     {{#if perf}}
-        <a href="/feedback/create" class="btn btn-danger">End Stream</a>
+        <form method="post" action="/live/end/{{streamId}}?_method=DELETE"> 
+            <a class="btn btn-danger" href="javascript:;" onclick="parentNode.submit();">End Stream</a>
+        </form>
     {{/if}}
     {{#if cust}}
         <a href="/feedback/create" class="btn btn-danger">Leave Stream</a>
@@ -32,7 +34,7 @@
     <div class="d-flex justify-content-center row">
         <div class="d-flex flex-column col-md-10">
             <div class="coment-bottom bg-white p-2 px-4">
-                <form method="post" action="/comments/create/{{streamId}}">
+                <form method="post" action="/live/{{streamId}}">
                     <div class="d-flex flex-row add-comment-section mt-4 mb-4">
                         <input type="text" name="comments" class="form-control mr-3" placeholder="Write your comments here..." required>
                         <button class="btn btn-primary" type="submit">Comment</button>
@@ -54,7 +56,7 @@
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <button type="button" class="dropdown-item" data-toggle="collapse" data-target="#edit{{uuid}}" aria-expanded="false" aria-controls="edit{{uuid}}">Edit</button>
                                             {{!-- ?_method=DELETE is needed --}}
-                                            <form method="post" action="/comments/delete/{{stream_id}}/{{uuid}}?_method=DELETE"> 
+                                            <form method="post" action="/live/delete/{{stream_id}}/{{uuid}}?_method=DELETE"> 
                                                 <a class="dropdown-item" href="javascript:;" onclick="if (confirm('Confirm delete?')) parentNode.submit();" data-title="Confirm delete?">Delete</a>
                                             </form>
                                         </div>
@@ -66,7 +68,7 @@
                                 <span> {{ comments }} </span>
                             </div>
 
-                            <form method="post" action="/comments/update/{{stream_id}}/{{uuid}}" class="collapse" id="edit{{uuid}}">
+                            <form method="post" action="/live/update/{{stream_id}}/{{uuid}}" class="collapse" id="edit{{uuid}}">
                                 <div class="d-flex flex-row mt-4 mb-3">
                                     <input type="text" name="update_comments" class="form-control mr-3 border-top-0 border-left-0 border-right-0" placeholder="Write your comments here..." required>
                                 </div>

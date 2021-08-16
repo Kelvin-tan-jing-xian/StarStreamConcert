@@ -71,7 +71,6 @@
         var html = [];
         $.each(row, function(key, value){
             if (key == 'uuid'){
-                // html.push('<a class="edit" href="/stream/update/' + value + '" ><i class="fa fa-edit"></i></a>')
                 html.push('<form method="POST" action="/stream/delete/'+value+'?_method=DELETE"><a  onclick="parentNode.submit();"  class="remove"  href="javascript:;"><i class="fa fa-trash"></i></a>   </form>')
             }
         })
