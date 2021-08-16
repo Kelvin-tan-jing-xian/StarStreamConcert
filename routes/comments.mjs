@@ -1,5 +1,7 @@
 import { Router }       from 'express';
 import { ModelComments }    from '../data/Comments.mjs';
+import { ModelStream }    from '../data/stream.mjs';
+import { ModelTicket } from '../data/ticket.mjs';
 import { UserRole }     from '../data/user.mjs';
 import JWT              from 'jsonwebtoken';
 import ORM   from 'sequelize';
@@ -13,6 +15,7 @@ router.get("/:streamId", page_stream);
 router.post("/:streamId", create_process);
 router.post("/update/:stream_id/:uuid", update_process);
 router.delete("/delete/:stream_id/:uuid", delete_process);
+router.delete("/end/:stream_id", end_process);
 
 function roleResult(role) {
 	if (role == "performer") {
@@ -197,6 +200,40 @@ async function delete_process(req, res) {
         }
         catch (error) {
 		console.error(`Failed to delete comment: ${req.params.uuid}`);
+		console.error(error);
+		return res.status(500);
+	}
+}
+
+/**
+ * End Stream
+ * @param {Request}  req Express request  object
+ * @param {Response} res Express response object
+ */
+ async function end_process(req, res) {
+	try {
+		const del = await ModelStream.destroy({
+			where: { 
+				"uuid": req.params.stream_id,
+			} 
+		});
+		const del_ticket = await ModelTicket.destroy({
+			where: { 
+				"stream_id": req.params.stream_id,
+			} 
+		});
+
+		if (del == 1) {    
+			console.log(`Stream ended`);
+			return res.redirect("/feedback/create");
+		}
+		else {
+			console.error(`More than one entries of: ${req.params.stream_id}, Total: ${del}`);
+			return res.status(409);
+		}
+	}
+	catch (error) {
+		console.error(`Failed to delete stream: ${req.params.stream_id}`);
 		console.error(error);
 		return res.status(500);
 	}

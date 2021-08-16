@@ -19,7 +19,9 @@
 
 <div class="d-flex justify-content-end mt-3">
     {{#if perf}}
-        <a href="/feedback/create" class="btn btn-danger">End Stream</a>
+        <form method="post" action="/live/end/{{streamId}}?_method=DELETE"> 
+            <a class="btn btn-danger" href="javascript:;" onclick="parentNode.submit();">End Stream</a>
+        </form>
     {{/if}}
     {{#if cust}}
         <a href="/feedback/create" class="btn btn-danger">Leave Stream</a>
