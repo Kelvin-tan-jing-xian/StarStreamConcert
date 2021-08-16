@@ -9,6 +9,8 @@ import ExpressHBS       from 'express-handlebars';
 import SendGrid         from '@sendgrid/mail';
 import JWT              from 'jsonwebtoken';
 
+import {sendMail} from '../server.mjs';
+
 SendGrid.setApiKey("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");
 
 const { Op } = ORM;
@@ -27,6 +29,8 @@ const regexPwd   = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*
 
 const hbsRender  = ExpressHBS.create({});
 
+
+
 router.get("/login",     login_page);
 router.post("/login",    login_process);
 router.get("/register",  register_page);
@@ -35,6 +39,11 @@ router.get("/logout",    logout_process);
 router.get("/retrieve-data", retrieve_data);
 router.delete("/delete/:uuid", delete_process);
 router.get("/verify/:token", verify_process);
+router.get("/forget",     forget_page);
+router.post("/forget",     forget_process);
+router.get("/reset/:email",      reset_page);
+router.post("/reset/:email",  reset_process);
+
 
 
 // This function helps in showing different nav bars
@@ -61,6 +70,137 @@ function roleResult(role){
 }
 
 
+
+
+
+
+
+
+
+/**
+ * Renders the forget page
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function forget_page(req, res) {
+
+	console.log("forget page accessed");
+	return res.render('auth/forget',{
+
+	});
+}
+
+
+
+/**
+ * Renders the forget process
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function forget_process(req, res) {
+
+	console.log("forget process accessed");
+
+	let errors = [];
+	//	Check your Form contents
+	//	Basic IF ELSE STUFF no excuse not to be able to do this alone
+	//	Common Sense
+	try {
+		
+		const user = await ModelUser.findOne({where: {email: req.body.email}});
+		if (user == null) {
+			errors = errors.concat({ text: "Account does not exist!" }); // if the user register the second time
+			}
+		
+
+		
+	}
+	catch (error) {
+		console.error("There is errors with the forget password form body.");
+		console.error(error);
+		return res.render('auth/forget', { errors: errors });
+	}
+	
+	
+
+
+	sendMail(req.body.email)
+	.then((result) => console.log('Email sent...', result))
+    .catch((error) => console.log(error.message));
+	flashMessage(res, 'success', 'A reset link has been sent to your email', 'fas fa-sign-in-alt', true);
+	return res.render('auth/forget',{
+
+	});
+}
+
+
+/**
+ * Renders the reset process
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function reset_process(req, res) {
+
+	console.log("reset process accessed");
+
+	const regexPwd   = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+	let errors = [];
+	
+	try {
+		
+	 	if (!regexPwd.test(req.body.new_password)) {
+			errors = errors.concat({ text: "Password Requires Minimum 8 characters, at least 1 Uppercase letter, 1 Lower Case Letter , 1 Number and 1 Special Character" });
+			return res.render('auth/reset', {
+				errors: errors,
+				email: req.params.email
+				
+			});
+		}
+		else if (req.body.new_password !== req.body.confirm_password) {
+			errors = errors.concat({ text: "Password do not match!" });
+			return res.render('auth/reset', {
+				errors: errors,
+				email: req.params.email
+				
+			});
+		}
+		const update_password = await ModelUser.update({
+			password: Hash.sha256().update(req.body.new_password).digest("hex")},{
+			where: {
+				email: req.params.email
+			  }
+		});
+		flashMessage(res, 'success', 'Successfully updated password', 'fas fa-sign-in-alt', true);
+		return res.redirect("/auth/login");
+	}
+	catch (error) {
+		console.log("Error in changing password page")
+	}
+};
+	
+	
+
+
+
+
+
+
+/**
+ * Renders the reset page
+ * @param {import('express')Request}  req Express Request handle
+ * @param {import('express')Response} res Express Response handle
+ */
+ async function reset_page(req, res) {
+	
+
+	console.log("reset page accessed");
+
+	return res.render('auth/reset',{
+	email: req.params.email
+
+
+	});
+}
 
 
 /**

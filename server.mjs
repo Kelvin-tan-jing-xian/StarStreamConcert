@@ -29,9 +29,9 @@ const Port = process.env.PORT || 3000;
 
 // These id's and secrets should come from .env file.
 const CLIENT_ID = '676747649537-dldinldb4oehsaf21ppj9erusdr8vt13.apps.googleusercontent.com';
-const CLIENT_SECRET = 'a-Ep6y2x3NRS_Ml_quORac9W';
+const CLIENT_SECRET = 'Djv8Cx5_ggCzXsHvcXGZlvvH';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
-const REFRESH_TOKEN = '1//04sqASaIu3n5kCgYIARAAGAQSNwF-L9IrYKRrfhAzLk4aIVBoA-w15BOJhcOxDCQger1zNlqfcuwo_osTpMyV-yGPVpa4cHO6nCg';
+const REFRESH_TOKEN = '1//04qzeIM9JEFSqCgYIARAAGAQSNwF-L9IrgCE6VR5la7h76Q4U9_XaG8piQ3LK9cWM4JfabXnolEqmmNpZmYZJg8hmshsyk1e3aws';
 
 
 const oAuth2Client = new google.auth.OAuth2(
@@ -41,45 +41,37 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
-async function sendMail() {
-  try {
-    const accessToken = await oAuth2Client.getAccessToken();
+export async function sendMail(email) {
+    try {
+      const accessToken = await oAuth2Client.getAccessToken();
 
-    const transport = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: 'trumenlim@gmail.com',
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        refreshToken: REFRESH_TOKEN,
-        accessToken: accessToken,
-      },
-    });
+      const transport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          type: 'OAuth2',
+          user: 'trumenlim@gmail.com',
+          clientId: CLIENT_ID,
+          clientSecret: CLIENT_SECRET,
+          refreshToken: REFRESH_TOKEN,
+          accessToken: accessToken,
+        },
+      });
 
-    const mailOptions = {
-      from: 'TRUMENLIM<trumenlim@gmail.com>',
-      to: 'trumenlim123@gmail.com',
-      subject: 'Hello from my test, testing gmail using API',
-      text: 'Hello from gmail email using API',
-      html: '<h1>Hello from gmail email using API</h1>',
-    };
+      const mailOptions = {
+        from: 'TRUMENLIM<trumenlim@gmail.com>',
+        to: email,
+        subject: 'Password reset for StarStream',
+        text: 'To reset the password for your account, click on the link below:',
+        html: `<h3>To reset the password for your account, click on the link below</h3><a href="http://localhost:3000/auth/reset/${email}" target="_blank"`,
+      };
 
-    const result = await transport.sendMail(mailOptions);
-    return result;
-  } catch (error) {
-    return error;
+      const result = await transport.sendMail(mailOptions);
+      return result;
+    } catch (error) {
+      return error;
+    }
   }
-}
-
-sendMail()
-  .then((result) => console.log('Email sent...', result))
-  .catch((error) => console.log(error.message));
-
-
-
-
-
+ 
 
 /**
  * Template Engine
