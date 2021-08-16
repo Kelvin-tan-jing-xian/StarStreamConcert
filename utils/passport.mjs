@@ -46,7 +46,7 @@ const LocalStrategy = new Strategy ({
 		}});
 
 		if (user == null) {
-			throw new Error ("Invalid Credentials");
+			throw new Error ("Invalid Credentials, the email you entered is not registered");
 		}
 		else {
 			return done(null, user);

@@ -23,11 +23,14 @@
                     <div class="form-group col">
                         <label class="font-italic" for="concertPoster">Concert poster</label>
                         <br>
-                        <input onchange="return fileValidation()" type="file" id="file" name="concertPoster" accept="image/png,image/jpeg,image/jpg,image/gif" required>
-                            {{!-- To display error message --}}
-                        <div class="font-weight-bold text-danger small" id="posterErr" style="display:none"></div>
+                        <input onchange="return fileValidation()" type="file" id="file" name="concertPoster" accept="image/png,image/jpeg,image/jpg,image/gif" >
                         <div id="imagePreview"></div>
+                        <br>
+                        <p>Current poster:</p>
+                        <img src="/{{content.concertPoster}}" alt="Poster unavailable">
+
                     </div>
+
                 </div>
             
                 <div class="form-group">

@@ -251,11 +251,23 @@ async function create_process(req, res) {
  */
  async function update_page(req, res) {
 	try {
+
+		var role = roleResult(req.user.role);
+		var cust = role[0];
+		var perf = role[1];
+		var admin = role[2];
+		console.log(cust);
+		console.log(perf);
+		console.log(admin);
+
 		const content = await ModelStream.findOne({where: { "uuid": req.params["uuid"] }});
 		console.log("Is content a list? :" + content);
 		if (content) {
 			// render to update.handlebars
 			return res.render('stream/update', {
+				cust:cust,
+				perf:perf,
+				admin:admin,
 				"mode"   : "update",
 				"content": content
 			});
@@ -308,18 +320,32 @@ async function create_process(req, res) {
 		
 		//	Save previous file path...
 		const previous_file = contents[0].concertPoster;
+		var data = {};
 
 		
-		const data={
-			concertName:     req.body.concertName,
-			artistName: req.body.artistName,
-			concertStory:    req.body.concertStory,
-			concertDate:  req.body.concertDate,
-			concertTime: req.body.concertTime,
-			concertPrice: req.body.concertPrice,
-			concertPoster: req.file.path,
-				
-		};
+		if (req.body.concertPoster == undefined) {
+			data = {
+				concertName: req.body.concertName,
+				artistName: req.body.artistName,
+				concertStory: req.body.concertStory,
+				concertDate: req.body.concertDate,
+				concertPrice: req.body.concertPrice,
+				concertTime: req.body.concertTime
+			};
+
+		}
+		else{
+			data = {
+				concertName: req.body.concertName,
+				artistName: req.body.artistName,
+				concertStory: req.body.concertStory,
+				concertDate: req.body.concertDate,
+				concertPrice: req.body.concertPrice,
+				concertPoster: req.file.path,
+				concertTime:req.body.concertTime
+			};
+
+		}
 
 		//	Assign new file if necessary
 		if (replaceFile) {
@@ -336,7 +362,7 @@ async function create_process(req, res) {
 			remove_file(previous_file);
 		}
 		
-		flashMessage(res, 'success', "stream updated", 'fas fa-sign-in-alt', true);
+		flashMessage(res, 'success', "Stream Updated", 'fas fa-sign-in-alt', true);
 		return res.redirect(`/stream/update/${req.params.uuid}`);
 	}
 	catch(error) {
@@ -360,7 +386,7 @@ async function create_process(req, res) {
  * @param {Request}  req Express request  object
  * @param {Response} res Express response object
  */
- async function delete_process(req, res) {
+async function delete_process(req, res) {
 
 	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
 	// if uuid doesnt match with uuidv4, give error

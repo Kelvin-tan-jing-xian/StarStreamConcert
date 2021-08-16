@@ -10,7 +10,7 @@ import {Path} from '../../utils/multer.mjs';
 import { ModelVenueBookings } from '../../data/VenueBookings.mjs';
 import Hash             from 'hash.js';
 import JWT              from 'jsonwebtoken';
-
+import { ModelStream }    from '../../data/stream.mjs';
 const router = Router();
 export default router;
 /**
@@ -67,6 +67,7 @@ router.get("/venue/update/:uuid", venue_update_page);
 router.post("/venue/update/:uuid",UploadFile.single("venuePoster"),venue_update_process);
 router.delete("/venue/delete/:uuid",  venue_delete_process);
 router.get("/stream/retrieveall", stream_retrieveall_page);
+router.delete("/stream/delete/:uuid", stream_delete_process);
 router.get("/feedback/retrieve", feedback_retrieve_page);
 router.get("/feedback/update/:uuid", feedback_update_page);
 router.post('/feedback/update/:uuid',  feedback_update_process);
@@ -465,6 +466,53 @@ async function venue_delete_process(req, res) {
 		admin: admin
 	});
  }
+
+
+/**
+ * Handles the deletion of streams.
+ * @param {Request}  req Express request  object
+ * @param {Response} res Express response object
+ */
+async function stream_delete_process(req, res) {
+
+	const regex_uuidv4 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
+	// if uuid doesnt match with uuidv4, give error
+	if (!regex_uuidv4.test(req.params.uuid))
+		return res.status(400);
+	
+
+	try {
+		const targets = await ModelStream.findAll({where: { "uuid": req.params.uuid }});
+
+		switch(targets.length) {
+			case 0      : return res.status(409);
+			case 1      : console.log("Found 1 eligible stream to be deleted"); break;
+			default: return res.status(409);
+		}
+		const affected = await ModelStream.destroy({where: { "uuid": req.params.uuid}});
+
+		if (affected == 1) {
+			//	Delete all files associated
+			targets.forEach((target) => { 
+				remove_file(target.concertPoster);
+			});
+
+			console.log(`Deleted stream: ${req.params.uuid}`);
+			return res.redirect("/admin/stream/retrieveall");
+		}
+		//	There should only be one, so this else should never occur anyway
+		else {
+			console.error(`More than one entries affected by: ${req.params.uuid}, Total: ${affected}`);
+			return res.status(409);
+		}
+	}
+	catch (error) {
+		console.error(`Failed to delete stream with uuid: ${req.params.uuid}`);
+		console.error(error);
+		return res.status(500);
+	}
+}
+
 /**
  * Renders the retrieve page
  * @param {import('express')Request}  req Express Request handle

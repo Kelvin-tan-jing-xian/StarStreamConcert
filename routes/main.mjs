@@ -248,7 +248,7 @@ router.post('/profile/change-password', async function(req,res){
 			});
 		}
 		else if (req.body.new_password !== req.body.confirm_password) {
-			errors = errors.concat({ text: "Password do not match!" });
+			errors = errors.concat({ text: "New Password and Confirm Password do not match!" });
 			return res.render('change_password', {
 				errors: errors,
 				cust: cust,
