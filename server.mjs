@@ -29,9 +29,9 @@ const Port = process.env.PORT || 3000;
 
 // These id's and secrets should come from .env file.
 const CLIENT_ID = '676747649537-dldinldb4oehsaf21ppj9erusdr8vt13.apps.googleusercontent.com';
-const CLIENT_SECRET = 'Djv8Cx5_ggCzXsHvcXGZlvvH';
+const CLIENT_SECRET = 'H_xdl_7rL4O2_KbWXrou5eoI';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
-const REFRESH_TOKEN = '1//04qzeIM9JEFSqCgYIARAAGAQSNwF-L9IrgCE6VR5la7h76Q4U9_XaG8piQ3LK9cWM4JfabXnolEqmmNpZmYZJg8hmshsyk1e3aws';
+const REFRESH_TOKEN = '1//047raAoa1FVduCgYIARAAGAQSNwF-L9Irkox21YPTpv2U0d24th7e5sdopkCWt2d8-4_DaiZUdKT_JVclj_2HNj0Lb87E_MdbcOc';
 
 
 const oAuth2Client = new google.auth.OAuth2(
@@ -72,6 +72,13 @@ export async function sendMail(email) {
     }
   }
  
+
+
+
+
+
+
+  
 
 /**
  * Template Engine
