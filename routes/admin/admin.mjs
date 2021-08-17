@@ -760,6 +760,7 @@ async function feedback_update_process(req, res) {
 		});
 
 		flashMessage(res, 'success', 'Successfully created an admin account. Please login', 'fas fa-sign-in-alt', true);
+    req.logout();
 		return res.redirect("/auth/login");
 	}
 	catch (error) {

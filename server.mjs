@@ -62,7 +62,7 @@ export async function sendMail(email) {
         to: email,
         subject: 'Password reset for StarStream',
         text: 'To reset the password for your account, click on the link below:',
-        html: `<h3>To reset the password for your account, click on the link below</h3><a href="http://localhost:3000/auth/reset/${email}" target="_blank"`,
+        html: `<h3>To reset the password for your account, click on the link below</h3><a href="https://localhost/auth/reset/${email}" target="_blank"`,
       };
 
       const result = await transport.sendMail(mailOptions);
