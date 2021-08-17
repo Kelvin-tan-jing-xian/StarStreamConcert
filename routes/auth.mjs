@@ -101,29 +101,21 @@ function roleResult(role){
 
 	console.log("forget process accessed");
 
-	let errors = [];
+	
 	//	Check your Form contents
 	//	Basic IF ELSE STUFF no excuse not to be able to do this alone
 	//	Common Sense
-	try {
-		
-		const user = await ModelUser.findOne({where: {email: req.body.email}});
-		if (user == null) {
-			errors = errors.concat({ text: "Account does not exist!" }); // if the user register the second time
+	
+	const user = await ModelUser.findOne({where: {email: req.body.email}});
+	if (user == null) {
+			
+		flashMessage(res, 'fail', 'Email does not exist', 'fas fa-sign-in-alt', true);
+		return res.render('auth/forget',{
+
+	});
 			}
 		
-
-		
-	}
-	catch (error) {
-		console.error("There is errors with the forget password form body.");
-		console.error(error);
-		return res.render('auth/forget', { errors: errors });
-	}
-	
-	
-
-
+	else{
 	sendMail(req.body.email)
 	.then((result) => console.log('Email sent...', result))
     .catch((error) => console.log(error.message));
@@ -131,6 +123,8 @@ function roleResult(role){
 	return res.render('auth/forget',{
 
 	});
+}
+
 }
 
 
